@@ -63,6 +63,7 @@ public class UserService {
     }
 
     private boolean validate(User user) throws ValidationException {
+
         for (User oldUser: storage.findAll()) {
             if (Objects.equals(oldUser.getEmail(), user.getEmail())) {
                 return false;
