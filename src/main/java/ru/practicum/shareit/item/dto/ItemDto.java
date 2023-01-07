@@ -1,15 +1,18 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
-import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.user.model.User;
 
 @Data
 public class ItemDto {
-    private Long id;
     private String name;
     private String description;
     private boolean available;
-    private User owner;
-    private ItemRequest request;
+    private Long along;
+
+    public ItemDto(String name, String description, boolean available, Long along) {
+        this.name = name;
+        this.description = description;
+        this.available = available;
+        this.along = along;
+    }
 }
