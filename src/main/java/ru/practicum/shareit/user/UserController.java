@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User findUser(@PathVariable Long userId) {
+    public User find(@PathVariable Long userId) {
         return userService.findById(userId);
     }
 
@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @DeleteMapping()
-    public User deleteUser(@Valid @RequestBody User user) {
+    public User delete(@Valid @RequestBody User user) {
         return userService.deleteUser(user);
     }
 }
