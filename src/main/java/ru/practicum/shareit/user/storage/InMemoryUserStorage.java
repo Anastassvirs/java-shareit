@@ -39,7 +39,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User saveUser(User user) {
+    public User save(User user) {
         numberOfUsers++;
         user.setId(numberOfUsers);
         users.put(numberOfUsers, user);
@@ -47,14 +47,13 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User updateUser(User user) {
+    public User update(User user) {
         users.put(user.getId(), user);
         return user;
     }
 
     @Override
-    public User deleteUser(User user) {
-        users.remove(user.getId());
-        return user;
+    public void delete(Long id) {
+        users.remove(id);
     }
 }

@@ -36,39 +36,35 @@ public class UserService {
             log.debug("Произошла ошибка: Введенный пользователь уже зарегистрирован");
             throw new AlreadyExistException("Такой пользователь уже зарегистрирован");
         }
-        if (!validate(user)) {
+        if (emailAlreadyExist(user.getEmail())) {
             log.debug("Произошла ошибка валидации");
-            throw new AlreadyExistException("Произошла ошибка валидации");
+            throw new ValidationException("Произошла ошибка валидации");
         }
         log.debug("Добавлен новый пользователь: {}", user);
-        return storage.saveUser(user);
+        return storage.save(user);
     }
 
     public User updateUser(User user) {
-        if(validate(user)) {
-            if (userAlreadyExist(user)) {
-                log.debug("Обновлен пользователь: {}", user);
-                return storage.updateUser(user);
-            } else {
-                log.debug("Произошла ошибка: Введенного пользователя не существует");
-                throw new NotFoundAnythingException("Такого пользователя не существует");
-            }
+        if (userAlreadyExist(user)) {
+            log.debug("Обновлен пользователь: {}", user);
+            return storage.update(user);
         } else {
-            throw new ValidationException("Произошла ошибка валидации");
+            log.debug("Произошла ошибка: Введенного пользователя не существует");
+            throw new NotFoundAnythingException("Такого пользователя не существует");
         }
     }
 
-    public User deleteUser(User user) {
-        return storage.deleteUser(user);
+    public void deleteById(Long id) {
+        storage.delete(id);
     }
 
-    private boolean validate(User user) throws ValidationException {
+    public boolean emailAlreadyExist(String email) {
         for (User oldUser: storage.findAll()) {
-            if (Objects.equals(oldUser.getEmail(), user.getEmail())) {
-                return false;
+            if (Objects.equals(oldUser.getEmail(), email)) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     private boolean userAlreadyExist(User user) {

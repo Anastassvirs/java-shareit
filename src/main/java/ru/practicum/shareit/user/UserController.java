@@ -1,8 +1,11 @@
 package ru.practicum.shareit.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.model.UserDto;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -33,13 +36,25 @@ public class UserController {
         return userService.createUser(user);
     }
 
-    @PutMapping
-    public User update(@Valid @RequestBody User user) {
-        return userService.updateUser(user);
+    @PatchMapping(path = "/{userId}", consumes = "application/json")
+    public ResponseEntity<User> update(@PathVariable Long userId, @RequestBody UserDto userDto) {
+        User user = userService.findById(userId);
+        if (userDto.getName() != null) {
+            user.setName(userDto.getName());
+        }
+        if (userDto.getEmail() != null) {
+            if (!userService.emailAlreadyExist(userDto.getEmail())) {
+                user.setEmail(userDto.getEmail());
+            } else {
+                throw new ValidationException("Данный email уже зарегистрирован");
+            }
+        }
+        userService.updateUser(user);
+        return ResponseEntity.ok(user);
     }
 
-    @DeleteMapping()
-    public User delete(@Valid @RequestBody User user) {
-        return userService.deleteUser(user);
+    @DeleteMapping(path = "/{userId}")
+    public void deleteById(@PathVariable Long userId) {
+        userService.deleteById(userId);
     }
 }

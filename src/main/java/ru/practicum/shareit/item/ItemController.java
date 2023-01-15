@@ -22,7 +22,7 @@ public class ItemController {
         return itemService.findAll();
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/{itemId}")
     public Item find(@PathVariable Long userId) {
         return itemService.findById(userId);
     }
@@ -32,9 +32,9 @@ public class ItemController {
         return itemService.createItem(item);
     }
 
-    @PutMapping
-    public Item update(@Valid @RequestBody Item item) {
-        return itemService.updateItem(item);
+    @PatchMapping("/{itemId}")
+    public Item update(@PathVariable Long itemId) {
+        return itemService.updateItem(find(itemId));
     }
 
     @DeleteMapping()

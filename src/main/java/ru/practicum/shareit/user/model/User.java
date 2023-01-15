@@ -8,8 +8,6 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class User {
-    @NotNull
-    @NotBlank
     private Long id;
     private String name;
     @Email
