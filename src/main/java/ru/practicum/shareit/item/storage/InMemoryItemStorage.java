@@ -8,6 +8,8 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 @Component
 @Qualifier("memoryItemStorage")
@@ -29,6 +31,33 @@ public class InMemoryItemStorage implements ItemStorage{
         return listItems;
     }
 
+
+    @Override
+    public List<Item> findAllByUser(Long userId) {
+        listItems = new ArrayList();
+        for (Item item: items.values()) {
+            if (item.getOwner().getId() == userId) {
+                listItems.add(item);
+            }
+        }
+        return listItems;
+    }
+
+    @Override
+    public List<Item> findAllByText(String text) {
+        listItems = new ArrayList();
+        if (text.equals("")) {
+            return listItems;
+        }
+        for (Item item: items.values()) {
+            if (item.getAvailable() && (item.getName().toLowerCase().contains(text.toLowerCase())
+                    || item.getDescription().toLowerCase().contains(text.toLowerCase()))) {
+                listItems.add(item);
+            }
+        }
+        return listItems;
+    }
+
     @Override
     public Item findById(Long id) {
         if (items.containsKey(id)) {
@@ -39,22 +68,22 @@ public class InMemoryItemStorage implements ItemStorage{
     }
 
     @Override
-    public Item saveItem(Item user) {
+    public Item saveItem(Item item) {
         numberOfItems++;
-        user.setId(numberOfItems);
-        items.put(numberOfItems, user);
-        return user;
+        item.setId(numberOfItems);
+        items.put(numberOfItems, item);
+        return item;
     }
 
     @Override
-    public Item updateItem(Item user) {
-        items.put(user.getId(), user);
-        return user;
+    public Item updateItem(Item item) {
+        items.put(item.getId(), item);
+        return item;
     }
 
     @Override
-    public Item deleteItem(Item user) {
-        items.remove(user.getId());
-        return user;
+    public Item deleteItem(Item item) {
+        items.remove(item.getId());
+        return item;
     }
 }

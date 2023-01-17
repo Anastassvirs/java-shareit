@@ -4,10 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.AlreadyExistException;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.model.ItemDto;
+import ru.practicum.shareit.item.model.ItemMapper;
 import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 import java.util.Objects;
@@ -26,17 +28,23 @@ public class ItemService {
         return storage.findAll();
     }
 
+    public List<Item> findAllByUser(Long userId) {
+        return storage.findAllByUser(userId);
+    }
+
+    public List<Item> findAllByText(String text) {
+        return storage.findAllByText(text);
+    }
+
     public Item findById(Long id) {
         return storage.findById(id);
     }
 
-    public Item createItem(Item item) {
-        if (itemAlreadyExist(item)) {
-            log.debug("Произошла ошибка: Введенная вещь уже зарегистрирована");
-            throw new AlreadyExistException("Такая вещь уже зарегистрирована");
-        }
-        log.debug("Добавлена новая вещь: {}", item);
-        return storage.saveItem(item);
+    public Item createItem(ItemDto itemDto, User owner) {
+        log.debug("Пользователем с id: {} была добавлена новая вещь: {}", owner.getId(), itemDto);
+        Item newItem = ItemMapper.toItem(itemDto);
+        newItem.setOwner(owner);
+        return storage.saveItem(newItem);
     }
 
     public Item updateItem(Item item) {

@@ -5,7 +5,12 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 
 public interface ItemStorage {
+
     List<Item> findAll();
+
+    List<Item> findAllByUser(Long userId);
+
+    List<Item> findAllByText(String text);
 
     Item findById(Long id);
 

@@ -9,9 +9,14 @@ import javax.validation.constraints.NotNull;
 @Data
 public class User {
     private Long id;
+    @NotBlank
     private String name;
     @Email
-    @NotNull
     @NotBlank
     private String email;
+
+    public User(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
 }
