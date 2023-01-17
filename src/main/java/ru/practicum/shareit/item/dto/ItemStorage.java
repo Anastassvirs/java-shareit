@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.storage;
+package ru.practicum.shareit.item.dto;
 
 import ru.practicum.shareit.item.model.Item;
 

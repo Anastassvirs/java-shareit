@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request.dao;
+package ru.practicum.shareit.request.dto;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;

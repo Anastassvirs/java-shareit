@@ -8,7 +8,7 @@ import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemDto;
 import ru.practicum.shareit.item.model.ItemMapper;
-import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.item.dto.ItemStorage;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
