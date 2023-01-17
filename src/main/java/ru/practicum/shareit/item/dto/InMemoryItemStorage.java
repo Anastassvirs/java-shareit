@@ -11,7 +11,7 @@ import java.util.List;
 
 @Component
 @Qualifier("memoryItemStorage")
-public class InMemoryItemStorage implements ItemStorage{
+public class InMemoryItemStorage implements ItemStorage {
     private HashMap<Long, Item> items;
     private Long numberOfItems;
     private List<Item> listItems;
