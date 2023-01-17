@@ -64,7 +64,7 @@ public class ItemController {
     public ResponseEntity<Item> update(@PathVariable Long itemId, @RequestBody ItemDto itemDto, @RequestHeader(value = "X-Sharer-User-Id") Long ownerId) {
         try {
             Item item = itemService.findById(itemId);
-            if (ownerId == item.getOwner().getId()) {
+            if (ownerId.equals(item.getOwner().getId())) {
                 if (itemDto.getName() != null) {
                     item.setName(itemDto.getName());
                 }

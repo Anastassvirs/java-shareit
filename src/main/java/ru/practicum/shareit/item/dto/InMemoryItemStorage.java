@@ -8,6 +8,7 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @Qualifier("memoryItemStorage")
@@ -33,7 +34,7 @@ public class InMemoryItemStorage implements ItemStorage {
     public List<Item> findAllByUser(Long userId) {
         listItems = new ArrayList();
         for (Item item: items.values()) {
-            if (item.getOwner().getId() == userId) {
+            if (Objects.equals(item.getOwner().getId(), userId)) {
                 listItems.add(item);
             }
         }
