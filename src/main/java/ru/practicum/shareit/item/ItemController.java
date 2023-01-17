@@ -46,8 +46,8 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public Item find(@PathVariable Long userId) {
-        return itemService.findById(userId);
+    public Item find(@PathVariable Long itemId) {
+        return itemService.findById(itemId);
     }
 
     @PostMapping
