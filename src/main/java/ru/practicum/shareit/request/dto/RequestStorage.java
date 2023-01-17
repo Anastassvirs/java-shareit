@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request.storage;
+package ru.practicum.shareit.request.dao;
 
 import ru.practicum.shareit.request.model.ItemRequest;
 
