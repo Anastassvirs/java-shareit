@@ -54,8 +54,8 @@ public class RequestService {
     }
 
     private boolean requestAlreadyExist(ItemRequest request) {
-        for (ItemRequest OldRequest: storage.findAll()) {
-            if (Objects.equals(OldRequest.getId(), request.getId())) {
+        for (ItemRequest oldRequest: storage.findAll()) {
+            if (Objects.equals(oldRequest.getId(), request.getId())) {
                 return true;
             }
         }

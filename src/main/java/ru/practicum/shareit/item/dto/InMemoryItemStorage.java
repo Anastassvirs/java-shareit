@@ -29,7 +29,6 @@ public class InMemoryItemStorage implements ItemStorage{
         return listItems;
     }
 
-
     @Override
     public List<Item> findAllByUser(Long userId) {
         listItems = new ArrayList();
