@@ -12,6 +12,7 @@ import ru.practicum.shareit.user.model.User;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/items")
@@ -65,15 +66,9 @@ public class ItemController {
         try {
             Item item = itemService.findById(itemId);
             if (ownerId.equals(item.getOwner().getId())) {
-                if (itemDto.getName() != null) {
-                    item.setName(itemDto.getName());
-                }
-                if (itemDto.getDescription() != null) {
-                    item.setDescription(itemDto.getDescription());
-                }
-                if (itemDto.getAvailable() != null) {
-                    item.setAvailable(itemDto.getAvailable());
-                }
+                Optional.ofNullable(itemDto.getName()).ifPresent(item::setName);
+                Optional.ofNullable(itemDto.getDescription()).ifPresent(item::setDescription);
+                Optional.ofNullable(itemDto.getAvailable()).ifPresent(item::setAvailable);
                 itemService.updateItem(find(itemId));
                 return new ResponseEntity<>(item, HttpStatus.OK);
             } else {
