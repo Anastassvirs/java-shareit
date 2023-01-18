@@ -1,8 +1,8 @@
 package ru.practicum.shareit.item.dto;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.apache.commons.lang3.StringUtils;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.item.model.Item;
 

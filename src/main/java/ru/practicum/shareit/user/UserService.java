@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.AlreadyExistException;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.exceptions.SameFieldException;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dto.UserStorage;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserDto;
 
 import java.util.List;
@@ -70,7 +70,7 @@ public class UserService {
     }
 
     private boolean emailAlreadyExist(String email) {
-        for (User oldUser: storage.findAll()) {
+        for (User oldUser : storage.findAll()) {
             if (Objects.equals(oldUser.getEmail(), email)) {
                 return true;
             }
@@ -79,7 +79,7 @@ public class UserService {
     }
 
     private boolean userAlreadyExist(User user) {
-        for (User oldUser: storage.findAll()) {
+        for (User oldUser : storage.findAll()) {
             if (Objects.equals(oldUser.getId(), user.getId())) {
                 return true;
             }

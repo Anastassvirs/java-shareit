@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
+import ru.practicum.shareit.item.dto.ItemStorage;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemDto;
 import ru.practicum.shareit.item.model.ItemMapper;
-import ru.practicum.shareit.item.dto.ItemStorage;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;

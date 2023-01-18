@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.AlreadyExistException;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
-import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.dto.RequestStorage;
+import ru.practicum.shareit.request.model.ItemRequest;
 
 import java.util.List;
 import java.util.Objects;
@@ -54,7 +54,7 @@ public class RequestService {
     }
 
     private boolean requestAlreadyExist(ItemRequest request) {
-        for (ItemRequest oldRequest: storage.findAll()) {
+        for (ItemRequest oldRequest : storage.findAll()) {
             if (Objects.equals(oldRequest.getId(), request.getId())) {
                 return true;
             }
