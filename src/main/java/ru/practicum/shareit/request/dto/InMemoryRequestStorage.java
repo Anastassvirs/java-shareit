@@ -14,17 +14,15 @@ import java.util.List;
 public class InMemoryRequestStorage implements RequestStorage {
     private HashMap<Long, ItemRequest> requests;
     private Long numberOfRequests;
-    private List<ItemRequest> listrequests;
 
     public InMemoryRequestStorage() {
         requests = new HashMap();
-        listrequests = new ArrayList<>();
         numberOfRequests = (long) 0;
     }
 
     @Override
     public List<ItemRequest> findAll() {
-        listrequests = new ArrayList();
+        List<ItemRequest> listrequests = new ArrayList();
         listrequests.addAll(requests.values());
         return listrequests;
     }

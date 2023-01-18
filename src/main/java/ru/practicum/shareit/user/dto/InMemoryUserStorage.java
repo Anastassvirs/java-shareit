@@ -14,17 +14,15 @@ import java.util.List;
 public class InMemoryUserStorage implements UserStorage {
     private HashMap<Long, User> users;
     private Long numberOfUsers;
-    private List<User> listUsers;
 
     public InMemoryUserStorage() {
         users = new HashMap();
-        listUsers = new ArrayList<>();
         numberOfUsers = (long) 0;
     }
 
     @Override
     public List<User> findAll() {
-        listUsers = new ArrayList();
+        List<User> listUsers = new ArrayList();
         listUsers.addAll(users.values());
         return listUsers;
     }
