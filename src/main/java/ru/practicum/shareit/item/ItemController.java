@@ -52,7 +52,7 @@ public class ItemController {
         return new ResponseEntity<>(itemService.updateItem(itemId, itemDto, ownerId), HttpStatus.OK);
     }
 
-    @DeleteMapping()
+    @DeleteMapping
     public Item delete(@Valid @RequestBody Item item, @RequestHeader(value = "X-Sharer-User-Id") Long ownerId) {
         userService.findById(ownerId);
         return itemService.deleteItem(item);

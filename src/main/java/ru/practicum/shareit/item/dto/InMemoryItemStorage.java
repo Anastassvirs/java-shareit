@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.dto;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.apache.commons.lang3.StringUtils;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.item.model.Item;
 
@@ -15,25 +16,23 @@ import java.util.Objects;
 public class InMemoryItemStorage implements ItemStorage {
     private HashMap<Long, Item> items;
     private Long numberOfItems;
-    private List<Item> listItems;
 
     public InMemoryItemStorage() {
-        items = new HashMap();
-        listItems = new ArrayList<>();
-        numberOfItems = (long) 0;
+        this.items = new HashMap();
+        this.numberOfItems = (long) 0;
     }
 
     @Override
     public List<Item> findAll() {
-        listItems = new ArrayList();
+        List<Item> listItems = new ArrayList();
         listItems.addAll(items.values());
         return listItems;
     }
 
     @Override
     public List<Item> findAllByUser(Long userId) {
-        listItems = new ArrayList();
-        for (Item item: items.values()) {
+        List<Item> listItems = new ArrayList();
+        for (Item item : items.values()) {
             if (Objects.equals(item.getOwner().getId(), userId)) {
                 listItems.add(item);
             }
@@ -43,13 +42,13 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public List<Item> findAllByText(String text) {
-        listItems = new ArrayList();
+        List<Item> listItems = new ArrayList();
         if (text.equals("")) {
             return listItems;
         }
-        for (Item item: items.values()) {
-            if (item.getAvailable() && (item.getName().toLowerCase().contains(text.toLowerCase())
-                    || item.getDescription().toLowerCase().contains(text.toLowerCase()))) {
+        for (Item item : items.values()) {
+            if (item.getAvailable() && (StringUtils.containsIgnoreCase(item.getName(), text.toLowerCase())
+                    || StringUtils.containsIgnoreCase(item.getDescription(), text))) {
                 listItems.add(item);
             }
         }

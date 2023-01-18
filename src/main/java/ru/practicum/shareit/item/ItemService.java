@@ -73,7 +73,7 @@ public class ItemService {
     }
 
     private boolean itemAlreadyExist(Item item) {
-        for (Item oldItem: storage.findAll()) {
+        for (Item oldItem : storage.findAll()) {
             if (Objects.equals(oldItem.getId(), item.getId())) {
                 return true;
             }
