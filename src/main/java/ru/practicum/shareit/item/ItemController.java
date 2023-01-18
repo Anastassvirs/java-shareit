@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exceptions.ErrorResponse;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemDto;
@@ -28,22 +29,14 @@ public class ItemController {
 
     @GetMapping
     public ResponseEntity<List<Item>> findAllByUser(@RequestHeader(value = "X-Sharer-User-Id") Long ownerId) {
-        try {
-            userService.findById(ownerId);
-            return new ResponseEntity<>(itemService.findAllByUser(ownerId), HttpStatus.OK);
-        } catch (NotFoundAnythingException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        userService.findById(ownerId);
+        return new ResponseEntity<>(itemService.findAllByUser(ownerId), HttpStatus.OK);
     }
 
     @GetMapping("/search")
     public ResponseEntity<List<Item>> findAllByText(@RequestParam String text, @RequestHeader(value = "X-Sharer-User-Id") Long ownerId) {
-        try {
-            userService.findById(ownerId);
-            return new ResponseEntity<>(itemService.findAllByText(text), HttpStatus.OK);
-        } catch (NotFoundAnythingException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        userService.findById(ownerId);
+        return new ResponseEntity<>(itemService.findAllByText(text), HttpStatus.OK);
     }
 
     @GetMapping("/{itemId}")
@@ -53,28 +46,19 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<Item> create(@Valid @RequestBody ItemDto item, @RequestHeader(value = "X-Sharer-User-Id") Long ownerId) {
-        try {
-            User owner = userService.findById(ownerId);
-            return new ResponseEntity<>(itemService.createItem(item, owner), HttpStatus.OK);
-        } catch (NotFoundAnythingException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(itemService.createItem(item, userService.findById(ownerId)), HttpStatus.OK);
     }
 
     @PatchMapping("/{itemId}")
     public ResponseEntity<Item> update(@PathVariable Long itemId, @RequestBody ItemDto itemDto, @RequestHeader(value = "X-Sharer-User-Id") Long ownerId) {
-        try {
-            Item item = itemService.findById(itemId);
-            if (ownerId.equals(item.getOwner().getId())) {
-                Optional.ofNullable(itemDto.getName()).ifPresent(item::setName);
-                Optional.ofNullable(itemDto.getDescription()).ifPresent(item::setDescription);
-                Optional.ofNullable(itemDto.getAvailable()).ifPresent(item::setAvailable);
-                itemService.updateItem(find(itemId));
-                return new ResponseEntity<>(item, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } catch (NotFoundAnythingException e) {
+        Item item = itemService.findById(itemId);
+        if (ownerId.equals(item.getOwner().getId())) {
+            Optional.ofNullable(itemDto.getName()).ifPresent(item::setName);
+            Optional.ofNullable(itemDto.getDescription()).ifPresent(item::setDescription);
+            Optional.ofNullable(itemDto.getAvailable()).ifPresent(item::setAvailable);
+            itemService.updateItem(find(itemId));
+            return new ResponseEntity<>(item, HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

@@ -3,7 +3,7 @@ package ru.practicum.shareit.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exceptions.ValidationException;
+import ru.practicum.shareit.exceptions.SameFieldException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserDto;
 
@@ -45,7 +45,7 @@ public class UserController {
             if (!userService.emailAlreadyExist(userDto.getEmail())) {
                 user.setEmail(userDto.getEmail());
             } else {
-                throw new ValidationException("Данный email уже зарегистрирован");
+                throw new SameFieldException("Данный email уже зарегистрирован");
             }
         }
         userService.updateUser(user);

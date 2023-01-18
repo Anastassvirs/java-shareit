@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.AlreadyExistException;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
-import ru.practicum.shareit.exceptions.ValidationException;
+import ru.practicum.shareit.exceptions.SameFieldException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dto.UserStorage;
 
@@ -38,7 +38,7 @@ public class UserService {
         }
         if (emailAlreadyExist(user.getEmail())) {
             log.debug("Произошла ошибка валидации");
-            throw new ValidationException("Произошла ошибка валидации");
+            throw new SameFieldException("Произошла ошибка валидации");
         }
         log.debug("Добавлен новый пользователь: {}", user);
         return storage.save(user);
