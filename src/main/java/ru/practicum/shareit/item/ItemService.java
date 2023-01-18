@@ -13,6 +13,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -47,14 +48,24 @@ public class ItemService {
         return storage.saveItem(newItem);
     }
 
-    public Item updateItem(Item item) {
-        if (itemAlreadyExist(item)) {
-            log.debug("Обновлена вещь: {}", item);
-            return storage.updateItem(item);
+    public Item updateItem(Long itemId, ItemDto itemDto, Long ownerId) {
+        Item item = findById(itemId);
+        if (ownerId.equals(item.getOwner().getId())) {
+            Optional.ofNullable(itemDto.getName()).ifPresent(item::setName);
+            Optional.ofNullable(itemDto.getDescription()).ifPresent(item::setDescription);
+            Optional.ofNullable(itemDto.getAvailable()).ifPresent(item::setAvailable);
+            if (itemAlreadyExist(item)) {
+                log.debug("Обновлена вещь: {}", item);
+                return storage.updateItem(item);
+            } else {
+                log.debug("Произошла ошибка: Введенной вещи не существует");
+                throw new NotFoundAnythingException("Такой вещи не существует");
+            }
         } else {
-            log.debug("Произошла ошибка: Введенной вещи не существует");
-            throw new NotFoundAnythingException("Такой вещи не существует");
+            log.debug("Произошла ошибка: ID пользователя не соответсвует владельцу вещи");
+            throw new NotFoundAnythingException("ID пользователя не соответсвует владельцу вещи");
         }
+
     }
 
     public Item deleteItem(Item item) {

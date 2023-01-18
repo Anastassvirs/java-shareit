@@ -9,9 +9,11 @@ import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.exceptions.SameFieldException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dto.UserStorage;
+import ru.practicum.shareit.user.model.UserDto;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -44,7 +46,16 @@ public class UserService {
         return storage.save(user);
     }
 
-    public User updateUser(User user) {
+    public User updateUser(Long userId, UserDto userDto) {
+        User user = findById(userId);
+        Optional.ofNullable(userDto.getName()).ifPresent(user::setName);
+        if (userDto.getEmail() != null) {
+            if (!emailAlreadyExist(userDto.getEmail())) {
+                user.setEmail(userDto.getEmail());
+            } else {
+                throw new SameFieldException("Данный email уже зарегистрирован");
+            }
+        }
         if (userAlreadyExist(user)) {
             log.debug("Обновлен пользователь: {}", user);
             return storage.update(user);
@@ -58,7 +69,7 @@ public class UserService {
         storage.delete(id);
     }
 
-    public boolean emailAlreadyExist(String email) {
+    private boolean emailAlreadyExist(String email) {
         for (User oldUser: storage.findAll()) {
             if (Objects.equals(oldUser.getEmail(), email)) {
                 return true;

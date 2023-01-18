@@ -3,7 +3,6 @@ package ru.practicum.shareit.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exceptions.SameFieldException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserDto;
 
@@ -37,19 +36,7 @@ public class UserController {
 
     @PatchMapping(path = "/{userId}", consumes = "application/json")
     public ResponseEntity<User> update(@PathVariable Long userId, @RequestBody UserDto userDto) {
-        User user = userService.findById(userId);
-        if (userDto.getName() != null) {
-            user.setName(userDto.getName());
-        }
-        if (userDto.getEmail() != null) {
-            if (!userService.emailAlreadyExist(userDto.getEmail())) {
-                user.setEmail(userDto.getEmail());
-            } else {
-                throw new SameFieldException("Данный email уже зарегистрирован");
-            }
-        }
-        userService.updateUser(user);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userService.updateUser(userId, userDto));
     }
 
     @DeleteMapping(path = "/{userId}")
