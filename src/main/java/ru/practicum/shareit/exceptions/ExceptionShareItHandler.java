@@ -20,6 +20,12 @@ public class ExceptionShareItHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleUserNotFoundException(final AuntificationException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleUserNotFoundException(final AlreadyExistException e) {
         return new ErrorResponse(e.getMessage());
