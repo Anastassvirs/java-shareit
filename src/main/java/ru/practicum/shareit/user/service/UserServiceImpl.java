@@ -1,15 +1,16 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.AlreadyExistException;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.exceptions.SameFieldException;
-import ru.practicum.shareit.user.dto.UserStorage;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserDto;
+
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -17,35 +18,36 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-public class UserService {
-    private final UserStorage storage;
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
+public class UserServiceImpl implements UserService {
 
-    @Autowired
-    public UserService(@Qualifier("memoryUserStorage") UserStorage storage) {
-        this.storage = storage;
-    }
+    private final UserRepository repository;
 
+    @Override
     public List<User> findAll() {
-        return storage.findAll();
+        return repository.findAll();
     }
 
+    @Override
     public User findById(Long id) {
-        return storage.findById(id);
+        return repository.findById(id)
+                .orElseThrow(() -> new NotFoundAnythingException("Пользователя с данным id не существует"));
     }
 
+    @Transactional
+    @Override
     public User createUser(User user) {
         if (userAlreadyExist(user)) {
             log.debug("Произошла ошибка: Введенный пользователь уже зарегистрирован");
             throw new AlreadyExistException("Такой пользователь уже зарегистрирован");
         }
-        if (emailAlreadyExist(user.getEmail())) {
-            log.debug("Произошла ошибка валидации");
-            throw new SameFieldException("Произошла ошибка валидации");
-        }
         log.debug("Добавлен новый пользователь: {}", user);
-        return storage.save(user);
+        return repository.save(user);
     }
 
+    @Transactional
+    @Override
     public User updateUser(Long userId, UserDto userDto) {
         User user = findById(userId);
         Optional.ofNullable(userDto.getName()).ifPresent(user::setName);
@@ -58,19 +60,20 @@ public class UserService {
         }
         if (userAlreadyExist(user)) {
             log.debug("Обновлен пользователь: {}", user);
-            return storage.update(user);
+            return repository.save(user);
         } else {
             log.debug("Произошла ошибка: Введенного пользователя не существует");
             throw new NotFoundAnythingException("Такого пользователя не существует");
         }
     }
 
+    @Override
     public void deleteById(Long id) {
-        storage.delete(id);
+        repository.deleteById(id);
     }
 
     private boolean emailAlreadyExist(String email) {
-        for (User oldUser : storage.findAll()) {
+        for (User oldUser : repository.findAll()) {
             if (Objects.equals(oldUser.getEmail(), email)) {
                 return true;
             }
@@ -79,7 +82,7 @@ public class UserService {
     }
 
     private boolean userAlreadyExist(User user) {
-        for (User oldUser : storage.findAll()) {
+        for (User oldUser : repository.findAll()) {
             if (Objects.equals(oldUser.getId(), user.getId())) {
                 return true;
             }

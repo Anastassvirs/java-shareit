@@ -32,11 +32,11 @@ public class Item {
     private Boolean available;
 
     @ManyToOne
-    @Column(name = "owner_id")
+    @JoinColumn(name = "owner_id")
     private User owner;
 
     @OneToOne
-    @Column(name = "request_id")
+    @JoinColumn(name = "request_id")
     private ItemRequest request;
 
     public Item(String name, String description, Boolean available) {

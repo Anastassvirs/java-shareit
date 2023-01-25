@@ -20,6 +20,12 @@ public class ExceptionShareItHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleUserNotFoundException(final AlreadyExistException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleThrowable(final Throwable e) {
         return new ErrorResponse("Произошла непредвиденная ошибка.");

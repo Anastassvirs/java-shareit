@@ -19,7 +19,7 @@ public class ItemRequest {
     private String description;
 
     @ManyToOne
-    @Column(name = "requestor_id")
+    @JoinColumn(name = "requestor_id")
     private User requestor;
 
     @Column

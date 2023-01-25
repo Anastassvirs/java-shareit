@@ -79,8 +79,7 @@ public class InMemoryItemStorage implements ItemStorage {
     }
 
     @Override
-    public Item deleteItem(Item item) {
-        items.remove(item.getId());
-        return item;
+    public void deleteItem(Long itemId) {
+        items.remove(itemId);
     }
 }
