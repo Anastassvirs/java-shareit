@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.StatusOfBooking;
@@ -11,6 +13,11 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exceptions.AlreadyBookedException;
 import ru.practicum.shareit.exceptions.AuntificationException;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
+import ru.practicum.shareit.exceptions.WrongParametersException;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.service.ItemServiceImpl;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import java.util.List;
 
@@ -20,7 +27,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
-    BookingRepository repository;
+    private BookingRepository repository;
+    private ItemServiceImpl itemService;
+    private UserServiceImpl userService;
+    private BookingMapper bookingMapper;
 
     @Override
     public List<Booking> findAllByUser(Long userId, State state) {
@@ -72,16 +82,21 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Booking create(Booking booking, Long userId) {
-        if (booking.getBooker().getId().equals(userId)) {
+    public Booking create(BookingDto bookingDto, Long userId) {
+        Item item = itemService.findById(bookingDto.getItemId());
+        userService.findById(userId);
+        User owner = userService.findById(item.getOwner().getId());
+        if (owner.getId().equals(userId)) {
             throw new AuntificationException("Невозможно забронировать собственную вещь");
         }
-        if (!booking.getItem().getAvailable()) {
+        if (!item.getAvailable()) {
             throw new AlreadyBookedException("Эта вещь уже забронирована!");
         }
-        log.debug("Добавлено новое бронирование: {}", booking);
-        booking.setStatus(StatusOfBooking.WAITING);
-        return repository.save(booking);
+        if (bookingDto.getEnd().isBefore(bookingDto.getStart())) {
+            throw new WrongParametersException("Введены некорректные параметры даты старта/окончания бронирования");
+        }
+        log.debug("Добавлено новое бронирование: {}", bookingDto);
+        return repository.save(bookingMapper.toBooking(bookingDto));
     }
 
     @Override

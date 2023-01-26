@@ -32,4 +32,12 @@ public class Booking {
 
     @Enumerated(EnumType.STRING)
     private StatusOfBooking status;
+
+    public Booking(LocalDateTime start, LocalDateTime end, Item item, User booker) {
+        this.start = start;
+        this.end = end;
+        this.item = item;
+        this.booker = booker;
+        this.status = StatusOfBooking.WAITING;
+    }
 }

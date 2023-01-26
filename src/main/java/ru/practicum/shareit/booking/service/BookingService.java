@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.service;
 
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 
@@ -13,7 +14,7 @@ public interface BookingService {
 
     Booking findById(Long id, Long userId);
 
-    Booking create(Booking booking, Long userId);
+    Booking create(BookingDto bookingDto, Long userId);
 
     Booking changeStatus(Long bookingId, Long userId, Boolean approved);
 }

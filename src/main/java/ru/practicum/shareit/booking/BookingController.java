@@ -1,16 +1,11 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
-import ru.practicum.shareit.exceptions.NotFoundAnythingException;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.model.ItemDto;
-import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import javax.validation.Valid;
@@ -22,14 +17,11 @@ import java.util.List;
 public class BookingController {
     private final BookingServiceImpl bookingService;
     private final UserServiceImpl userService;
-    private final ItemServiceImpl itemService;
 
     @PostMapping
-    public Booking create(@Valid @RequestBody Booking booking,
+    public Booking create(@Valid @RequestBody BookingDto bookingDto,
                           @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
-        itemService.findById(booking.getItem().getId());
-        booking.setBooker(userService.findById(userId));
-        return bookingService.create(booking, userId);
+        return bookingService.create(bookingDto, userId);
     }
 
     @PatchMapping("/{bookingId}")

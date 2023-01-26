@@ -11,6 +11,7 @@ import ru.practicum.shareit.item.model.ItemDto;
 import ru.practicum.shareit.item.model.ItemMapper;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,23 +22,32 @@ import java.util.Optional;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository repository;
 
+    @Override
     public List<Item> findAll() {
         return repository.findAll();
     }
 
+    @Override
     public List<Item> findAllByUser(Long userId) {
         return repository.findAllByOwner(userId);
     }
 
+    @Override
     public List<Item> findAllByText(String text) {
+        if (text.equals("")) {
+            return new ArrayList<>();
+        }
         return repository.findAllByText(text);
     }
 
+    @Override
     public Item findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new NotFoundAnythingException("Вещи с данным id не существует"));
     }
 
+    @Override
+    @Transactional
     public Item createItem(ItemDto itemDto, User owner) {
         log.debug("Пользователем с id: {} была добавлена новая вещь: {}", owner.getId(), itemDto);
         Item newItem = ItemMapper.toItem(itemDto);
@@ -45,6 +55,8 @@ public class ItemServiceImpl implements ItemService {
         return repository.save(newItem);
     }
 
+    @Override
+    @Transactional
     public Item updateItem(Long itemId, ItemDto itemDto, Long ownerId) {
         Item item = findById(itemId);
         if (ownerId.equals(item.getOwner().getId())) {
@@ -60,6 +72,7 @@ public class ItemServiceImpl implements ItemService {
 
     }
 
+    @Override
     public void deleteItem(Long itemId) {
         repository.deleteById(itemId);
     }

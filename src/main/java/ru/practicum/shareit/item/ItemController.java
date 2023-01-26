@@ -21,15 +21,15 @@ public class ItemController {
     private final UserServiceImpl userServiceImpl;
 
     @GetMapping
-    public ResponseEntity<List<Item>> findAllByUser(@RequestHeader(value = "X-Sharer-User-Id") Long ownerId) {
-        userServiceImpl.findById(ownerId);
-        return new ResponseEntity<>(itemServiceImpl.findAllByUser(ownerId), HttpStatus.OK);
+    public List<Item> findAllByUser(@RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+        userServiceImpl.findById(userId);
+        return itemServiceImpl.findAllByUser(userId);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Item>> findAllByText(@RequestParam String text, @RequestHeader(value = "X-Sharer-User-Id") Long ownerId) {
+    public List<Item> findAllByText(@RequestParam String text, @RequestHeader(value = "X-Sharer-User-Id") Long ownerId) {
         userServiceImpl.findById(ownerId);
-        return new ResponseEntity<>(itemServiceImpl.findAllByText(text), HttpStatus.OK);
+        return itemServiceImpl.findAllByText(text);
     }
 
     @GetMapping("/{itemId}")
