@@ -81,6 +81,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    @Transactional
     @Override
     public Booking create(BookingDto bookingDto, Long userId) {
         Item item = itemService.findById(bookingDto.getItemId());
@@ -99,6 +100,7 @@ public class BookingServiceImpl implements BookingService {
         return repository.save(bookingMapper.toBooking(bookingDto));
     }
 
+    @Transactional
     @Override
     public Booking changeStatus(Long bookingId, Long userId, Boolean approved) {
         Booking booking = repository.findById(bookingId).orElseThrow(() ->

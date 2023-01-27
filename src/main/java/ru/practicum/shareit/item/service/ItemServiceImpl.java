@@ -5,12 +5,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
+import ru.practicum.shareit.exceptions.WrongParametersException;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.model.CommentMapper;
+import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.model.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.ItemMapper;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.service.UserService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +28,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository repository;
+    private final UserService userService;
+    private final CommentRepository commentRepository;
+    private final CommentMapper commentMapper;
 
     @Override
     public List<Item> findAll() {
@@ -73,7 +83,24 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public void deleteItem(Long itemId) {
         repository.deleteById(itemId);
     }
+
+    @Override
+    @Transactional
+    public CommentDto createComment(CommentDto commentDto, Long itemId, Long userId) {
+        if (commentDto.getText().equals("")) {
+            throw new WrongParametersException("Поле текста комментария не  может быть пустым");
+        }
+        Comment comment = commentMapper.newtoComment(commentDto);
+        User author = userService.findById(userId);
+        comment.setItem(findById(itemId));
+        comment.setAuthor(author);
+        comment.setCreated(LocalDateTime.now());
+        return commentMapper.toCommentDto(commentRepository.save(comment));
+    }
+
+
 }
