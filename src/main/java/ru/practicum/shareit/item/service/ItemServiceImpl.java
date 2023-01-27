@@ -45,35 +45,36 @@ public class ItemServiceImpl implements ItemService {
         return repository.findAll();
     }
 
-    private List<ItemDtoBookingsComments> upgradeItems(List<Item> items) {
-        List<ItemDtoBookingsComments> fullItems = new ArrayList<>();
+    private ItemDtoBookingsComments upgradeItem(Item item) {
         ItemDtoBookingsComments fullItem;
-        for (Item item : items) {
-            fullItem = itemMapper.toItemDtoBookingsComments(item);
-            List<Booking> bookings = bookingRepository.findNextBookingsByItem(item.getId());
-            if (!bookings.isEmpty()) {
-                BookingDto nextBooking = bookingMapper.toBookingDto(bookings.get(0));
-                fullItem.setNextBooking(nextBooking);
-            }
-            bookings = bookingRepository.findPastBookingsByItem(item.getId());
-            if (!bookings.isEmpty()) {
-                BookingDto lastBooking = bookingMapper.toBookingDto(bookings.get(0));
-                fullItem.setLastBooking(lastBooking);
-            }
-            List<Comment> comments = commentRepository.findAllByItem(item.getId());
-            List<CommentDto> commentsDto = new ArrayList<>();
-            for (Comment comment : comments) {
-                commentsDto.add(commentMapper.toCommentDto(comment));
-            }
-            fullItem.setComments(commentsDto);
-            fullItems.add(fullItem);
+        fullItem = itemMapper.toItemDtoBookingsComments(item);
+        List<Booking> bookings = bookingRepository.findNextBookingsByItem(item.getId());
+        if (!bookings.isEmpty()) {
+            BookingDto nextBooking = bookingMapper.toBookingDto(bookings.get(0));
+            fullItem.setNextBooking(nextBooking);
         }
-        return fullItems;
+        bookings = bookingRepository.findPastBookingsByItem(item.getId());
+        if (!bookings.isEmpty()) {
+            BookingDto lastBooking = bookingMapper.toBookingDto(bookings.get(0));
+            fullItem.setLastBooking(lastBooking);
+        }
+        List<Comment> comments = commentRepository.findAllByItem(item.getId());
+        List<CommentDto> commentsDto = new ArrayList<>();
+        for (Comment comment : comments) {
+            commentsDto.add(commentMapper.toCommentDto(comment));
+        }
+        fullItem.setComments(commentsDto);
+        return fullItem;
     }
 
     @Override
     public List<ItemDtoBookingsComments> findAllByUser(Long userId) {
-        return upgradeItems(repository.findAllByOwner(userId));
+        List<Item> items = repository.findAllByOwner(userId);
+        List<ItemDtoBookingsComments> fullItems = new ArrayList<>();
+        for (Item item : items) {
+            fullItems.add(upgradeItem(item));
+        }
+        return fullItems;
     }
 
     @Override
@@ -81,7 +82,17 @@ public class ItemServiceImpl implements ItemService {
         if (text.equals("")) {
             return new ArrayList<>();
         }
-        return upgradeItems(repository.findAllByText(text));
+        List<Item> items = repository.findAllByText(text);
+        List<ItemDtoBookingsComments> fullItems = new ArrayList<>();
+        for (Item item : items) {
+            fullItems.add(upgradeItem(item));
+        }
+        return fullItems;
+    }
+
+    @Override
+    public ItemDtoBookingsComments findDtoById(Long id) {
+        return upgradeItem(findById(id));
     }
 
     @Override

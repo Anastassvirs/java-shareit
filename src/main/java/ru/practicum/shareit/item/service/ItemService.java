@@ -16,6 +16,8 @@ public interface ItemService {
 
     List<ItemDtoBookingsComments> findAllByText(String text);
 
+    ItemDtoBookingsComments findDtoById(Long id);
+
     Item findById(Long id);
 
     Item createItem(ItemDto itemDto, User owner);
