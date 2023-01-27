@@ -31,11 +31,11 @@ public class ExceptionShareItHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler
+    /*@ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleThrowable(final Throwable e) {
         return new ErrorResponse("Произошла непредвиденная ошибка.");
-    }
+    }*/
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)

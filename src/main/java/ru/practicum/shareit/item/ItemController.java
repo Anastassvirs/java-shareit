@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemDtoBookingsComments;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
@@ -28,14 +29,14 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<Item> findAllByUser(@RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+    public List<ItemDtoBookingsComments> findAllByUser(@RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         userService.findById(userId);
         return itemService.findAllByUser(userId);
     }
 
     @GetMapping("/search")
-    public List<Item> findAllByText(@RequestParam String text,
-                                    @RequestHeader(value = "X-Sharer-User-Id") Long ownerId) {
+    public List<ItemDtoBookingsComments> findAllByText(@RequestParam String text,
+                                                       @RequestHeader(value = "X-Sharer-User-Id") Long ownerId) {
         userService.findById(ownerId);
         return itemService.findAllByText(text);
     }

@@ -10,7 +10,7 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     // Мне кажется, что этот набор можно оптимизировать, но я не нашла способа, как.
-    // Если разделять строку запроса на две части, тто вторая часть не видит, что такое b
+    // Если разделять строку запроса на две части(чтобы создать вариативность), то вторая часть не видит, что такое b
     @Query(value = "select b from Booking b where b.booker.id = ?1")
     List<Booking> findAllByUser(Long userId);
 
@@ -46,4 +46,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query(value = "select b from Booking b where b.item.owner = ?1 and b.status = ?2")
     List<Booking> findByStatusAndOwner(Long userId, State state);
+
+    // Можно ли сразу передать только первый элемент? TOP 1 тут не работает, не могу найти решение
+    @Query(value = "select b from Booking b where b.item.id = ?1 and b.start > current_timestamp order by b.start")
+    List<Booking> findNextBookingsByItem(Long itemId);
+
+    @Query(value = "select b from Booking b where b.item.id = ?1 and b.start < current_timestamp order by b.end desc")
+    List<Booking> findPastBookingsByItem(Long itemId);
 }

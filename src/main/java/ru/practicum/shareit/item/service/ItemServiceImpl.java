@@ -4,9 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.exceptions.WrongParametersException;
 import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemDtoBookingsComments;
 import ru.practicum.shareit.item.model.CommentMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.repository.CommentRepository;
@@ -31,23 +36,52 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
+    private final ItemMapper itemMapper;
+    private final BookingRepository bookingRepository;
+    private final BookingMapper bookingMapper;
 
     @Override
     public List<Item> findAll() {
         return repository.findAll();
     }
 
-    @Override
-    public List<Item> findAllByUser(Long userId) {
-        return repository.findAllByOwner(userId);
+    private List<ItemDtoBookingsComments> upgradeItems(List<Item> items) {
+        List<ItemDtoBookingsComments> fullItems = new ArrayList<>();
+        ItemDtoBookingsComments fullItem;
+        for (Item item : items) {
+            fullItem = itemMapper.toItemDtoBookingsComments(item);
+            List<Booking> bookings = bookingRepository.findNextBookingsByItem(item.getId());
+            if (!bookings.isEmpty()) {
+                BookingDto nextBooking = bookingMapper.toBookingDto(bookings.get(0));
+                fullItem.setNextBooking(nextBooking);
+            }
+            bookings = bookingRepository.findPastBookingsByItem(item.getId());
+            if (!bookings.isEmpty()) {
+                BookingDto lastBooking = bookingMapper.toBookingDto(bookings.get(0));
+                fullItem.setLastBooking(lastBooking);
+            }
+            List<Comment> comments = commentRepository.findAllByItem(item.getId());
+            List<CommentDto> commentsDto = new ArrayList<>();
+            for (Comment comment : comments) {
+                commentsDto.add(commentMapper.toCommentDto(comment));
+            }
+            fullItem.setComments(commentsDto);
+            fullItems.add(fullItem);
+        }
+        return fullItems;
     }
 
     @Override
-    public List<Item> findAllByText(String text) {
+    public List<ItemDtoBookingsComments> findAllByUser(Long userId) {
+        return upgradeItems(repository.findAllByOwner(userId));
+    }
+
+    @Override
+    public List<ItemDtoBookingsComments> findAllByText(String text) {
         if (text.equals("")) {
             return new ArrayList<>();
         }
-        return repository.findAllByText(text);
+        return upgradeItems(repository.findAllByText(text));
     }
 
     @Override
