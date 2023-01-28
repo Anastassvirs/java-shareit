@@ -3,21 +3,37 @@ package ru.practicum.shareit.booking.dto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.exceptions.NotFoundAnythingException;
+import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.UserRepository;
 
 @Component
-@RequiredArgsConstructor
 public class BookingMapper {
-    private UserService userService;
-    private ItemService itemService;
+    private UserRepository userRepository;
+    private ItemRepository itemRepository;
+
+    public BookingMapper(UserRepository userRepository, ItemRepository itemRepository) {
+        this.userRepository = userRepository;
+        this.itemRepository = itemRepository;
+    }
 
     public Booking toBooking(BookingDto bookingCreationDto) {
         return new Booking(
                 bookingCreationDto.getStart(),
                 bookingCreationDto.getEnd(),
-                itemService.findById(bookingCreationDto.getItemId()),
-                userService.findById(bookingCreationDto.getBookerId())
+                itemRepository.findById(bookingCreationDto.getItemId()).orElseThrow(() ->
+                        new NotFoundAnythingException("Такой вещи не существует")),
+                userRepository.findById(bookingCreationDto.getBookerId()).orElseThrow(() ->
+                        new NotFoundAnythingException("Такого пользователя не существует"))
+        );
+    }
+
+    public Booking toBookingCreation(CreateBookingDto bookingCreationDto) {
+        return new Booking(
+                bookingCreationDto.getStart(),
+                bookingCreationDto.getEnd(),
+                itemRepository.findById(bookingCreationDto.getItemId()).orElseThrow(() ->
+                        new NotFoundAnythingException("Такой вещи не существует"))
         );
     }
 

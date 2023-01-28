@@ -40,4 +40,14 @@ public class Booking {
         this.booker = booker;
         this.status = StatusOfBooking.WAITING;
     }
+
+    public Booking() {
+
+    }
+
+    public Booking(LocalDateTime start, LocalDateTime end, Item item) {
+        this.start = start;
+        this.end = end;
+        this.item = item;
+    }
 }

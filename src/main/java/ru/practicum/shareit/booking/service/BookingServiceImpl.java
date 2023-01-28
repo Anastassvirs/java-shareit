@@ -1,11 +1,11 @@
 package ru.practicum.shareit.booking.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.StatusOfBooking;
@@ -24,13 +24,20 @@ import java.util.List;
 @Slf4j
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
-    private BookingRepository repository;
-    private ItemServiceImpl itemService;
-    private UserServiceImpl userService;
-    private BookingMapper bookingMapper;
+    private final BookingRepository repository;
+    private final ItemServiceImpl itemService;
+    private final UserServiceImpl userService;
+    private final BookingMapper bookingMapper;
+
+    @Autowired
+    public BookingServiceImpl(BookingRepository repository, ItemServiceImpl itemService, UserServiceImpl userService, BookingMapper bookingMapper) {
+        this.repository = repository;
+        this.itemService = itemService;
+        this.userService = userService;
+        this.bookingMapper = bookingMapper;
+    }
 
     @Override
     public List<Booking> findAllByUser(Long userId, State state) {
@@ -44,8 +51,9 @@ public class BookingServiceImpl implements BookingService {
             case FUTURE:
                 return repository.findFutureByUser(userId);
             case WAITING:
+                return repository.findByStatusAndUser(userId, StatusOfBooking.WAITING);
             case REJECTED:
-                return repository.findByStatusAndUser(userId, state);
+                return repository.findByStatusAndUser(userId, StatusOfBooking.REJECTED);
             default:
                 throw new NotFoundAnythingException("Передан неверный статус");
         }
@@ -63,8 +71,9 @@ public class BookingServiceImpl implements BookingService {
             case FUTURE:
                 return repository.findFutureByOwner(userId);
             case WAITING:
+                return repository.findByStatusAndOwner(userId, StatusOfBooking.WAITING);
             case REJECTED:
-                return repository.findByStatusAndOwner(userId, state);
+                return repository.findByStatusAndOwner(userId, StatusOfBooking.REJECTED);
             default:
                 throw new NotFoundAnythingException("Передан неверный статус");
         }
@@ -83,7 +92,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public Booking create(BookingDto bookingDto, Long userId) {
+    public Booking create(CreateBookingDto bookingDto, Long userId) {
         Item item = itemService.findById(bookingDto.getItemId());
         userService.findById(userId);
         User owner = userService.findById(item.getOwner().getId());
@@ -97,7 +106,9 @@ public class BookingServiceImpl implements BookingService {
             throw new WrongParametersException("Введены некорректные параметры даты старта/окончания бронирования");
         }
         log.debug("Добавлено новое бронирование: {}", bookingDto);
-        return repository.save(bookingMapper.toBooking(bookingDto));
+        Booking booking = bookingMapper.toBookingCreation(bookingDto);
+        booking.setBooker(userService.findById(userId));
+        return repository.save(booking);
     }
 
     @Transactional

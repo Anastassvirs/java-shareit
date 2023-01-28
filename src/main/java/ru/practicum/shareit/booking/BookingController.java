@@ -1,8 +1,12 @@
 package ru.practicum.shareit.booking;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
@@ -11,17 +15,24 @@ import ru.practicum.shareit.user.service.UserServiceImpl;
 import javax.validation.Valid;
 import java.util.List;
 
+@Component
 @RestController
 @RequestMapping(path = "/bookings")
-@RequiredArgsConstructor
 public class BookingController {
     private final BookingServiceImpl bookingService;
     private final UserServiceImpl userService;
 
+    @Autowired
+    public BookingController(BookingServiceImpl bookingService, UserServiceImpl userService) {
+        this.bookingService = bookingService;
+        this.userService = userService;
+    }
+
     @PostMapping
-    public Booking create(@Valid @RequestBody BookingDto bookingDto,
-                          @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
-        return bookingService.create(bookingDto, userId);
+    public ResponseEntity<Booking> create(@Valid @RequestBody CreateBookingDto bookingDto,
+                                          @RequestHeader(value = "X-Sharer-User-Id") Long ownerId) {
+        userService.findById(ownerId);
+        return new ResponseEntity<>(bookingService.create(bookingDto, ownerId), HttpStatus.OK);
     }
 
     @PatchMapping("/{bookingId}")
