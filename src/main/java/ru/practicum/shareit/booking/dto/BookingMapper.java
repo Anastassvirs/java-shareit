@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.dto;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
@@ -39,6 +38,7 @@ public class BookingMapper {
 
     public BookingDto toBookingDto(Booking booking) {
         return new BookingDto(
+                booking.getId(),
                 booking.getStart(),
                 booking.getEnd(),
                 booking.getBooker().getId(),

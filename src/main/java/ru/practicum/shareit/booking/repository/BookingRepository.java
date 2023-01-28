@@ -50,9 +50,15 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByStatusAndOwner(Long userId, StatusOfBooking status);
 
     // Можно ли сразу передать только первый элемент? TOP 1 тут не работает, не могу найти решение
-    @Query(value = "select b from Booking b where b.item.id = ?1 and b.start > current_timestamp order by b.start")
+    @Query(value = "select b from Booking b where b.item.id = ?1 and b.start > current_timestamp order by b.start desc")
     List<Booking> findNextBookingsByItem(Long itemId);
 
-    @Query(value = "select b from Booking b where b.item.id = ?1 and b.start < current_timestamp order by b.end desc")
+    @Query(value = "select b from Booking b where b.item.id = ?1 and b.end < current_timestamp order by b.end desc")
     List<Booking> findPastBookingsByItem(Long itemId);
+
+    @Query(value = "select b from Booking b where b.item.id = ?1 and b.item.owner.id = ?2 and b.start > current_timestamp order by b.start desc")
+    List<Booking> findNextBookingsByItemAndUser(Long itemId, Long userId);
+
+    @Query(value = "select b from Booking b where b.item.id = ?1 and b.item.owner.id = ?2 and b.end < current_timestamp order by b.end desc")
+    List<Booking> findPastBookingsByItemAndUser(Long itemId, Long userId);
 }

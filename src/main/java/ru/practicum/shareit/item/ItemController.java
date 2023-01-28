@@ -42,8 +42,9 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public Item find(@PathVariable Long itemId) {
-        return itemService.findById(itemId);
+    public ItemDtoBookingsComments find(@PathVariable Long itemId,
+                                        @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+        return itemService.findDtoById(itemId, userId);
     }
 
     @PostMapping

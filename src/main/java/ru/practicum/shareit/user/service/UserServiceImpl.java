@@ -1,16 +1,15 @@
 package ru.practicum.shareit.user.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.NonUniqueObjectException;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.AlreadyExistException;
-import ru.practicum.shareit.exceptions.NotFoundAnythingException;
-import ru.practicum.shareit.exceptions.SameFieldException;
+import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserDto;
 
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.user.model.UserMapper;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,10 +18,15 @@ import java.util.Optional;
 @Slf4j
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
+    private final UserMapper userMapper;
+
+    public UserServiceImpl(UserRepository repository, UserMapper userMapper) {
+        this.repository = repository;
+        this.userMapper = userMapper;
+    }
 
     @Override
     public List<User> findAll() {
@@ -37,13 +41,23 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User createUser(User user) {
+    public User createUser(UserDto userDto) {
+        User user = userMapper.toUser(userDto);
+
         if (userAlreadyExist(user)) {
             log.debug("Произошла ошибка: Введенный пользователь уже зарегистрирован");
             throw new AlreadyExistException("Такой пользователь уже зарегистрирован");
         }
+        if (Objects.isNull(userDto.getEmail()) || !userDto.getEmail().contains("@")) {
+            throw new WrongParametersException("Неправильно заполнены поля создаваемого пользователя");
+        }
         log.debug("Добавлен новый пользователь: {}", user);
-        return repository.save(user);
+        try {
+            return repository.save(user);
+        } catch (Exception e) {
+            log.debug("Произошла ошибка: Неправильно заполнены поля создаваемого пользователя");
+            throw new SaveUserException("Неправильно заполнены поля создаваемого пользователя");
+        }
     }
 
     @Transactional
@@ -53,7 +67,11 @@ public class UserServiceImpl implements UserService {
         Optional.ofNullable(userDto.getName()).ifPresent(user::setName);
         if (userDto.getEmail() != null) {
             if (!emailAlreadyExist(userDto.getEmail())) {
-                user.setEmail(userDto.getEmail());
+                try {
+                    user.setEmail(userDto.getEmail());
+                } catch (Exception e) {
+                    throw new SameFieldException("Данный email уже зарегистрирован");
+                }
             } else {
                 throw new SameFieldException("Данный email уже зарегистрирован");
             }

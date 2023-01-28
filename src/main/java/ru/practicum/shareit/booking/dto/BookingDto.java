@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class BookingDto {
+    private Long id;
     @FutureOrPresent
     @NotNull
     private LocalDateTime start;
@@ -18,7 +19,8 @@ public class BookingDto {
     private Long bookerId;
     private Long itemId;
 
-    public BookingDto(LocalDateTime start, LocalDateTime end, Long bookerId, Long itemId) {
+    public BookingDto(Long id, LocalDateTime start, LocalDateTime end, Long bookerId, Long itemId) {
+        this.id = id;
         this.start = start;
         this.end = end;
         this.bookerId = bookerId;

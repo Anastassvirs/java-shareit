@@ -48,14 +48,16 @@ public class ItemServiceImpl implements ItemService {
     private ItemDtoBookingsComments upgradeItem(Item item) {
         ItemDtoBookingsComments fullItem;
         fullItem = itemMapper.toItemDtoBookingsComments(item);
-        List<Booking> bookings = bookingRepository.findNextBookingsByItem(item.getId());
+        List<Booking> bookings;
+        bookings = bookingRepository.findNextBookingsByItem(item.getId());
         if (!bookings.isEmpty()) {
-            BookingDto nextBooking = bookingMapper.toBookingDto(bookings.get(0));
+            BookingDto nextBooking = bookingMapper.toBookingDto(bookings.stream().findFirst().orElse(null));
             fullItem.setNextBooking(nextBooking);
         }
         bookings = bookingRepository.findPastBookingsByItem(item.getId());
+
         if (!bookings.isEmpty()) {
-            BookingDto lastBooking = bookingMapper.toBookingDto(bookings.get(0));
+            BookingDto lastBooking = bookingMapper.toBookingDto(bookings.stream().findFirst().orElse(null));
             fullItem.setLastBooking(lastBooking);
         }
         List<Comment> comments = commentRepository.findAllByItem(item.getId());
@@ -95,8 +97,29 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDtoBookingsComments findDtoById(Long id) {
-        return upgradeItem(findById(id));
+    public ItemDtoBookingsComments findDtoById(Long id, Long userId) {
+        Item item = findById(id);
+        ItemDtoBookingsComments fullItem;
+        fullItem = itemMapper.toItemDtoBookingsComments(item);
+        List<Booking> bookings;
+        bookings = bookingRepository.findNextBookingsByItemAndUser(item.getId(), userId);
+        if (!bookings.isEmpty()) {
+            BookingDto nextBooking = bookingMapper.toBookingDto(bookings.stream().findFirst().orElse(null));
+            fullItem.setNextBooking(nextBooking);
+        }
+        bookings = bookingRepository.findPastBookingsByItemAndUser(item.getId(), userId);
+
+        if (!bookings.isEmpty()) {
+            BookingDto lastBooking = bookingMapper.toBookingDto(bookings.stream().findFirst().orElse(null));
+            fullItem.setLastBooking(lastBooking);
+        }
+        List<Comment> comments = commentRepository.findAllByItem(item.getId());
+        List<CommentDto> commentsDto = new ArrayList<>();
+        for (Comment comment : comments) {
+            commentsDto.add(commentMapper.toCommentDto(comment));
+        }
+        fullItem.setComments(commentsDto);
+        return fullItem;
     }
 
     @Override
@@ -145,6 +168,16 @@ public class ItemServiceImpl implements ItemService {
         }
         Comment comment = commentMapper.newtoComment(commentDto);
         User author = userService.findById(userId);
+        List<Booking> bookings = bookingRepository.findPastBookingsByItem(itemId);
+        Boolean isBookedByThatUser = false;
+        for (Booking booking : bookings) {
+            if (booking.getBooker().getId().equals(userId)) {
+                isBookedByThatUser = true;
+            }
+        }
+        if (!isBookedByThatUser) {
+            throw new WrongParametersException("Написать отзыв может только человек, бронировавший вещь!");
+        }
         comment.setItem(findById(itemId));
         comment.setAuthor(author);
         comment.setCreated(LocalDateTime.now());

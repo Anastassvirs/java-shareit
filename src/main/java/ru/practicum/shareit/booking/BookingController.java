@@ -5,11 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
+import ru.practicum.shareit.exceptions.WrongParametersException;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import javax.validation.Valid;
@@ -50,16 +50,25 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<Booking> findAllByUser(@RequestParam(required = false, defaultValue = "ALL") State state,
+    public List<Booking> findAllByUser(@RequestParam(required = false, defaultValue = "ALL") String state,
                                        @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         userService.findById(userId);
-        return bookingService.findAllByUser(userId, state);
+        return bookingService.findAllByUser(userId, validateState(state));
     }
 
     @GetMapping("/owner")
-    public List<Booking> findAllUserItems(@RequestParam(required = false, defaultValue = "ALL") State state,
+    public List<Booking> findAllUserItems(@RequestParam(required = false, defaultValue = "ALL") String state,
                                           @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         userService.findById(userId);
-        return bookingService.findAllByOwner(userId, state);
+        return bookingService.findAllByOwner(userId, validateState(state));
+    }
+
+    private State validateState(String state) {
+        try {
+            return State.valueOf(state);
+        } catch (Exception e) {
+            throw new WrongParametersException("Unknown state: " + state);
+        }
+
     }
 }

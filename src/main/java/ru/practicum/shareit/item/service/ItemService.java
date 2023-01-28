@@ -16,7 +16,7 @@ public interface ItemService {
 
     List<ItemDtoBookingsComments> findAllByText(String text);
 
-    ItemDtoBookingsComments findDtoById(Long id);
+    ItemDtoBookingsComments findDtoById(Long id, Long userId);
 
     Item findById(Long id);
 

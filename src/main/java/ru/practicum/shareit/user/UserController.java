@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserDto;
+import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import java.util.List;
@@ -12,35 +13,35 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/users")
 public class UserController {
-    private final UserServiceImpl userServiceImpl;
+    private final UserService userService;
 
     @Autowired
     public UserController(UserServiceImpl userServiceImpl) {
-        this.userServiceImpl = userServiceImpl;
+        this.userService = userServiceImpl;
     }
 
     @GetMapping
     public List<User> findAll() {
-        return userServiceImpl.findAll();
+        return userService.findAll();
     }
 
     @GetMapping("/{userId}")
     public User find(@PathVariable Long userId) {
-        return userServiceImpl.findById(userId);
+        return userService.findById(userId);
     }
 
     @PostMapping
-    public User create(@RequestBody User user) {
-        return userServiceImpl.createUser(user);
+    public User create(@RequestBody UserDto userDto) {
+        return userService.createUser(userDto);
     }
 
     @PatchMapping(path = "/{userId}", consumes = "application/json")
     public ResponseEntity<User> update(@PathVariable Long userId, @RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userServiceImpl.updateUser(userId, userDto));
+        return ResponseEntity.ok(userService.updateUser(userId, userDto));
     }
 
     @DeleteMapping(path = "/{userId}")
     public void deleteById(@PathVariable Long userId) {
-        userServiceImpl.deleteById(userId);
+        userService.deleteById(userId);
     }
 }
