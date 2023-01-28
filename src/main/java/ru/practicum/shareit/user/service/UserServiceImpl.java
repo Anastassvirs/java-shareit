@@ -1,14 +1,12 @@
 package ru.practicum.shareit.user.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.NonUniqueObjectException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserDto;
-
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.user.model.UserMapper;
 
 import java.util.List;
@@ -35,8 +33,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new NotFoundAnythingException("Пользователя с данным id не существует"));
+        return repository.findById(id).orElseThrow(() -> new NotFoundAnythingException("Пользователя с данным id не существует"));
     }
 
     @Transactional
