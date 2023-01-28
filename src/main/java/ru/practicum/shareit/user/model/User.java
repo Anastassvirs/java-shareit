@@ -21,7 +21,8 @@ public class User {
     @NotBlank
     private String name;
 
-    @Column(unique = true)
+    @Column(unique = true) // У меня почему-то не работает ограничение, которое я написала при создании таблицы,
+    // без этой аннотации
     @Email
     @NotBlank
     private String email;

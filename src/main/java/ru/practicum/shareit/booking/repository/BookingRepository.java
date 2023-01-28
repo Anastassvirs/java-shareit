@@ -13,40 +13,40 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     // Мне кажется, что этот набор можно оптимизировать, но я не нашла способа, как.
     // Если разделять строку запроса на две части(чтобы создать вариативность), то вторая часть не видит, что такое b
-    @Query(value = "select b from Booking b where b.booker.id = ?1")
+    @Query(value = "select b from Booking b where b.booker.id = ?1 order by b.end desc")
     List<Booking> findAllByUser(Long userId);
 
     @Query(value = "select b from Booking b where " +
-            "b.booker.id = ?1 and current_timestamp > b.start and current_timestamp < b.end")
+            "b.booker.id = ?1 and current_timestamp > b.start and current_timestamp < b.end order by b.end desc")
     List<Booking> findCurrentByUser(Long userId);
 
     @Query(value = "select b from Booking b where " +
-            "b.booker.id = ?1 and current_timestamp > b.end")
+            "b.booker.id = ?1 and current_timestamp > b.end order by b.end desc")
     List<Booking> findPastByUser(Long userId);
 
     @Query(value = "select b from Booking b where " +
-            "b.booker.id = ?1 and current_timestamp < b.start")
+            "b.booker.id = ?1 and current_timestamp < b.start order by b.end desc")
     List<Booking> findFutureByUser(Long userId);
 
-    @Query(value = "select b from Booking b where b.booker.id = ?1 and b.status = ?2")
+    @Query(value = "select b from Booking b where b.booker.id = ?1 and b.status = ?2 order by b.end desc")
     List<Booking> findByStatusAndUser(Long userId, StatusOfBooking status);
 
-    @Query(value = "select b from Booking b where b.item.owner.id = ?1")
+    @Query(value = "select b from Booking b where b.item.owner.id = ?1 order by b.end desc")
     List<Booking> findAllByOwner(Long userId);
 
     @Query(value = "select b from Booking b where " +
-            "b.item.owner.id = ?1 and current_timestamp > b.start and current_timestamp < b.end")
+            "b.item.owner.id = ?1 and current_timestamp > b.start and current_timestamp < b.end order by b.end desc")
     List<Booking> findCurrentByOwner(Long userId);
 
     @Query(value = "select b from Booking b where " +
-            "b.item.owner.id = ?1 and current_timestamp > b.end")
+            "b.item.owner.id = ?1 and current_timestamp > b.end order by b.end desc")
     List<Booking> findPastByOwner(Long userId);
 
     @Query(value = "select b from Booking b where " +
-            "b.item.owner.id = ?1 and current_timestamp < b.start")
+            "b.item.owner.id = ?1 and current_timestamp < b.start order by b.end desc")
     List<Booking> findFutureByOwner(Long userId);
 
-    @Query(value = "select b from Booking b where b.item.owner.id = ?1 and b.status = ?2")
+    @Query(value = "select b from Booking b where b.item.owner.id = ?1 and b.status = ?2 order by b.end desc")
     List<Booking> findByStatusAndOwner(Long userId, StatusOfBooking status);
 
     // Можно ли сразу передать только первый элемент? TOP 1 тут не работает, не могу найти решение

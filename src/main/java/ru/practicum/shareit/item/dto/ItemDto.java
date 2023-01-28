@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 public class ItemDto {
+    private Long id;
     @NotNull
     @NotBlank
     private String name;

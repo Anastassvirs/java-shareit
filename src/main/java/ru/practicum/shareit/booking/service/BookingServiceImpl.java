@@ -108,6 +108,7 @@ public class BookingServiceImpl implements BookingService {
         log.debug("Добавлено новое бронирование: {}", bookingDto);
         Booking booking = bookingMapper.toBookingCreation(bookingDto);
         booking.setBooker(userService.findById(userId));
+        booking.setStatus(StatusOfBooking.WAITING);
         return repository.save(booking);
     }
 
@@ -118,6 +119,9 @@ public class BookingServiceImpl implements BookingService {
                 new NotFoundAnythingException("Бронирования с данным id не существует"));
         if (!booking.getItem().getAvailable()) {
             throw new AlreadyBookedException("Эта вещь уже забронирована!");
+        }
+        if (booking.getStatus().equals(StatusOfBooking.APPROVED)) {
+            throw new AlreadyBookedException("Эта бронь уже подтверждена!");
         }
         if (booking.getItem().getOwner().getId().equals(userId)) {
             if (approved) {

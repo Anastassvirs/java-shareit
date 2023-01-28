@@ -72,7 +72,9 @@ public class ItemServiceImpl implements ItemService {
         List<Item> items = repository.findAllByOwner(userId);
         List<ItemDtoBookingsComments> fullItems = new ArrayList<>();
         for (Item item : items) {
-            fullItems.add(upgradeItem(item));
+            if (item.getAvailable()) {
+                fullItems.add(upgradeItem(item));
+            }
         }
         return fullItems;
     }
@@ -85,7 +87,9 @@ public class ItemServiceImpl implements ItemService {
         List<Item> items = repository.findAllByText(text);
         List<ItemDtoBookingsComments> fullItems = new ArrayList<>();
         for (Item item : items) {
-            fullItems.add(upgradeItem(item));
+            if (item.getAvailable()) {
+                fullItems.add(upgradeItem(item));
+            }
         }
         return fullItems;
     }
