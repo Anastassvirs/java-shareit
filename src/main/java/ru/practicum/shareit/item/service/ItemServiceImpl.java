@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -11,18 +12,17 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.exceptions.WrongParametersException;
 import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoBookingsComments;
-import ru.practicum.shareit.item.model.CommentMapper;
 import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.item.model.CommentMapper;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.model.ItemMapper;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.ItemMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -83,7 +83,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDtoBookingsComments> findAllByText(String text) {
-        if (text.equals("")) {
+        if (StringUtils.isBlank(text)) {
             return new ArrayList<>();
         }
         List<Item> items = repository.findAllByText(text);
@@ -166,7 +166,6 @@ public class ItemServiceImpl implements ItemService {
         if (commentDto.getText().equals("")) {
             throw new WrongParametersException("Поле текста комментария не  может быть пустым");
         }
-        Comment comment = commentMapper.newtoComment(commentDto);
         User author = userService.findById(userId);
         List<Booking> bookings = bookingRepository.findPastBookingsByItem(itemId);
         Boolean isBookedByThatUser = false;
@@ -178,9 +177,7 @@ public class ItemServiceImpl implements ItemService {
         if (!isBookedByThatUser) {
             throw new WrongParametersException("Написать отзыв может только человек, бронировавший вещь!");
         }
-        comment.setItem(findById(itemId));
-        comment.setAuthor(author);
-        comment.setCreated(LocalDateTime.now());
+        Comment comment = commentMapper.newtoComment(commentDto, findById(itemId), author);
         return commentMapper.toCommentDto(commentRepository.save(comment));
     }
 

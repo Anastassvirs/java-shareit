@@ -30,14 +30,16 @@ public class Comment {
     @JoinColumn(name = "item_id")
     private Item item;
 
-
     @ManyToOne
     @JoinColumn(name = "author_id")
     private User author;
 
     private LocalDateTime created;
 
-    public Comment(String text) {
+    public Comment(String text, Item item, User author, LocalDateTime created) {
         this.text = text;
+        this.item = item;
+        this.author = author;
+        this.created = created;
     }
 }

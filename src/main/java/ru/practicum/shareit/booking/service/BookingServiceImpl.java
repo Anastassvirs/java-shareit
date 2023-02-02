@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -17,10 +16,8 @@ import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.exceptions.WrongParametersException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import java.util.List;
 
@@ -79,11 +76,10 @@ public class BookingServiceImpl implements BookingService {
     public Booking findById(Long id, Long userId) {
         Booking booking = repository.findById(id).orElseThrow(() ->
                 new NotFoundAnythingException("Бронирования с данным id не существует"));
-        if (booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().getId().equals(userId)) {
-            return booking;
-        } else {
+        if (!(booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().getId().equals(userId))) {
             throw new AuntificationException("У вас нет доступа к получению данных об этом бронировании");
         }
+        return booking;
     }
 
     @Transactional
@@ -119,15 +115,15 @@ public class BookingServiceImpl implements BookingService {
         if (booking.getStatus().equals(StatusOfBooking.APPROVED)) {
             throw new AlreadyBookedException("Эта бронь уже подтверждена!");
         }
-        if (booking.getItem().getOwner().getId().equals(userId)) {
-            if (approved) {
-                booking.setStatus(StatusOfBooking.APPROVED);
-            } else {
-                booking.setStatus(StatusOfBooking.REJECTED);
-            }
-            return repository.save(booking);
-        } else {
+        if (!booking.getItem().getOwner().getId().equals(userId)) {
             throw new AuntificationException("У вас нет доступа к изменению статуса этого бронирования");
+
         }
+        if (Boolean.TRUE.equals(approved)) {
+            booking.setStatus(StatusOfBooking.APPROVED);
+        } else {
+            booking.setStatus(StatusOfBooking.REJECTED);
+        }
+        return repository.save(booking);
     }
 }

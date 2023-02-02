@@ -9,8 +9,6 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    // Мне кажется, что этот набор можно оптимизировать, но я не нашла способа, как.
-    // Если разделять строку запроса на две части(чтобы создать вариативность), то вторая часть не видит, что такое b
     @Query(value = "select b from Booking b where b.booker.id = ?1 order by b.end desc")
     List<Booking> findAllByUser(Long userId);
 
