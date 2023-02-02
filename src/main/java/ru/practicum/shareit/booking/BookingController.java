@@ -48,22 +48,13 @@ public class BookingController {
     public List<Booking> findAllByUser(@RequestParam(required = false, defaultValue = "ALL") String state,
                                        @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         userService.findById(userId);
-        return bookingService.findAllByUser(userId, validateState(state));
+        return bookingService.findAllByUser(userId, State.validateState(state));
     }
 
     @GetMapping("/owner")
     public List<Booking> findAllUserItems(@RequestParam(required = false, defaultValue = "ALL") String state,
                                           @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         userService.findById(userId);
-        return bookingService.findAllByOwner(userId, validateState(state));
-    }
-
-    private State validateState(String state) {
-        try {
-            return State.valueOf(state);
-        } catch (Exception e) {
-            throw new WrongParametersException("Unknown state: " + state);
-        }
-
+        return bookingService.findAllByOwner(userId, State.validateState(state));
     }
 }
