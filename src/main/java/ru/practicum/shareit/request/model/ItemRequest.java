@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import ru.practicum.shareit.user.model.User;
 
@@ -11,7 +12,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "requests")
-@Data
+@Getter
+@Setter
 public class ItemRequest {
 
     @Id

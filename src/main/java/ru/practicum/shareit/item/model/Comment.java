@@ -1,7 +1,8 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import ru.practicum.shareit.user.model.User;
 
@@ -12,7 +13,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class Comment {
     @Id
