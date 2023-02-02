@@ -16,8 +16,10 @@ import ru.practicum.shareit.exceptions.AuntificationException;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.exceptions.WrongParametersException;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import java.util.List;
@@ -29,8 +31,8 @@ import java.util.List;
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository repository;
-    private final ItemServiceImpl itemService;
-    private final UserServiceImpl userService;
+    private final ItemService itemService;
+    private final UserService userService;
     private final BookingMapper bookingMapper;
 
     @Override

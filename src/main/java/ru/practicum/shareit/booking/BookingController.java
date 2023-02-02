@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
+import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.exceptions.WrongParametersException;
+import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import javax.validation.Valid;
@@ -21,8 +23,8 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 @AllArgsConstructor
 public class BookingController {
-    private final BookingServiceImpl bookingService;
-    private final UserServiceImpl userService;
+    private final BookingService bookingService;
+    private final UserService userService;
 
     @PostMapping
     public ResponseEntity<Booking> create(@Valid @RequestBody CreateBookingDto bookingDto,
