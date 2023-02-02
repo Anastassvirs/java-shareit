@@ -47,3 +47,25 @@ CREATE TABLE IF NOT EXISTS bookings
     status     VARCHAR(50),
     CONSTRAINT pk_booking PRIMARY KEY (id)
 );
+
+DELETE
+from users;
+DELETE
+from requests;
+DELETE
+FROM items;
+DELETE
+FROM comments;
+DELETE
+FROM bookings;
+
+ALTER TABLE users
+    ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE requests
+    ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE items
+    ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE comments
+    ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE bookings
+    ALTER COLUMN id RESTART WITH 1;
