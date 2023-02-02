@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
@@ -17,18 +18,25 @@ public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull
+    @NotBlank
     private Long id;
 
     @Column
+    @NotNull
     @NotBlank
+    @Length(max = 255)
     private String name;
 
     @Column
+    @NotNull
     @NotBlank
+    @Length(max = 512)
     private String description;
 
     @Column(name = "is_avaliable")
     @NotNull
+    @NotBlank
     private Boolean available;
 
     @ManyToOne
