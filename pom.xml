@@ -138,6 +138,7 @@
                         <dependency>
                             <groupId>org.springframework.data</groupId>
                             <artifactId>spring-data-jpa</artifactId>
+                            <version>${jpa.version}</version>
                         </dependency>
 
                         <dependency>
@@ -149,6 +150,7 @@
                         <dependency>
                             <groupId>org.postgresql</groupId>
                             <artifactId>postgresql</artifactId>
+                            <version>${postgres.version}</version>
                         </dependency>
                     </dependencies>
                 </plugin>
