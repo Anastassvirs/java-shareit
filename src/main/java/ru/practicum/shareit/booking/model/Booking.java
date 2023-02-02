@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.model.Item;
@@ -34,14 +35,6 @@ public class Booking {
 
     @Enumerated(EnumType.STRING)
     private StatusOfBooking status;
-
-    public Booking(LocalDateTime start, LocalDateTime end, Item item, User booker) {
-        this.start = start;
-        this.end = end;
-        this.item = item;
-        this.booker = booker;
-        this.status = StatusOfBooking.WAITING;
-    }
 
     public Booking(LocalDateTime start, LocalDateTime end, Item item) {
         this.start = start;
