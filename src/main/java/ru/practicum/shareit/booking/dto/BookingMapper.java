@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.dto;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
@@ -7,14 +8,10 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.UserRepository;
 
 @Component
+@AllArgsConstructor
 public class BookingMapper {
-    private UserRepository userRepository;
-    private ItemRepository itemRepository;
-
-    public BookingMapper(UserRepository userRepository, ItemRepository itemRepository) {
-        this.userRepository = userRepository;
-        this.itemRepository = itemRepository;
-    }
+    private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
     public Booking toBooking(BookingDto bookingCreationDto) {
         return new Booking(

@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,15 +19,10 @@ import java.util.List;
 @Component
 @RestController
 @RequestMapping(path = "/bookings")
+@AllArgsConstructor
 public class BookingController {
     private final BookingServiceImpl bookingService;
     private final UserServiceImpl userService;
-
-    @Autowired
-    public BookingController(BookingServiceImpl bookingService, UserServiceImpl userService) {
-        this.bookingService = bookingService;
-        this.userService = userService;
-    }
 
     @PostMapping
     public ResponseEntity<Booking> create(@Valid @RequestBody CreateBookingDto bookingDto,

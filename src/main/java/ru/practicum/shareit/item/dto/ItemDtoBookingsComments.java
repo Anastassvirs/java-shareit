@@ -30,8 +30,5 @@ public class ItemDtoBookingsComments {
         this.description = description;
         this.available = available;
         this.requestId = requestId;
-        this.lastBooking = null;
-        this.nextBooking = null;
-        this.comments = null;
     }
 }

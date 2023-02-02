@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.service;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,20 +25,13 @@ import java.util.List;
 @Slf4j
 @Service
 @Transactional(readOnly = true)
+@AllArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository repository;
     private final ItemServiceImpl itemService;
     private final UserServiceImpl userService;
     private final BookingMapper bookingMapper;
-
-    @Autowired
-    public BookingServiceImpl(BookingRepository repository, ItemServiceImpl itemService, UserServiceImpl userService, BookingMapper bookingMapper) {
-        this.repository = repository;
-        this.itemService = itemService;
-        this.userService = userService;
-        this.bookingMapper = bookingMapper;
-    }
 
     @Override
     public List<Booking> findAllByUser(Long userId, State state) {

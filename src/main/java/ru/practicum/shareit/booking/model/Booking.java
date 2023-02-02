@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -8,8 +9,9 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "bookings", schema = "public")
+@Table(name = "bookings")
 @Data
+@NoArgsConstructor
 public class Booking {
 
     @Id
@@ -39,10 +41,6 @@ public class Booking {
         this.item = item;
         this.booker = booker;
         this.status = StatusOfBooking.WAITING;
-    }
-
-    public Booking() {
-
     }
 
     public Booking(LocalDateTime start, LocalDateTime end, Item item) {

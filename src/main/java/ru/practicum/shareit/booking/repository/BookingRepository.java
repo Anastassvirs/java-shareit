@@ -2,13 +2,11 @@ package ru.practicum.shareit.booking.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StatusOfBooking;
 
 import java.util.List;
 
-@Component
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     // Мне кажется, что этот набор можно оптимизировать, но я не нашла способа, как.
