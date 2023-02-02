@@ -25,6 +25,7 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -36,7 +37,6 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
-    private final ItemMapper itemMapper;
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
 
@@ -47,18 +47,24 @@ public class ItemServiceImpl implements ItemService {
 
     private ItemDtoBookingsComments upgradeItem(Item item) {
         ItemDtoBookingsComments fullItem;
-        fullItem = itemMapper.toItemDtoBookingsComments(item);
+        fullItem = ItemMapper.toItemDtoBookingsComments(item);
         List<Booking> bookings;
         bookings = bookingRepository.findNextBookingsByItem(item.getId());
         if (!bookings.isEmpty()) {
-            BookingDto nextBooking = bookingMapper.toBookingDto(bookings.stream().findFirst().orElse(null));
-            fullItem.setNextBooking(nextBooking);
+            Booking booking = bookings.stream().findFirst().orElse(null);
+            if (!Objects.isNull(booking)) {
+                BookingDto nextBooking = bookingMapper.toBookingDto(booking);
+                fullItem.setNextBooking(nextBooking);
+            }
         }
         bookings = bookingRepository.findPastBookingsByItem(item.getId());
 
         if (!bookings.isEmpty()) {
-            BookingDto lastBooking = bookingMapper.toBookingDto(bookings.stream().findFirst().orElse(null));
-            fullItem.setLastBooking(lastBooking);
+            Booking booking = bookings.stream().findFirst().orElse(null);
+            if (!Objects.isNull(booking)) {
+                BookingDto lastBooking = bookingMapper.toBookingDto(booking);
+                fullItem.setLastBooking(lastBooking);
+            }
         }
         List<Comment> comments = commentRepository.findAllByItem(item.getId());
         List<CommentDto> commentsDto = new ArrayList<>();
@@ -71,6 +77,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDtoBookingsComments> findAllByUser(Long userId) {
+        if (!userService.userExistById(userId)) {
+            throw new NotFoundAnythingException("Пользователя, по которому производится поиск вещи, не существует");
+        }
         List<Item> items = repository.findAllByOwner(userId);
         List<ItemDtoBookingsComments> fullItems = new ArrayList<>();
         for (Item item : items) {
@@ -82,7 +91,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoBookingsComments> findAllByText(String text) {
+    public List<ItemDtoBookingsComments> findAllByText(String text, Long userId) {
+        if (!userService.userExistById(userId)) {
+            throw new NotFoundAnythingException("Пользователя, от лица которого производится поиск вещи, не существует");
+        }
         if (StringUtils.isBlank(text)) {
             return new ArrayList<>();
         }
@@ -98,20 +110,29 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDtoBookingsComments findDtoById(Long id, Long userId) {
+        if (!userService.userExistById(userId)) {
+            throw new NotFoundAnythingException("Пользователя, от лица которого производится поиск вещи, не существует");
+        }
         Item item = findById(id);
         ItemDtoBookingsComments fullItem;
-        fullItem = itemMapper.toItemDtoBookingsComments(item);
+        fullItem = ItemMapper.toItemDtoBookingsComments(item);
         List<Booking> bookings;
         bookings = bookingRepository.findNextBookingsByItemAndUser(item.getId(), userId);
         if (!bookings.isEmpty()) {
-            BookingDto nextBooking = bookingMapper.toBookingDto(bookings.stream().findFirst().orElse(null));
-            fullItem.setNextBooking(nextBooking);
+            Booking booking = bookings.stream().findFirst().orElse(null);
+            if (!Objects.isNull(booking)) {
+                BookingDto nextBooking = bookingMapper.toBookingDto(booking);
+                fullItem.setNextBooking(nextBooking);
+            }
         }
         bookings = bookingRepository.findPastBookingsByItemAndUser(item.getId(), userId);
 
         if (!bookings.isEmpty()) {
-            BookingDto lastBooking = bookingMapper.toBookingDto(bookings.stream().findFirst().orElse(null));
-            fullItem.setLastBooking(lastBooking);
+            Booking booking = bookings.stream().findFirst().orElse(null);
+            if (!Objects.isNull(booking)) {
+                BookingDto lastBooking = bookingMapper.toBookingDto(booking);
+                fullItem.setLastBooking(lastBooking);
+            }
         }
         List<Comment> comments = commentRepository.findAllByItem(item.getId());
         List<CommentDto> commentsDto = new ArrayList<>();
@@ -130,16 +151,25 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item createItem(ItemDto itemDto, User owner) {
-        log.debug("Пользователем с id: {} была добавлена новая вещь: {}", owner.getId(), itemDto);
+    public Item createItem(ItemDto itemDto, Long ownerId) {
+        if (!userService.userExistById(ownerId)) {
+            throw new NotFoundAnythingException("Пользователя, от лица которого производится создание вещи, не существует");
+        }
+        log.debug("Пользователем с id: {} была добавлена новая вещь: {}", ownerId, itemDto);
         Item newItem = ItemMapper.toItem(itemDto);
-        newItem.setOwner(owner);
+        newItem.setOwner(userService.findById(ownerId));
         return repository.save(newItem);
     }
 
     @Override
     @Transactional
     public Item updateItem(Long itemId, ItemDto itemDto, Long ownerId) {
+        if (!userService.userExistById(ownerId)) {
+            throw new NotFoundAnythingException("Пользователя, от лица которого производится изменение вещи, не существует");
+        }
+        if (!itemExistById(itemId)) {
+            throw new NotFoundAnythingException("Вещи, которую вы пытаетесь изменить, не существует");
+        }
         Item item = findById(itemId);
         if (ownerId.equals(item.getOwner().getId())) {
             Optional.ofNullable(itemDto.getName()).ifPresent(item::setName);
@@ -156,29 +186,57 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public void deleteItem(Long itemId) {
+    public void deleteItem(Long itemId, Long userId) {
+        if (!userService.userExistById(userId)) {
+            throw new NotFoundAnythingException("Пользователя, от лица которого удаляется комментарий, не существует");
+        }
+        if (!itemExistById(itemId)) {
+            throw new NotFoundAnythingException("Вещи, которую вы пытаетесь удалить, не существует");
+        }
+        if (!userId.equals(findById(itemId).getOwner().getId())) {
+            log.debug("Произошла ошибка: ID пользователя не соответсвует владельцу вещи");
+            throw new NotFoundAnythingException("ID пользователя не соответсвует владельцу вещи");
+
+        }
+        log.debug("Удалена вещь с id : {}", itemId);
         repository.deleteById(itemId);
     }
 
     @Override
     @Transactional
     public CommentDto createComment(CommentDto commentDto, Long itemId, Long userId) {
+        if (!userService.userExistById(userId)) {
+            throw new NotFoundAnythingException("Пользователя, от лица которого создается комментарий, не существует");
+        }
+        if (!itemExistById(itemId)) {
+            throw new NotFoundAnythingException("Вещи, к которой создается комментарий, не существует");
+        }
         if (commentDto.getText().equals("")) {
             throw new WrongParametersException("Поле текста комментария не  может быть пустым");
         }
         User author = userService.findById(userId);
         List<Booking> bookings = bookingRepository.findPastBookingsByItem(itemId);
-        Boolean isBookedByThatUser = false;
+        boolean isBookedByThatUser = false;
         for (Booking booking : bookings) {
             if (booking.getBooker().getId().equals(userId)) {
                 isBookedByThatUser = true;
             }
         }
-        if (!isBookedByThatUser) {
+        if (Boolean.FALSE.equals(isBookedByThatUser)) {
             throw new WrongParametersException("Написать отзыв может только человек, бронировавший вещь!");
         }
         Comment comment = commentMapper.newtoComment(commentDto, findById(itemId), author);
         return commentMapper.toCommentDto(commentRepository.save(comment));
+    }
+
+    @Override
+    public boolean itemExistById(Long id) {
+        for (Item oldItem : repository.findAll()) {
+            if (Objects.equals(oldItem.getId(), id)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

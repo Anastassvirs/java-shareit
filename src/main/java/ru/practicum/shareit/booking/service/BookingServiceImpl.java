@@ -34,6 +34,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<Booking> findAllByUser(Long userId, State state) {
+        if (!userService.userExistById(userId)) {
+            throw new NotFoundAnythingException("Пользователя, от лица которого создается бронирование, не существует");
+        }
         switch (state) {
             case ALL:
                 return repository.findAllByUser(userId);
@@ -54,6 +57,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<Booking> findAllByOwner(Long userId, State state) {
+        if (!userService.userExistById(userId)) {
+            throw new NotFoundAnythingException("Пользователя, от лица которого создается бронирование, не существует");
+        }
         switch (state) {
             case ALL:
                 return repository.findAllByOwner(userId);
@@ -74,6 +80,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking findById(Long id, Long userId) {
+        if (!userService.userExistById(userId)) {
+            throw new NotFoundAnythingException("Пользователя, от лица которого происходит поиск бронирования, не существует");
+        }
         Booking booking = repository.findById(id).orElseThrow(() ->
                 new NotFoundAnythingException("Бронирования с данным id не существует"));
         if (!(booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().getId().equals(userId))) {
@@ -85,8 +94,13 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public Booking create(CreateBookingDto bookingDto, Long userId) {
+        if (!userService.userExistById(userId)) {
+            throw new NotFoundAnythingException("Пользователя, от лица которого создается бронирование, не существует");
+        }
+        if (!itemService.itemExistById(bookingDto.getItemId())) {
+            throw new NotFoundAnythingException("Вещи, на которую создается бронирование, не существует");
+        }
         Item item = itemService.findById(bookingDto.getItemId());
-        userService.findById(userId);
         User owner = userService.findById(item.getOwner().getId());
         if (owner.getId().equals(userId)) {
             throw new AuntificationException("Невозможно забронировать собственную вещь");
@@ -107,6 +121,9 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public Booking changeStatus(Long bookingId, Long userId, Boolean approved) {
+        if (!userService.userExistById(userId)) {
+            throw new NotFoundAnythingException("Пользователя, от лица которого изменяется бронирование, не существует");
+        }
         Booking booking = repository.findById(bookingId).orElseThrow(() ->
                 new NotFoundAnythingException("Бронирования с данным id не существует"));
         if (!booking.getItem().getAvailable()) {

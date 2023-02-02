@@ -105,4 +105,13 @@ public class UserServiceImpl implements UserService {
         }
         return false;
     }
+
+    public boolean userExistById(Long id) {
+        for (User oldUser : repository.findAll()) {
+            if (Objects.equals(oldUser.getId(), id)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
