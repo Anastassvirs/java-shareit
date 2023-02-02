@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comments", schema = "public")
+@Table(name = "comments")
 @Data
 @NoArgsConstructor
 public class Comment {

@@ -8,7 +8,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "users", schema = "public")
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 public class User {
