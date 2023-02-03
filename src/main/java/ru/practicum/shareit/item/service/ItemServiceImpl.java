@@ -67,7 +67,7 @@ public class ItemServiceImpl implements ItemService {
                 fullItem.setLastBooking(lastBooking);
             }
         }
-        List<Comment> comments = commentRepository.findAllByItem(item.getId());
+        List<Comment> comments = commentRepository.findAllByItemId(item.getId());
         List<CommentDto> commentsDto = new ArrayList<>();
         for (Comment comment : comments) {
             commentsDto.add(commentMapper.toCommentDto(comment));
@@ -81,7 +81,7 @@ public class ItemServiceImpl implements ItemService {
         if (!userService.userExistById(userId)) {
             throw new NotFoundAnythingException("Пользователя, по которому производится поиск вещи, не существует");
         }
-        List<Item> items = repository.findAllByOwner(userId);
+        List<Item> items = repository.findAllByOwnerIdOrderById(userId);
         List<ItemDtoBookingsComments> fullItems = new ArrayList<>();
         for (Item item : items) {
             if (item.getAvailable()) {
@@ -137,7 +137,7 @@ public class ItemServiceImpl implements ItemService {
                 fullItem.setLastBooking(lastBooking);
             }
         }
-        List<Comment> comments = commentRepository.findAllByItem(item.getId());
+        List<Comment> comments = commentRepository.findAllByItemId(item.getId());
         List<CommentDto> commentsDto = new ArrayList<>();
         for (Comment comment : comments) {
             commentsDto.add(commentMapper.toCommentDto(comment));
