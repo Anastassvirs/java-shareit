@@ -23,6 +23,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -49,7 +50,7 @@ public class ItemServiceImpl implements ItemService {
         ItemDtoBookingsComments fullItem;
         fullItem = ItemMapper.toItemDtoBookingsComments(item);
         List<Booking> bookings;
-        bookings = bookingRepository.findNextBookingsByItem(item.getId());
+        bookings = bookingRepository.findAllByItemIdAndStartAfterOrderByStartDesc(item.getId(), LocalDateTime.now());
         if (!bookings.isEmpty()) {
             Booking booking = bookings.stream().findFirst().orElse(null);
             if (!Objects.isNull(booking)) {
@@ -57,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
                 fullItem.setNextBooking(nextBooking);
             }
         }
-        bookings = bookingRepository.findPastBookingsByItem(item.getId());
+        bookings = bookingRepository.findAllByItemIdAndEndBeforeOrderByEndDesc(item.getId(), LocalDateTime.now());
 
         if (!bookings.isEmpty()) {
             Booking booking = bookings.stream().findFirst().orElse(null);
@@ -117,7 +118,8 @@ public class ItemServiceImpl implements ItemService {
         ItemDtoBookingsComments fullItem;
         fullItem = ItemMapper.toItemDtoBookingsComments(item);
         List<Booking> bookings;
-        bookings = bookingRepository.findNextBookingsByItemAndUser(item.getId(), userId);
+        bookings = bookingRepository.findAllByItemOwnerIdAndItemIdAndStartAfterOrderByStartDesc(userId, item.getId(),
+                LocalDateTime.now());
         if (!bookings.isEmpty()) {
             Booking booking = bookings.stream().findFirst().orElse(null);
             if (!Objects.isNull(booking)) {
@@ -125,7 +127,8 @@ public class ItemServiceImpl implements ItemService {
                 fullItem.setNextBooking(nextBooking);
             }
         }
-        bookings = bookingRepository.findPastBookingsByItemAndUser(item.getId(), userId);
+        bookings = bookingRepository.findAllByItemOwnerIdAndItemIdAndEndBeforeOrderByEndDesc(userId, item.getId(),
+                LocalDateTime.now());
 
         if (!bookings.isEmpty()) {
             Booking booking = bookings.stream().findFirst().orElse(null);
@@ -215,7 +218,7 @@ public class ItemServiceImpl implements ItemService {
             throw new WrongParametersException("Поле текста комментария не  может быть пустым");
         }
         User author = userService.findById(userId);
-        List<Booking> bookings = bookingRepository.findPastBookingsByItem(itemId);
+        List<Booking> bookings = bookingRepository.findAllByItemIdAndEndBeforeOrderByEndDesc(itemId, LocalDateTime.now());
         boolean isBookedByThatUser = false;
         for (Booking booking : bookings) {
             if (booking.getBooker().getId().equals(userId)) {

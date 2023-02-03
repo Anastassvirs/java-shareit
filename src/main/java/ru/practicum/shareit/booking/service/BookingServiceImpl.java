@@ -19,6 +19,7 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -39,17 +40,18 @@ public class BookingServiceImpl implements BookingService {
         }
         switch (state) {
             case ALL:
-                return repository.findAllByUser(userId);
+                return repository.findAllByBookerIdOrderByEndDesc(userId);
             case CURRENT:
-                return repository.findCurrentByUser(userId);
+                return repository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByEndDesc(userId, LocalDateTime.now(),
+                        LocalDateTime.now());
             case PAST:
-                return repository.findPastByUser(userId);
+                return repository.findAllByBookerIdAndEndBeforeOrderByEndDesc(userId, LocalDateTime.now());
             case FUTURE:
-                return repository.findFutureByUser(userId);
+                return repository.findAllByBookerIdAndStartAfterOrderByEndDesc(userId, LocalDateTime.now());
             case WAITING:
-                return repository.findByStatusAndUser(userId, StatusOfBooking.WAITING);
+                return repository.findAllByBookerIdAndStatusOrderByEndDesc(userId, StatusOfBooking.WAITING);
             case REJECTED:
-                return repository.findByStatusAndUser(userId, StatusOfBooking.REJECTED);
+                return repository.findAllByBookerIdAndStatusOrderByEndDesc(userId, StatusOfBooking.REJECTED);
             default:
                 throw new NotFoundAnythingException("Передан неверный статус");
         }
@@ -62,17 +64,18 @@ public class BookingServiceImpl implements BookingService {
         }
         switch (state) {
             case ALL:
-                return repository.findAllByOwner(userId);
+                return repository.findAllByItemOwnerIdOrderByEndDesc(userId);
             case CURRENT:
-                return repository.findCurrentByOwner(userId);
+                return repository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByEndDesc(userId,
+                        LocalDateTime.now(), LocalDateTime.now());
             case PAST:
-                return repository.findPastByOwner(userId);
+                return repository.findAllByItemOwnerIdAndEndBeforeOrderByEndDesc(userId, LocalDateTime.now());
             case FUTURE:
-                return repository.findFutureByOwner(userId);
+                return repository.findAllByItemOwnerIdAndStartAfterOrderByEndDesc(userId, LocalDateTime.now());
             case WAITING:
-                return repository.findByStatusAndOwner(userId, StatusOfBooking.WAITING);
+                return repository.findAllByItemOwnerIdAndStatusOrderByEndDesc(userId, StatusOfBooking.WAITING);
             case REJECTED:
-                return repository.findByStatusAndOwner(userId, StatusOfBooking.REJECTED);
+                return repository.findAllByItemOwnerIdAndStatusOrderByEndDesc(userId, StatusOfBooking.REJECTED);
             default:
                 throw new NotFoundAnythingException("Передан неверный статус");
         }

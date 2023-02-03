@@ -1,60 +1,43 @@
 package ru.practicum.shareit.booking.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StatusOfBooking;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    @Query(value = "select b from Booking b where b.booker.id = ?1 order by b.end desc")
-    List<Booking> findAllByUser(Long userId);
+    List<Booking> findAllByBookerIdOrderByEndDesc(Long userId);
 
-    @Query(value = "select b from Booking b where " +
-            "b.booker.id = ?1 and current_timestamp > b.start and current_timestamp < b.end order by b.end desc")
-    List<Booking> findCurrentByUser(Long userId);
+    List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByEndDesc(Long userId, LocalDateTime now,
+                                                                           LocalDateTime now2);
 
-    @Query(value = "select b from Booking b where " +
-            "b.booker.id = ?1 and current_timestamp > b.end order by b.end desc")
-    List<Booking> findPastByUser(Long userId);
+    List<Booking> findAllByBookerIdAndEndBeforeOrderByEndDesc(Long userId, LocalDateTime now);
 
-    @Query(value = "select b from Booking b where " +
-            "b.booker.id = ?1 and current_timestamp < b.start order by b.end desc")
-    List<Booking> findFutureByUser(Long userId);
+    List<Booking> findAllByBookerIdAndStartAfterOrderByEndDesc(Long userId, LocalDateTime now);
 
-    @Query(value = "select b from Booking b where b.booker.id = ?1 and b.status = ?2 order by b.end desc")
-    List<Booking> findByStatusAndUser(Long userId, StatusOfBooking status);
+    List<Booking> findAllByBookerIdAndStatusOrderByEndDesc(Long userId, StatusOfBooking status);
 
-    @Query(value = "select b from Booking b where b.item.owner.id = ?1 order by b.end desc")
-    List<Booking> findAllByOwner(Long userId);
+    List<Booking> findAllByItemOwnerIdOrderByEndDesc(Long userId);
 
-    @Query(value = "select b from Booking b where " +
-            "b.item.owner.id = ?1 and current_timestamp > b.start and current_timestamp < b.end order by b.end desc")
-    List<Booking> findCurrentByOwner(Long userId);
+    List<Booking> findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByEndDesc(Long userId, LocalDateTime now,
+                                                                              LocalDateTime now2);
 
-    @Query(value = "select b from Booking b where " +
-            "b.item.owner.id = ?1 and current_timestamp > b.end order by b.end desc")
-    List<Booking> findPastByOwner(Long userId);
+    List<Booking> findAllByItemOwnerIdAndEndBeforeOrderByEndDesc(Long userId, LocalDateTime now);
 
-    @Query(value = "select b from Booking b where " +
-            "b.item.owner.id = ?1 and current_timestamp < b.start order by b.end desc")
-    List<Booking> findFutureByOwner(Long userId);
+    List<Booking> findAllByItemOwnerIdAndStartAfterOrderByEndDesc(Long userId, LocalDateTime now);
 
-    @Query(value = "select b from Booking b where b.item.owner.id = ?1 and b.status = ?2 order by b.end desc")
-    List<Booking> findByStatusAndOwner(Long userId, StatusOfBooking status);
+    List<Booking> findAllByItemOwnerIdAndStatusOrderByEndDesc(Long userId, StatusOfBooking status);
 
-    // Можно ли сразу передать только первый элемент? TOP 1 тут не работает, не могу найти решение
-    @Query(value = "select b from Booking b where b.item.id = ?1 and b.start > current_timestamp order by b.start desc")
-    List<Booking> findNextBookingsByItem(Long itemId);
+    List<Booking> findAllByItemOwnerIdAndItemIdAndStartAfterOrderByStartDesc(Long userId, Long itemId, LocalDateTime now);
 
-    @Query(value = "select b from Booking b where b.item.id = ?1 and b.end < current_timestamp order by b.end desc")
-    List<Booking> findPastBookingsByItem(Long itemId);
+    List<Booking> findAllByItemOwnerIdAndItemIdAndEndBeforeOrderByEndDesc(Long userId, Long itemId, LocalDateTime now);
 
-    @Query(value = "select b from Booking b where b.item.id = ?1 and b.item.owner.id = ?2 and b.start > current_timestamp order by b.start desc")
-    List<Booking> findNextBookingsByItemAndUser(Long itemId, Long userId);
+    List<Booking> findAllByItemIdAndStartAfterOrderByStartDesc(Long itemId, LocalDateTime now);
 
-    @Query(value = "select b from Booking b where b.item.id = ?1 and b.item.owner.id = ?2 and b.end < current_timestamp order by b.end desc")
-    List<Booking> findPastBookingsByItemAndUser(Long itemId, Long userId);
+    List<Booking> findAllByItemIdAndEndBeforeOrderByEndDesc(Long itemId, LocalDateTime now);
+
+
 }
