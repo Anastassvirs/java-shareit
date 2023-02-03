@@ -20,25 +20,16 @@ public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
-    @NotBlank
+    @Column(nullable = false)
     private Long id;
 
-    @Column
-    @NotNull
-    @NotBlank
-    @Length(max = 255)
+    @Column(nullable = false)
     private String name;
 
-    @Column
-    @NotNull
-    @NotBlank
-    @Length(max = 512)
+    @Column(nullable = false, length = 512)
     private String description;
 
-    @Column(name = "is_avaliable")
-    @NotNull
-    @NotBlank
+    @Column(name = "is_avaliable", nullable = false)
     private Boolean available;
 
     @ManyToOne

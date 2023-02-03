@@ -2,13 +2,10 @@ package ru.practicum.shareit.booking.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,10 +14,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Booking {
 
+    @Column(nullable = false)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
-    @NotBlank
     private Long id;
 
     @Column(name = "start_date")
@@ -37,8 +33,8 @@ public class Booking {
     @JoinColumn(name = "booker_id")
     private User booker;
 
+    @Column(length = 10)
     @Enumerated(EnumType.STRING)
-    @Length(max = 10)
     private StatusOfBooking status;
 
     public Booking(LocalDateTime start, LocalDateTime end, Item item) {

@@ -18,14 +18,10 @@ public class ItemRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
-    @NotBlank
+    @Column(nullable = false)
     private Long id;
 
-    @Column
-    @NotNull
-    @NotBlank
-    @Length(max = 512)
+    @Column(nullable = false, length = 512)
     private String description;
 
     @ManyToOne

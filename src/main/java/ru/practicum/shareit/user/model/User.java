@@ -19,21 +19,14 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
-    @NotBlank
+    @Column(nullable = false)
     private Long id;
 
-    @Column
-    @NotNull
-    @NotBlank
-    @Length(max = 255)
+    @Column(nullable = false)
     private String name;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false, length = 512)
     @Email
-    @NotNull
-    @NotBlank
-    @Length(max = 512)
     private String email;
 
     public User(String name, String email) {
