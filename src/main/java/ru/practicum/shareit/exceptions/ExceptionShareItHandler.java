@@ -34,7 +34,7 @@ public class ExceptionShareItHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleThrowable(final Throwable e) {
-        return new ErrorResponse("Произошла непредвиденная ошибка.");
+        return new ErrorResponse("Произошла непредвиденная ошибка: " + e.getStackTrace());
     }
 
     @ExceptionHandler
