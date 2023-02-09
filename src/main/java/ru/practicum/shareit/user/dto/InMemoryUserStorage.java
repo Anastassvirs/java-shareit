@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user.dto;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.user.model.User;
@@ -10,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 
 @Component
-@Qualifier("memoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
     private HashMap<Long, User> users;
     private Long numberOfUsers;
