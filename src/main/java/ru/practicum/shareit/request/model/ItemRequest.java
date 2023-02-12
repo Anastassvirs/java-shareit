@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.practicum.shareit.user.model.User;
 
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "requests")
 @Getter
 @Setter
+@NoArgsConstructor
 public class ItemRequest {
 
     @Id
@@ -27,4 +29,8 @@ public class ItemRequest {
 
     @Column
     private LocalDateTime created;
+
+    public ItemRequest(String description) {
+        this.description = description;
+    }
 }

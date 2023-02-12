@@ -1,9 +1,10 @@
-package ru.practicum.shareit.request.dto;
+package ru.practicum.shareit.request.storage;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.storage.RequestStorage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
