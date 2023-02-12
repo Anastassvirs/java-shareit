@@ -34,9 +34,9 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public List<ItemRequest> findAll(@RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
-                                     @RequestParam(defaultValue = "10") @Positive Integer size,
-                                     @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+    public List<RequestDto> findAll(@RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                    @RequestParam(defaultValue = "10") @Positive Integer size,
+                                    @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         return service.findAll(from, size, userId);
     }
 

@@ -11,7 +11,7 @@ public interface RequestService {
 
     List<RequestDto> findAllByOwnerWithResponses(Long userId);
 
-    List<ItemRequest> findAll(Integer from, Integer size, Long userId);
+    List<RequestDto> findAll(Integer from, Integer size, Long userId);
 
     RequestDto findByIdWithResponses(Long requestId, Long userId);
 }

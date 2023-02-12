@@ -60,12 +60,12 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<ItemRequest> findAll(Integer from, Integer size, Long userId) {
+    public List<RequestDto> findAll(Integer from, Integer size, Long userId) {
         if (!userService.userExistById(userId)) {
             throw new NotFoundAnythingException("Пользователя, от лица которого происходит поиск запросов, не существует");
         }
         Pageable pageable = PageRequest.of(from / size, size);
-        return repository.findAllByRequestorIdNotOrderByCreatedDesc(userId, pageable).getContent();
+        return requestMapper.toListRequestDto(repository.findAllByRequestorIdNotOrderByCreatedDesc(userId, pageable).getContent());
     }
 
     @Override
