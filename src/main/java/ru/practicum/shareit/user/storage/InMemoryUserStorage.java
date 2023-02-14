@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user.dto;
+package ru.practicum.shareit.user.storage;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;

@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.model.UserDto;
-import ru.practicum.shareit.user.model.UserMapper;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 
 import java.util.List;
 import java.util.Objects;
@@ -45,7 +45,8 @@ public class UserServiceImpl implements UserService {
             log.debug("Произошла ошибка: Введенный пользователь уже зарегистрирован");
             throw new AlreadyExistException("Такой пользователь уже зарегистрирован");
         }
-        if (Objects.isNull(userDto.getEmail()) || !userDto.getEmail().contains("@")) {
+        if (Objects.isNull(userDto.getEmail()) || !userDto.getEmail().contains("@") ||
+                Objects.isNull(userDto.getName()) || userDto.getName().isEmpty() || userDto.getEmail().isEmpty()) {
             throw new WrongParametersException("Неправильно заполнены поля создаваемого пользователя");
         }
         log.debug("Добавлен новый пользователь: {}", user);
