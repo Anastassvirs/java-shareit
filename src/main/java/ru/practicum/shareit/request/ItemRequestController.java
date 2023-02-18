@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.request.dto.RequestDto;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.service.RequestService;
 
@@ -22,27 +22,26 @@ public class ItemRequestController {
     private final RequestService service;
 
     @PostMapping
-    public ResponseEntity<ItemRequest> create(@Valid @RequestBody RequestDto request,
+    public ResponseEntity<ItemRequest> create(@Valid @RequestBody ItemRequestDto request,
                                               @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         return new ResponseEntity<>(service.create(request, userId), HttpStatus.OK);
     }
 
-
     @GetMapping
-    public List<RequestDto> findAllByOwnerWithResponses(@RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+    public List<ItemRequestDto> findAllByOwnerWithResponses(@RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         return service.findAllByOwnerWithResponses(userId);
     }
 
     @GetMapping("/all")
-    public List<RequestDto> findAll(@RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
-                                    @RequestParam(defaultValue = "10") @Positive Integer size,
-                                    @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+    public List<ItemRequestDto> findAll(@RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                        @RequestParam(defaultValue = "10") @Positive Integer size,
+                                        @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         return service.findAll(from, size, userId);
     }
 
     @GetMapping("/{requestId}")
-    public RequestDto findByIdWithResponses(@PathVariable Long requestId,
-                                            @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+    public ItemRequestDto findByIdWithResponses(@PathVariable Long requestId,
+                                                @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         return service.findByIdWithResponses(requestId, userId);
     }
 }

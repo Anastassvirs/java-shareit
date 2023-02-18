@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.practicum.shareit.exceptions.SameFieldException;
+import ru.practicum.shareit.exceptions.WrongParametersException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserServiceImpl;
@@ -15,6 +15,8 @@ import ru.practicum.shareit.user.service.UserServiceImpl;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -31,10 +33,7 @@ public class UserServiceTests {
 
     @Test
     public void findAllTest() {
-        List<User> users = List.of(new User("Anastasia", "an.svir@mail.com"),
-                new User("NEAnastasia", "nean.svir@mail.com"),
-                new User("HEHESir", "phphphph.sir@mail.com")
-        );
+        List<User> users = List.of(new User("Anastasia", "an.svir@mail.com"), new User("NEAnastasia", "nean.svir@mail.com"), new User("HEHESir", "phphphph.sir@mail.com"));
         when(userRepository.findAll()).thenReturn(users);
         assertEquals(users, userService.findAll());
     }
@@ -58,6 +57,17 @@ public class UserServiceTests {
     }
 
     @Test
+    public void saveNullNameTest() {
+        UserDto userDto = new UserDto(null, "an.svir@mail.com");
+        Throwable thrown = catchThrowable(() -> {
+            userService.createUser(userDto);
+        });
+        assertThat(thrown).isInstanceOf(WrongParametersException.class);
+        assertThat(thrown.getMessage()).isNotBlank();
+        assertEquals("Неправильно заполнены поля создаваемого пользователя", thrown.getMessage());
+    }
+
+    @Test
     public void updateTest() {
         Long userId = 1L;
         UserDto userDto = new UserDto("Updated", "update.svir@mail.com");
@@ -70,6 +80,7 @@ public class UserServiceTests {
         assertEquals(user, userService.updateUser(userId, userDto));
     }
 
+    @Test
     public void deleteTest() {
         Long userId = 1L;
         userService.deleteById(userId);

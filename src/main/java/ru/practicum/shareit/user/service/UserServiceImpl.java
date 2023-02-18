@@ -41,10 +41,6 @@ public class UserServiceImpl implements UserService {
     public User createUser(UserDto userDto) {
         User user = userMapper.toUser(userDto);
 
-        if (userAlreadyExist(user)) {
-            log.debug("Произошла ошибка: Введенный пользователь уже зарегистрирован");
-            throw new AlreadyExistException("Такой пользователь уже зарегистрирован");
-        }
         if (Objects.isNull(userDto.getEmail()) || !userDto.getEmail().contains("@") ||
                 Objects.isNull(userDto.getName()) || userDto.getName().isEmpty() || userDto.getEmail().isEmpty()) {
             throw new WrongParametersException("Неправильно заполнены поля создаваемого пользователя");

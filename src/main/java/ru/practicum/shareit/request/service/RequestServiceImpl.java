@@ -4,12 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.request.RequestRepository;
-import ru.practicum.shareit.request.dto.RequestDto;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.RequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.service.UserService;
@@ -35,7 +34,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional
-    public ItemRequest create(RequestDto request, Long userId) {
+    public ItemRequest create(ItemRequestDto request, Long userId) {
         if (!userService.userExistById(userId)) {
             throw new NotFoundAnythingException("Пользователя, от лица которого происходит поиск запросов, не существует");
         }
@@ -47,20 +46,16 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<RequestDto> findAllByOwnerWithResponses(Long userId) {
+    public List<ItemRequestDto> findAllByOwnerWithResponses(Long userId) {
         if (!userService.userExistById(userId)) {
             throw new NotFoundAnythingException("Пользователя, от лица которого происходит поиск запросов, не существует");
         }
-        List<RequestDto> dtorequests = new ArrayList<>();
         List<ItemRequest> requests = repository.findAllByRequestorId(userId);
-        for (ItemRequest request : requests) {
-            dtorequests.add(requestMapper.toRequestDto(request));
-        }
-        return dtorequests;
+        return requestMapper.toListRequestDto(requests);
     }
 
     @Override
-    public List<RequestDto> findAll(Integer from, Integer size, Long userId) {
+    public List<ItemRequestDto> findAll(Integer from, Integer size, Long userId) {
         if (!userService.userExistById(userId)) {
             throw new NotFoundAnythingException("Пользователя, от лица которого происходит поиск запросов, не существует");
         }
@@ -69,7 +64,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public RequestDto findByIdWithResponses(Long requestId, Long userId) {
+    public ItemRequestDto findByIdWithResponses(Long requestId, Long userId) {
         if (!userService.userExistById(userId)) {
             throw new NotFoundAnythingException("Пользователя, от лица которого происходит поиск запросов, не существует");
         }

@@ -10,17 +10,17 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = UserController.class)
@@ -32,9 +32,6 @@ public class UserControllerTests {
     @MockBean
     UserService userService;
 
-    @MockBean
-    UserMapper userMapper;
-
     @Autowired
     private MockMvc mvc;
 
@@ -44,14 +41,18 @@ public class UserControllerTests {
 
         when(userService.findAll()).thenReturn(users);
 
-        mvc.perform(get("/users")
+        String result = mvc.perform(get("/users")
                         .content(mapper.writeValueAsString(users))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
         verify(userService, Mockito.times(1)).findAll();
+        assertEquals(result, mapper.writeValueAsString(users));
     }
 
     @Test
@@ -69,7 +70,10 @@ public class UserControllerTests {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(user.getId()), Long.class))
+                .andExpect(jsonPath("$.name", is(user.getName())))
+                .andExpect(jsonPath("$.email", is(user.getEmail())));
 
         verify(userService, Mockito.times(1)).findById(userId);
     }
@@ -79,13 +83,23 @@ public class UserControllerTests {
         UserDto userDto = new UserDto(
                 "Anastasia",
                 "anastasia.svir@mail.com");
+        User user = new User(
+                "Anastasia",
+                "anastasia.svir@mail.com");
+        Long userId = 1L;
+        user.setId(userId);
+
+        when(userService.createUser(userDto)).thenReturn(user);
+
         mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        ;
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(user.getId()), Long.class))
+                .andExpect(jsonPath("$.name", is(user.getName())))
+                .andExpect(jsonPath("$.email", is(user.getEmail())));
 
         verify(userService, Mockito.times(1)).createUser(userDto);
     }
@@ -123,7 +137,10 @@ public class UserControllerTests {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(user.getId()), Long.class))
+                .andExpect(jsonPath("$.name", is(user.getName())))
+                .andExpect(jsonPath("$.email", is(user.getEmail())));
 
         verify(userService, Mockito.times(1)).updateUser(userId, userDto);
     }
