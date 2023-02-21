@@ -1,12 +1,9 @@
 package ru.practicum.shareit.user.dto;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class UserMapper {
