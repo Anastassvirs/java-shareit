@@ -41,13 +41,13 @@ public class DtoTests {
     @Test
     void testBookingDto() throws Exception {
         Long bookingId = 1L, bookerId = 1L, itemId = 1L;
-        LocalDateTime start = LocalDateTime.now().plusDays(1), end = LocalDateTime.now().plusDays(2);
+        LocalDateTime start = LocalDateTime.of(2023, 1, 18, 18, 18), end = LocalDateTime.of(2023, 1, 18, 18, 18).plusDays(1);
         BookingDto bookingDto = new BookingDto(bookingId, start, end, bookerId, itemId);
         JsonContent<BookingDto> jsonDto = jsonBookingDto.write(bookingDto);
 
         assertThat(jsonDto).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(jsonDto).extractingJsonPathStringValue("$.start").isEqualTo(start.toString().substring(0, 27));
-        assertThat(jsonDto).extractingJsonPathStringValue("$.end").isEqualTo(end.toString().substring(0, 27));
+        assertThat(jsonDto).extractingJsonPathStringValue("$.start").isEqualTo("2023-01-18T18:18:00");
+        assertThat(jsonDto).extractingJsonPathStringValue("$.end").isEqualTo("2023-01-19T18:18:00");
         assertThat(jsonDto).extractingJsonPathNumberValue("$.bookerId").isEqualTo(1);
         assertThat(jsonDto).extractingJsonPathNumberValue("$.itemId").isEqualTo(1);
     }
@@ -57,14 +57,14 @@ public class DtoTests {
         Boolean avaliable = true;
         Long requestId = 1L, itemId = 1L;
         String description = "description", nameItem = "Name", descriptionItem = "description of item";
-        LocalDateTime created = LocalDateTime.now().minusDays(1);
+        LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
         ItemDto itemDto = new ItemDto(itemId, nameItem, descriptionItem, avaliable, requestId);
         ItemRequestDto itemRequestDto = new ItemRequestDto(requestId, description, created, List.of(itemDto));
         JsonContent<ItemRequestDto> jsonDto = jsonItemRequestDto.write(itemRequestDto);
 
         assertThat(jsonDto).extractingJsonPathNumberValue("$.id").isEqualTo(1);
         assertThat(jsonDto).extractingJsonPathStringValue("$.description").isEqualTo("description");
-        assertThat(jsonDto).extractingJsonPathStringValue("$.created").isEqualTo(created.toString().substring(0, 27));
+        assertThat(jsonDto).extractingJsonPathStringValue("$.created").isEqualTo("2023-01-18T18:18:00");
 
         assertThat(jsonDto).extractingJsonPathNumberValue("$.items[0].id").isEqualTo(1);
         assertThat(jsonDto).extractingJsonPathStringValue("$.items[0].name").isEqualTo("Name");
