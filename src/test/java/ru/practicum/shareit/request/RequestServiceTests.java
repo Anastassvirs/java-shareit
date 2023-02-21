@@ -33,7 +33,7 @@ public class RequestServiceTests {
     ObjectMapper mapper;
 
     @InjectMocks
-    private RequestServiceImpl requestService;
+    RequestServiceImpl requestService;
 
     @Mock
     RequestRepository requestRepository;
@@ -100,9 +100,7 @@ public class RequestServiceTests {
         when(userService.userExistById(any(Long.class))).thenReturn(true);
         when(requestMapper.toListRequestDto(page.getContent())).thenReturn(requestDtos);
 
-        List<ItemRequestDto> actualList = requestService.findAll(from, size, userId);
-
-        assertEquals(actualList, requestDtos);
+        assertEquals(requestService.findAll(from, size, userId), requestDtos);
     }
 
     @Test

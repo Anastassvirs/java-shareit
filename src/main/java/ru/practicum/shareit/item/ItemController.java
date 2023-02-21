@@ -45,26 +45,26 @@ public class ItemController {
     }
 
     @PostMapping
-    public ResponseEntity<ItemDto> create(@Valid @RequestBody ItemDto item,
-                                          @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
-        return new ResponseEntity<>(itemService.createItem(item, userId), HttpStatus.OK);
+    public ItemDto create(@Valid @RequestBody ItemDto item,
+                          @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+        return itemService.createItem(item, userId);
     }
 
     @PatchMapping("/{itemId}")
-    public ResponseEntity<Item> update(@PathVariable Long itemId, @RequestBody ItemDto itemDto,
-                                       @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
-        return new ResponseEntity<>(itemService.updateItem(itemId, itemDto, userId), HttpStatus.OK);
+    public ItemDto update(@PathVariable Long itemId, @RequestBody ItemDto itemDto,
+                          @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+        return itemService.updateItem(itemId, itemDto, userId);
     }
 
     @DeleteMapping
-    public void delete(@Valid @RequestBody Item item, @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+    public void delete(@Valid @RequestBody ItemDto item, @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         itemService.deleteItem(item.getId(), userId);
     }
 
     @PostMapping("/{itemId}/comment")
-    public ResponseEntity<CommentDto> createComment(@PathVariable Long itemId,
-                                                    @Valid @RequestBody CommentDto commentDto,
-                                                    @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
-        return new ResponseEntity<>(itemService.createComment(commentDto, itemId, userId), HttpStatus.OK);
+    public CommentDto createComment(@PathVariable Long itemId,
+                                    @Valid @RequestBody CommentDto commentDto,
+                                    @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+        return itemService.createComment(commentDto, itemId, userId);
     }
 }

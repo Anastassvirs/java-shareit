@@ -16,7 +16,6 @@ import ru.practicum.shareit.exceptions.WrongParametersException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoBookingsComments;
-import ru.practicum.shareit.item.dto.ItemDtoForRequests;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.CommentMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -172,7 +171,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item updateItem(Long itemId, ItemDto itemDto, Long ownerId) {
+    public ItemDto updateItem(Long itemId, ItemDto itemDto, Long ownerId) {
         if (!userService.userExistById(ownerId)) {
             throw new NotFoundAnythingException("Пользователя, от лица которого производится изменение вещи, не существует");
         }
@@ -185,7 +184,7 @@ public class ItemServiceImpl implements ItemService {
             Optional.ofNullable(itemDto.getDescription()).ifPresent(item::setDescription);
             Optional.ofNullable(itemDto.getAvailable()).ifPresent(item::setAvailable);
             log.debug("Обновлена вещь: {}", item);
-            return repository.save(item);
+            return itemMapper.toItemDto(repository.save(item));
         } else {
             log.debug("Произошла ошибка: ID пользователя не соответсвует владельцу вещи");
             throw new NotFoundAnythingException("ID пользователя не соответсвует владельцу вещи");

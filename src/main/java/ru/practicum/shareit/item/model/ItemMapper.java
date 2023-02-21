@@ -53,6 +53,7 @@ public class ItemMapper {
 
     public Item toItem(@NotNull ItemDto itemDto) {
         return new Item(
+                itemDto.getId() != null ? itemDto.getId() : null,
                 itemDto.getName(),
                 itemDto.getDescription(),
                 itemDto.getAvailable(),

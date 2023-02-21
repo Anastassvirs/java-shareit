@@ -22,7 +22,7 @@ public interface ItemService {
 
     ItemDto createItem(ItemDto itemDto, Long ownerId);
 
-    Item updateItem(Long itemId, ItemDto itemDto, Long ownerId);
+    ItemDto updateItem(Long itemId, ItemDto itemDto, Long ownerId);
 
     void deleteItem(Long itemId, Long userId);
 
