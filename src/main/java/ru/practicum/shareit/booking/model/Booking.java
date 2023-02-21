@@ -7,6 +7,7 @@ import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "bookings")
@@ -41,5 +42,25 @@ public class Booking {
         this.start = start;
         this.end = end;
         this.item = item;
+    }
+
+    public Booking(Long id, LocalDateTime start, LocalDateTime end, Item item) {
+        this.id = id;
+        this.start = start;
+        this.end = end;
+        this.item = item;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Booking)) return false;
+        Booking booking = (Booking) o;
+        return Objects.equals(getId(), booking.getId()) && Objects.equals(getStart(), booking.getStart()) && Objects.equals(getEnd(), booking.getEnd()) && Objects.equals(getItem(), booking.getItem()) && Objects.equals(getBooker(), booking.getBooker()) && getStatus() == booking.getStatus();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getStart(), getEnd(), getItem(), getBooker(), getStatus());
     }
 }

@@ -8,13 +8,13 @@ import java.util.List;
 
 public interface BookingService {
 
+    Booking create(CreateBookingDto bookingDto, Long userId);
+
     List<Booking> findAllByUser(Integer from, Integer size, Long userId, State state);
 
     List<Booking> findAllByOwner(Integer from, Integer size, Long userId, State state);
 
     Booking findById(Long id, Long userId);
-
-    Booking create(CreateBookingDto bookingDto, Long userId);
 
     Booking changeStatus(Long bookingId, Long userId, Boolean approved);
 }

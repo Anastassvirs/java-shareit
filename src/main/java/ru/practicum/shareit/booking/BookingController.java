@@ -1,8 +1,6 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +20,13 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 public class BookingController {
+
     private final BookingService bookingService;
 
     @PostMapping
-    public ResponseEntity<Booking> create(@Valid @RequestBody CreateBookingDto bookingDto,
-                                          @RequestHeader(value = "X-Sharer-User-Id") Long ownerId) {
-        return new ResponseEntity<>(bookingService.create(bookingDto, ownerId), HttpStatus.OK);
+    public Booking create(@Valid @RequestBody CreateBookingDto bookingDto,
+                          @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+        return bookingService.create(bookingDto, userId);
     }
 
     @PatchMapping("/{bookingId}")

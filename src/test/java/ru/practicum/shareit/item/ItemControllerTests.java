@@ -39,7 +39,7 @@ public class ItemControllerTests {
     ItemMapper itemMapper;
 
     @Autowired
-    private MockMvc mvc;
+    MockMvc mvc;
 
     @Test
     void findAllByUser() throws Exception {
