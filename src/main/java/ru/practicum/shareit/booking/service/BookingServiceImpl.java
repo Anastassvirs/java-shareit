@@ -141,7 +141,6 @@ public class BookingServiceImpl implements BookingService {
         }
         if (!booking.getItem().getOwner().getId().equals(userId)) {
             throw new AuntificationException("У вас нет доступа к изменению статуса этого бронирования");
-
         }
         if (Boolean.TRUE.equals(approved)) {
             booking.setStatus(StatusOfBooking.APPROVED);

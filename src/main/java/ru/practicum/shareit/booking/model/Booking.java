@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.model.Item;
@@ -13,6 +14,7 @@ import java.util.Objects;
 @Table(name = "bookings")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Booking {
 
     @Column(nullable = false)
