@@ -91,23 +91,23 @@ public class BookingsServiceTests {
         assertEquals(bookingService.findAllByUser(from, size, userId, State.CURRENT), currentBookings);
 
         page = new PageImpl<>(pastBookings, pageable, 1);
-        when(bookingRepository.findAllByBookerIdAndEndBeforeOrderByEndDesc
-                (any(Long.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
+        when(bookingRepository.findAllByBookerIdAndEndBeforeOrderByEndDesc(any(Long.class),
+                any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
         assertEquals(bookingService.findAllByUser(from, size, userId, State.PAST), pastBookings);
 
         page = new PageImpl<>(futureBookings, pageable, 1);
-        when(bookingRepository.findAllByBookerIdAndStartAfterOrderByEndDesc
-                (any(Long.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
+        when(bookingRepository.findAllByBookerIdAndStartAfterOrderByEndDesc(
+                any(Long.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
         assertEquals(bookingService.findAllByUser(from, size, userId, State.FUTURE), futureBookings);
 
         page = new PageImpl<>(waitingBookings, pageable, 1);
-        when(bookingRepository.findAllByBookerIdAndStatusOrderByEndDesc
-                (any(Long.class), any(StatusOfBooking.class), any(Pageable.class))).thenReturn(page);
+        when(bookingRepository.findAllByBookerIdAndStatusOrderByEndDesc(any(Long.class),
+                any(StatusOfBooking.class), any(Pageable.class))).thenReturn(page);
         assertEquals(bookingService.findAllByUser(from, size, userId, State.WAITING), waitingBookings);
 
         page = new PageImpl<>(rejectedBookings, pageable, 1);
-        when(bookingRepository.findAllByBookerIdAndStatusOrderByEndDesc
-                (any(Long.class), any(StatusOfBooking.class), any(Pageable.class))).thenReturn(page);
+        when(bookingRepository.findAllByBookerIdAndStatusOrderByEndDesc(any(Long.class),
+                any(StatusOfBooking.class), any(Pageable.class))).thenReturn(page);
         assertEquals(bookingService.findAllByUser(from, size, userId, State.REJECTED), rejectedBookings);
     }
 
@@ -144,23 +144,23 @@ public class BookingsServiceTests {
         assertEquals(bookingService.findAllByOwner(from, size, userId, State.CURRENT), currentBookings);
 
         page = new PageImpl<>(pastBookings, pageable, 1);
-        when(bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByEndDesc
-                (any(Long.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
+        when(bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByEndDesc(
+                any(Long.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
         assertEquals(bookingService.findAllByOwner(from, size, userId, State.PAST), pastBookings);
 
         page = new PageImpl<>(futureBookings, pageable, 1);
-        when(bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByEndDesc
-                (any(Long.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
+        when(bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByEndDesc(
+                any(Long.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
         assertEquals(bookingService.findAllByOwner(from, size, userId, State.FUTURE), futureBookings);
 
         page = new PageImpl<>(waitingBookings, pageable, 1);
-        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByEndDesc
-                (any(Long.class), any(StatusOfBooking.class), any(Pageable.class))).thenReturn(page);
+        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByEndDesc(any(Long.class),
+                any(StatusOfBooking.class), any(Pageable.class))).thenReturn(page);
         assertEquals(bookingService.findAllByOwner(from, size, userId, State.WAITING), waitingBookings);
 
         page = new PageImpl<>(rejectedBookings, pageable, 1);
-        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByEndDesc
-                (any(Long.class), any(StatusOfBooking.class), any(Pageable.class))).thenReturn(page);
+        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByEndDesc(any(Long.class),
+                any(StatusOfBooking.class), any(Pageable.class))).thenReturn(page);
         assertEquals(bookingService.findAllByOwner(from, size, userId, State.REJECTED), rejectedBookings);
     }
 
