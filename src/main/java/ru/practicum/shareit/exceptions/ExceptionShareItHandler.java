@@ -16,21 +16,15 @@ public class ExceptionShareItHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({NotFoundAnythingException.class, AuntificationException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleUserNotFoundException(final NotFoundAnythingException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleUserNotFoundException(final AuntificationException e) {
+    public ErrorResponse handleUserNotFoundException(final Exception e) {
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleThrowable(final Throwable e) {
+    public ErrorResponse handleThrowable(Throwable e) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
@@ -49,5 +43,4 @@ public class ExceptionShareItHandler {
     public ErrorResponse handleThrowable(final SaveUserException e) {
         return new ErrorResponse(e.getMessage());
     }
-
 }

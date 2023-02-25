@@ -204,7 +204,6 @@ public class ItemServiceImpl implements ItemService {
         if (!userId.equals(findById(itemId).getOwner().getId())) {
             log.debug("Произошла ошибка: ID пользователя не соответсвует владельцу вещи");
             throw new NotFoundAnythingException("ID пользователя не соответсвует владельцу вещи");
-
         }
         log.debug("Удалена вещь с id : {}", itemId);
         repository.deleteById(itemId);
