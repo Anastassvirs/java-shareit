@@ -71,6 +71,12 @@ public class ItemServiceTests {
     BookingMapper bookingMapper;
 
     @Test
+    public void findAllTest() {
+        when(itemRepository.findAll()).thenReturn(List.of());
+        assertEquals(List.of(), itemService.findAll());
+    }
+
+    @Test
     public void findAllByUserTest() {
         Boolean avaliable = true;
         Long requestId = 1L, itemId = 1L, requestorId = 1L, commentId = 1L, userId = 1L, bookingId = 1L, bookerId = 2L;
