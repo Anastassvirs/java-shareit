@@ -23,9 +23,4 @@ public class UserDto {
         UserDto userDto = (UserDto) o;
         return Objects.equals(getName(), userDto.getName()) && Objects.equals(getEmail(), userDto.getEmail());
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getName(), getEmail());
-    }
 }

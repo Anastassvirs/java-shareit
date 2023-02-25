@@ -44,9 +44,4 @@ public class ItemRequest {
         ItemRequest request = (ItemRequest) o;
         return Objects.equals(getId(), request.getId()) && Objects.equals(getDescription(), request.getDescription()) && Objects.equals(getRequestor(), request.getRequestor()) && Objects.equals(getCreated(), request.getCreated());
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getDescription(), getRequestor(), getCreated());
-    }
 }

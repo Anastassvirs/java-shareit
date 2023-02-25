@@ -74,6 +74,14 @@ public class RequestServiceTests {
     @Test
     void findAllByOwnerTest() {
         Long userId = 1L;
+        when(userService.userExistById(any(Long.class))).thenReturn(false);
+        Throwable thrown = catchThrowable(() -> {
+            requestService.findAllByOwnerWithResponses(userId);
+        });
+        assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
+        assertThat(thrown.getMessage()).isNotBlank();
+        assertEquals("Пользователя, от лица которого происходит поиск запросов, не существует", thrown.getMessage());
+
         List<ItemRequestDto> requestDtos =
                 List.of(new ItemRequestDto("desc"), new ItemRequestDto("description"));
         List<ItemRequest> requests =
@@ -90,6 +98,14 @@ public class RequestServiceTests {
     void findAll() {
         Long userId = 1L;
         Integer from = 0, size = 1;
+        when(userService.userExistById(any(Long.class))).thenReturn(false);
+        Throwable thrown = catchThrowable(() -> {
+            requestService.findAll(from, size, userId);
+        });
+        assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
+        assertThat(thrown.getMessage()).isNotBlank();
+        assertEquals("Пользователя, от лица которого происходит поиск запросов, не существует", thrown.getMessage());
+
         ItemRequestDto itemRequestDto = new ItemRequestDto();
         itemRequestDto.setId(1L);
         List<ItemRequestDto> requestDtos = List.of(itemRequestDto);
@@ -104,8 +120,17 @@ public class RequestServiceTests {
     }
 
     @Test
-    public void findByIdTest() {
+    public void findByIdWithResponsesTest() {
         Long userId = 1L, requestId = 1L;
+
+        when(userService.userExistById(any(Long.class))).thenReturn(false);
+        Throwable thrown = catchThrowable(() -> {
+            requestService.findByIdWithResponses(requestId, userId);
+        });
+        assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
+        assertThat(thrown.getMessage()).isNotBlank();
+        assertEquals("Пользователя, от лица которого происходит поиск запросов, не существует", thrown.getMessage());
+
         ItemRequest request = new ItemRequest("Description");
         request.setId(userId);
         ItemRequestDto requestDto = new ItemRequestDto("Description");
@@ -114,6 +139,16 @@ public class RequestServiceTests {
         when(requestRepository.findById(requestId)).thenReturn(Optional.of(request));
         when(requestMapper.toRequestDto(any(ItemRequest.class))).thenReturn(requestDto);
         assertEquals(requestDto, requestService.findByIdWithResponses(requestId, userId));
+    }
+
+    @Test
+    public void findByIdTest() {
+        Long userId = 1L, requestId = 1L;
+        ItemRequest request = new ItemRequest("Description");
+        request.setId(userId);
+
+        when(requestRepository.findById(requestId)).thenReturn(Optional.of(request));
+        assertEquals(request, requestService.findById(requestId));
     }
 
     @Test

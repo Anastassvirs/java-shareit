@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,12 +8,14 @@ import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "comments")
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Comment {
     @Column(nullable = false)
     @Id
@@ -38,5 +41,18 @@ public class Comment {
         this.item = item;
         this.author = author;
         this.created = created;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Comment)) return false;
+        Comment comment = (Comment) o;
+        return Objects.equals(getId(), comment.getId()) && Objects.equals(getText(), comment.getText()) && Objects.equals(getItem(), comment.getItem()) && Objects.equals(getAuthor(), comment.getAuthor()) && Objects.equals(getCreated(), comment.getCreated());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getText(), getItem(), getAuthor(), getCreated());
     }
 }

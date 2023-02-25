@@ -27,8 +27,7 @@ public class RequestServiceImpl implements RequestService {
     private final RequestMapper requestMapper;
 
     public ItemRequest findById(Long id) {
-        return repository.findById(id).orElseThrow(() ->
-                new NotFoundAnythingException("Запроса с данным id не существует"));
+        return repository.findById(id).orElseThrow(() -> new NotFoundAnythingException("Запроса с данным id не существует"));
     }
 
     @Override
@@ -71,6 +70,7 @@ public class RequestServiceImpl implements RequestService {
                 new NotFoundAnythingException("Запроса с данным id не существует")));
     }
 
+    @Override
     public ItemRequest updateItemRequest(ItemRequest request) {
         if (requestAlreadyExist(request.getId())) {
             log.debug("Обновлен запрос: {}", request);
@@ -81,11 +81,12 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
+    @Override
     public void deleteById(Long id) {
         repository.deleteById(id);
     }
 
-    private boolean requestAlreadyExist(Long requestId) {
+    public boolean requestAlreadyExist(Long requestId) {
         for (ItemRequest oldRequest : repository.findAll()) {
             if (Objects.equals(oldRequest.getId(), requestId)) {
                 return true;
