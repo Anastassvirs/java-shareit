@@ -48,6 +48,11 @@ public class Comment {
         if (this == o) return true;
         if (!(o instanceof Comment)) return false;
         Comment comment = (Comment) o;
-        return Objects.equals(getId(), comment.getId()) && Objects.equals(getText(), comment.getText()) && Objects.equals(getItem(), comment.getItem()) && Objects.equals(getAuthor(), comment.getAuthor());
+        return Objects.equals(getId(), comment.getId()) && Objects.equals(getText(), comment.getText()) && Objects.equals(getItem(), comment.getItem()) && Objects.equals(getAuthor(), comment.getAuthor()) && Objects.equals(getCreated(), comment.getCreated());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getText(), getItem(), getAuthor(), getCreated());
     }
 }

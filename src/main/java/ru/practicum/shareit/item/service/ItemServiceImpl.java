@@ -233,7 +233,7 @@ public class ItemServiceImpl implements ItemService {
         if (Boolean.FALSE.equals(isBookedByThatUser)) {
             throw new WrongParametersException("Написать отзыв может только человек, бронировавший вещь!");
         }
-        Comment comment = commentMapper.newtoComment(commentDto, findById(itemId), author);
+        Comment comment = commentMapper.newtoComment(commentDto, findById(itemId), author, LocalDateTime.now());
         return commentMapper.toCommentDto(commentRepository.save(comment));
     }
 
