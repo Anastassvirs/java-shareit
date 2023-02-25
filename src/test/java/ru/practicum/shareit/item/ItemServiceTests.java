@@ -171,13 +171,32 @@ public class ItemServiceTests {
 
     @Test
     public void findDtoByIdTest() {
-        Long itemId = 1L, userId = 1L;
+        Boolean avaliable = true;
+        Long requestId = 1L, itemId = 1L, requestorId = 1L, commentId = 1L, userId = 1L, bookingId = 1L, bookerId = 2L;
+        LocalDateTime start = LocalDateTime.now().minusDays(1), end = LocalDateTime.now().plusDays(1);
+        String description = "description", nameItem = "Name", userName = "Anastasia",
+                descriptionItem = "Some description", commentText = "comment text";
+        LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
+        User user = new User(requestorId, userName, "anastasia.svir@mail.com");
+        ItemRequest itemRequest = new ItemRequest(requestId, description, user, created);
+        Item item = new Item(itemId, nameItem, descriptionItem, avaliable, user, itemRequest);
+        BookingDto bookingDto = new BookingDto(bookingId, start, end, bookerId, itemId);
+        Booking booking = new Booking(bookerId, start, end, item,
+                new User(bookerId, "name", "email@gmail.com"), StatusOfBooking.WAITING);
+        Comment comment = new Comment(commentId, commentText, item, user, created);
+        CommentDto commentDto = new CommentDto(commentId, commentText, userName, created);
         ItemDtoBookingsComments itemDto = new ItemDtoBookingsComments(itemId, "Name", "Some description", true);
-        Item item = new Item(itemId, "Name", "Some description", true);
+        List<Booking> bookings = List.of(booking);
+        List<Comment> comments = List.of(comment);
 
-        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
         when(userService.userExistById(any(Long.class))).thenReturn(true);
+        when(bookingRepository.findAllByItemOwnerIdAndItemIdAndStartAfterOrderByStartDesc(any(Long.class), any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
+        when(bookingRepository.findAllByItemOwnerIdAndItemIdAndEndBeforeOrderByEndDesc(any(Long.class), any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
+        when(commentRepository.findAllByItemId(any(Long.class))).thenReturn(comments);
         when(itemMapper.toItemDtoBookingsComments(item)).thenReturn(itemDto);
+        when(bookingMapper.toBookingDto(booking)).thenReturn(bookingDto);
+        when(commentMapper.toCommentDto(comment)).thenReturn(commentDto);
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
         assertEquals(itemService.findDtoById(itemId, userId), itemDto);
     }
@@ -234,6 +253,32 @@ public class ItemServiceTests {
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
         assertEquals(itemDto, itemService.updateItem(itemId, itemDto, userId));
+    }
+
+    @Test
+    public void updateErrorsTest() {
+        Long itemId = 1L, userId = 1L;
+        User user = new User(userId, "Anastasia", "an.svir@mail.com");
+        ItemDto itemDto = new ItemDto(itemId, "Name", "Some description", true);
+        Item item = new Item(itemId, "Name", "Some description", true, user);
+
+        when(userService.userExistById(any(Long.class))).thenReturn(false);
+        Throwable thrown = catchThrowable(() -> {
+            itemService.updateItem(itemId, itemDto, userId);
+        });
+        assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
+        assertThat(thrown.getMessage()).isNotBlank();
+        assertEquals("Пользователя, от лица которого производится изменение вещи, не существует", thrown.getMessage());
+
+        when(userService.userExistById(any(Long.class))).thenReturn(true);
+        when(itemRepository.findAll()).thenReturn(List.of());
+        thrown = catchThrowable(() -> {
+            itemService.updateItem(itemId, itemDto, userId);
+        });
+        assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
+        assertThat(thrown.getMessage()).isNotBlank();
+        assertEquals("Вещи, которую вы пытаетесь изменить, не существует", thrown.getMessage());
+
     }
 
     @Test
