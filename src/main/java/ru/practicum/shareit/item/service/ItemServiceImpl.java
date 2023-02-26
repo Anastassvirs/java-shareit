@@ -100,8 +100,8 @@ public class ItemServiceImpl implements ItemService {
         if (!userService.userExistById(userId)) {
             throw new NotFoundAnythingException("Пользователя, от лица которого производится поиск вещи, не существует");
         }
-        if (StringUtils.isBlank(text)) {
-            return new ArrayList<>();
+        if (StringUtils.isBlank(text) || text.equals("")) {
+            return List.of();
         }
         Pageable pageable = PageRequest.of(from / size, size);
         List<Item> items = repository.findAllByText(text, pageable);

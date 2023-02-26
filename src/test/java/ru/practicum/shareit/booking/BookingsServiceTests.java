@@ -112,6 +112,28 @@ public class BookingsServiceTests {
     }
 
     @Test
+    public void findAllByUserErrorsTest() {
+        Integer from = 0, size = 1;
+        Long userId = 1L;
+
+        when(userService.userExistById(any(Long.class))).thenReturn(false);
+        Throwable thrown = catchThrowable(() -> {
+            bookingService.findAllByUser(from, size, userId + 1L, State.ALL);
+        });
+        assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
+        assertThat(thrown.getMessage()).isNotBlank();
+        assertEquals("Пользователя, от лица которого создается бронирование, не существует", thrown.getMessage());
+
+        when(userService.userExistById(any(Long.class))).thenReturn(true);
+        thrown = catchThrowable(() -> {
+            bookingService.findAllByUser(from, size, userId, State.NOT_SUPPORTED);
+        });
+        assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
+        assertThat(thrown.getMessage()).isNotBlank();
+        assertEquals("Передан неверный статус", thrown.getMessage());
+    }
+
+    @Test
     public void findAllByOwnerTest() {
         Integer from = 0, size = 1;
         Long bookingId = 1L, userId = 1L, itemId = 1L, requestId = 1L;
@@ -162,6 +184,28 @@ public class BookingsServiceTests {
         when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByEndDesc(any(Long.class),
                 any(StatusOfBooking.class), any(Pageable.class))).thenReturn(page);
         assertEquals(bookingService.findAllByOwner(from, size, userId, State.REJECTED), rejectedBookings);
+    }
+
+    @Test
+    public void findAllByOwnerErrorsTest() {
+        Integer from = 0, size = 1;
+        Long userId = 1L;
+
+        when(userService.userExistById(any(Long.class))).thenReturn(false);
+        Throwable thrown = catchThrowable(() -> {
+            bookingService.findAllByOwner(from, size, userId + 1L, State.ALL);
+        });
+        assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
+        assertThat(thrown.getMessage()).isNotBlank();
+        assertEquals("Пользователя, от лица которого создается бронирование, не существует", thrown.getMessage());
+
+        when(userService.userExistById(any(Long.class))).thenReturn(true);
+        thrown = catchThrowable(() -> {
+            bookingService.findAllByOwner(from, size, userId, State.NOT_SUPPORTED);
+        });
+        assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
+        assertThat(thrown.getMessage()).isNotBlank();
+        assertEquals("Передан неверный статус", thrown.getMessage());
     }
 
     @Test

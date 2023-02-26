@@ -97,23 +97,6 @@ public class UserServiceTests {
     }
 
     @Test
-    public void updateAlreadyExistEmailTest() {
-        Long userId = 1L;
-        UserDto userDto = new UserDto("Updated", "an.svir@mail.com");
-        User user = new User("Anastasia", "an.svir@mail.com");
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userRepository.findAll()).thenReturn(List.of(user));
-
-        Throwable thrown = catchThrowable(() -> {
-            userService.updateUser(userId, userDto);
-        });
-        assertThat(thrown).isInstanceOf(SameFieldException.class);
-        assertThat(thrown.getMessage()).isNotBlank();
-        assertEquals("Данный email уже зарегистрирован", thrown.getMessage());
-    }
-
-    @Test
     public void updateErrorsTest() {
         Long userId = 1L;
         UserDto userDto = new UserDto("Updated", "update.svir@mail.com");

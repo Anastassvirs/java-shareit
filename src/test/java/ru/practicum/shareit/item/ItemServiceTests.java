@@ -113,6 +113,19 @@ public class ItemServiceTests {
     }
 
     @Test
+    public void findAllByUserErrorTest() {
+        Long userId = 1L;
+        Integer from = 0, size = 1;
+        when(userService.userExistById(any(Long.class))).thenReturn(false);
+        Throwable thrown = catchThrowable(() -> {
+            itemService.findAllByUser(from, size, userId);
+        });
+        assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
+        assertThat(thrown.getMessage()).isNotBlank();
+        assertEquals("Пользователя, по которому производится поиск вещи, не существует", thrown.getMessage());
+    }
+
+    @Test
     public void findAllByTextTest() {
         String text = "DeScr";
         Boolean avaliable = true;
@@ -152,10 +165,8 @@ public class ItemServiceTests {
     @Test
     public void findAllByTextErrorsTest() {
         String text = "DeScr";
-        Long itemId = 1L, userId = 1L;
+        Long userId = 1L;
         Integer from = 0, size = 1;
-        ItemDtoBookingsComments itemDto = new ItemDtoBookingsComments(itemId, "Name", "Some description", true);
-        List<ItemDtoBookingsComments> itemDtos = List.of(itemDto);
 
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
@@ -166,7 +177,7 @@ public class ItemServiceTests {
         assertEquals("Пользователя, от лица которого производится поиск вещи, не существует", thrown.getMessage());
 
         when(userService.userExistById(any(Long.class))).thenReturn(true);
-        assertEquals(itemService.findAllByText(from, size, text, userId), List.of());
+        assertEquals(itemService.findAllByText(from, size, "", userId), List.of());
     }
 
     @Test
@@ -199,6 +210,18 @@ public class ItemServiceTests {
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
         assertEquals(itemService.findDtoById(itemId, userId), itemDto);
+    }
+
+    @Test
+    public void findDtoByIdErrorTest() {
+        Long itemId = 1L, userId = 1L;
+        when(userService.userExistById(any(Long.class))).thenReturn(false);
+        Throwable thrown = catchThrowable(() -> {
+            itemService.findDtoById(itemId, userId);
+        });
+        assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
+        assertThat(thrown.getMessage()).isNotBlank();
+        assertEquals("Пользователя, от лица которого производится поиск вещи, не существует", thrown.getMessage());
     }
 
     @Test
@@ -258,10 +281,9 @@ public class ItemServiceTests {
     @Test
     public void updateErrorsTest() {
         Long itemId = 1L, userId = 1L;
-        User user = new User(userId, "Anastasia", "an.svir@mail.com");
         ItemDto itemDto = new ItemDto(itemId, "Name", "Some description", true);
+        User user = new User(userId, "Anastasia", "an.svir@mail.com");
         Item item = new Item(itemId, "Name", "Some description", true, user);
-
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
             itemService.updateItem(itemId, itemDto, userId);
@@ -278,6 +300,15 @@ public class ItemServiceTests {
         assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
         assertThat(thrown.getMessage()).isNotBlank();
         assertEquals("Вещи, которую вы пытаетесь изменить, не существует", thrown.getMessage());
+
+        when(itemRepository.findAll()).thenReturn(List.of(item));
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        thrown = catchThrowable(() -> {
+            itemService.updateItem(itemId, itemDto, userId + 1L);
+        });
+        assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
+        assertThat(thrown.getMessage()).isNotBlank();
+        assertEquals("ID пользователя не соответсвует владельцу вещи", thrown.getMessage());
 
     }
 
