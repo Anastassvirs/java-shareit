@@ -22,22 +22,23 @@ import java.util.List;
 public class BookingController {
 
     private final BookingService bookingService;
+    private final String userIdHeader = "X-Sharer-User-Id";
 
     @PostMapping
     public Booking create(@Valid @RequestBody CreateBookingDto bookingDto,
-                          @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+                          @RequestHeader(value = userIdHeader) Long userId) {
         return bookingService.create(bookingDto, userId);
     }
 
     @PatchMapping("/{bookingId}")
     public Booking approve(@PathVariable Long bookingId,
                            @RequestParam Boolean approved,
-                           @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+                           @RequestHeader(value = userIdHeader) Long userId) {
         return bookingService.changeStatus(bookingId, userId, approved);
     }
 
     @GetMapping("/{bookingId}")
-    public Booking find(@PathVariable Long bookingId, @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+    public Booking find(@PathVariable Long bookingId, @RequestHeader(value = userIdHeader) Long userId) {
         return bookingService.findById(bookingId, userId);
     }
 
@@ -45,7 +46,7 @@ public class BookingController {
     public List<Booking> findAllByUser(@RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                        @RequestParam(defaultValue = "10") @Positive Integer size,
                                        @RequestParam(required = false, defaultValue = "ALL") String state,
-                                       @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+                                       @RequestHeader(value = userIdHeader) Long userId) {
         return bookingService.findAllByUser(from, size, userId, State.validateState(state));
     }
 
@@ -53,7 +54,7 @@ public class BookingController {
     public List<Booking> findAllUserItems(@RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                           @RequestParam(defaultValue = "10") @Positive Integer size,
                                           @RequestParam(required = false, defaultValue = "ALL") String state,
-                                          @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+                                          @RequestHeader(value = userIdHeader) Long userId) {
         return bookingService.findAllByOwner(from, size, userId, State.validateState(state));
     }
 }

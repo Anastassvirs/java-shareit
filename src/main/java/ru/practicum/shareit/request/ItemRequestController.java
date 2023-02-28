@@ -20,28 +20,29 @@ import java.util.List;
 @AllArgsConstructor
 public class ItemRequestController {
     private final RequestService service;
+    private final String userIdHeader = "X-Sharer-User-Id";
 
     @PostMapping
     public ResponseEntity<ItemRequest> create(@Valid @RequestBody ItemRequestDto request,
-                                              @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+                                              @RequestHeader(value = userIdHeader) Long userId) {
         return new ResponseEntity<>(service.create(request, userId), HttpStatus.OK);
     }
 
     @GetMapping
-    public List<ItemRequestDto> findAllByOwnerWithResponses(@RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+    public List<ItemRequestDto> findAllByOwnerWithResponses(@RequestHeader(value = userIdHeader) Long userId) {
         return service.findAllByOwnerWithResponses(userId);
     }
 
     @GetMapping("/all")
     public List<ItemRequestDto> findAll(@RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                         @RequestParam(defaultValue = "10") @Positive Integer size,
-                                        @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+                                        @RequestHeader(value = userIdHeader) Long userId) {
         return service.findAll(from, size, userId);
     }
 
     @GetMapping("/{requestId}")
     public ItemRequestDto findByIdWithResponses(@PathVariable Long requestId,
-                                                @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+                                                @RequestHeader(value = userIdHeader) Long userId) {
         return service.findByIdWithResponses(requestId, userId);
     }
 }
