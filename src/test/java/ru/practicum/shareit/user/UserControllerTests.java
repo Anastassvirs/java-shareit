@@ -172,7 +172,6 @@ public class UserControllerTests {
     void delete() throws Exception {
         Long userId = 1L;
 
-        //Почему-то не получилось импортировать, чтобы было просто delete
         mvc.perform(MockMvcRequestBuilders.delete("/users/{userId}", userId)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)

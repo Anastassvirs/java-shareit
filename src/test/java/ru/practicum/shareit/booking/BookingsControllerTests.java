@@ -41,7 +41,8 @@ public class BookingsControllerTests {
 
     @Test
     void createTest() throws Exception {
-        Long userId = 1L, itemId = 1L;
+        Long userId = 1L;
+        Long itemId = 1L;
         Item item = new Item();
         item.setId(itemId);
         CreateBookingDto bookingDto =
@@ -67,7 +68,9 @@ public class BookingsControllerTests {
 
     @Test
     void approveTest() throws Exception {
-        Long bookingId = 1L, userId = 1L, itemId = 1L;
+        Long bookingId = 1L;
+        Long userId = 1L;
+        Long itemId = 1L;
         Item item = new Item();
         item.setId(itemId);
         Booking booking =
@@ -92,7 +95,8 @@ public class BookingsControllerTests {
 
     @Test
     void findTest() throws Exception {
-        Long bookingId = 1L, userId = 1L;
+        Long bookingId = 1L;
+        Long userId = 1L;
         Item item = new Item();
         Booking booking =
                 new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item);
@@ -115,8 +119,10 @@ public class BookingsControllerTests {
 
     @Test
     void findAllByUser() throws Exception {
-        Integer from = 0, size = 1;
-        Long bookingId = 1L, userId = 1L;
+        Integer from = 0;
+        Integer size = 1;
+        Long bookingId = 1L;
+        Long userId = 1L;
         Item item = new Item();
         Booking booking =
                 new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item);
@@ -143,8 +149,10 @@ public class BookingsControllerTests {
 
     @Test
     void findAllByOwner() throws Exception {
-        Integer from = 0, size = 1;
-        Long bookingId = 1L, userId = 1L;
+        Integer from = 0;
+        Integer size = 1;
+        Long bookingId = 1L;
+        Long userId = 1L;
         Item item = new Item();
         Booking booking =
                 new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item);

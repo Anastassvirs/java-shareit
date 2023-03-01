@@ -42,7 +42,8 @@ public class RequestControllerTests {
     @Test
     void createRequest() throws Exception {
         ItemRequest request = new ItemRequest("Some description");
-        Long requestId = 1L, userId = 1L;
+        Long requestId = 1L;
+        Long userId = 1L;
         request.setId(requestId);
         ItemRequestDto itemRequestDto = new ItemRequestDto(requestId, "Some description", LocalDateTime.now());
 
@@ -64,7 +65,8 @@ public class RequestControllerTests {
     @Test
     void createRequestFutureCreated() throws Exception {
         ItemRequest request = new ItemRequest("Some description");
-        Long requestId = 1L, userId = 1L;
+        Long requestId = 1L;
+        Long userId = 1L;
         request.setId(requestId);
         ItemRequestDto itemRequestDto = new ItemRequestDto(requestId, "Some description", LocalDateTime.now().plusDays(1));
 
@@ -84,7 +86,8 @@ public class RequestControllerTests {
     @Test
     void findAllOne() throws Exception {
         Long userId = 1L;
-        Integer from = 0, size = 1;
+        Integer from = 0;
+        Integer size = 1;
         List<ItemRequestDto> requestDtos = List.of(new ItemRequestDto());
 
         when(requestService.findAll(from, size, userId)).thenReturn(requestDtos);
@@ -131,7 +134,8 @@ public class RequestControllerTests {
     @Test
     void findRequestById() throws Exception {
         ItemRequest request = new ItemRequest("Some description");
-        Long requestId = 1L, userId = 1L;
+        Long requestId = 1L;
+        Long userId = 1L;
         request.setId(requestId);
         ItemRequestDto itemRequestDto = new ItemRequestDto(requestId, "Some description", LocalDateTime.now());
 

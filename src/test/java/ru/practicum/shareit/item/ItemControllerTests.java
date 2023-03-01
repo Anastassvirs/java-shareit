@@ -43,8 +43,10 @@ public class ItemControllerTests {
 
     @Test
     void findAllByUser() throws Exception {
-        Integer from = 0, size = 1;
-        Long itemId = 1L, userId = 1L;
+        Integer from = 0;
+        Integer size = 1;
+        Long itemId = 1L;
+        Long userId = 1L;
         ItemDtoBookingsComments itemDto =
                 new ItemDtoBookingsComments(itemId, "Name", "Some description", true);
         List<ItemDtoBookingsComments> itemDtos = List.of(itemDto);
@@ -69,8 +71,10 @@ public class ItemControllerTests {
 
     @Test
     void findAllByText() throws Exception {
-        Integer from = 0, size = 1;
-        Long itemId = 1L, userId = 1L;
+        Integer from = 0;
+        Integer size = 1;
+        Long itemId = 1L;
+        Long userId = 1L;
         String text = "DeScr";
         List<ItemDtoBookingsComments> itemDtos =
                 List.of(new ItemDtoBookingsComments(itemId, "Name", "Some description", true));
@@ -96,7 +100,8 @@ public class ItemControllerTests {
 
     @Test
     void findById() throws Exception {
-        Long itemId = 1L, userId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
         ItemDtoBookingsComments itemDto =
                 new ItemDtoBookingsComments(itemId, "Name", "Some description", true);
         when(itemService.findDtoById(itemId, userId)).thenReturn(itemDto);
@@ -118,7 +123,8 @@ public class ItemControllerTests {
 
     @Test
     void createItem() throws Exception {
-        Long itemId = 1L, userId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
         ItemDto itemDto = new ItemDto(itemId, "Name", "Some description", true);
 
         when(itemService.createItem(itemDto, userId)).thenReturn(itemDto);
@@ -140,10 +146,10 @@ public class ItemControllerTests {
 
     @Test
     void updateItemValid() throws Exception {
-        Long itemId = 1L, userId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
         ItemDto itemDto =
                 new ItemDto(itemId, "Name", "Some description", true);
-
 
         when(itemService.updateItem(itemId, itemDto, userId)).thenReturn(itemDto);
 
@@ -164,7 +170,8 @@ public class ItemControllerTests {
 
     @Test
     void delete() throws Exception {
-        Long itemId = 1L, userId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
         ItemDto itemDto =
                 new ItemDto(itemId, "Name", "Some description", true);
 
@@ -181,7 +188,8 @@ public class ItemControllerTests {
 
     @Test
     void createComment() throws Exception {
-        Long itemId = 1L, userId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
         CommentDto commentDto = new CommentDto(itemId, "Comment text", "Name", LocalDateTime.now());
 
         when(itemService.createComment(commentDto, itemId, userId)).thenReturn(commentDto);

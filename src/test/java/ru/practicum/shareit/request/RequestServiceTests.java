@@ -97,7 +97,8 @@ public class RequestServiceTests {
     @Test
     void findAll() {
         Long userId = 1L;
-        Integer from = 0, size = 1;
+        Integer from = 0;
+        Integer size = 1;
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
             requestService.findAll(from, size, userId);
@@ -121,7 +122,8 @@ public class RequestServiceTests {
 
     @Test
     public void findByIdWithResponsesTest() {
-        Long userId = 1L, requestId = 1L;
+        Long userId = 1L;
+        Long requestId = 1L;
 
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
@@ -143,7 +145,8 @@ public class RequestServiceTests {
 
     @Test
     public void findByIdTest() {
-        Long userId = 1L, requestId = 1L;
+        Long userId = 1L;
+        Long requestId = 1L;
         ItemRequest request = new ItemRequest("Description");
         request.setId(userId);
 

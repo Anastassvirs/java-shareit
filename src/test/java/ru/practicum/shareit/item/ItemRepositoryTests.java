@@ -22,8 +22,11 @@ public class ItemRepositoryTests {
 
     @Test
     void findAllByTextTest() {
-        Long itemId = 1L, itemId2 = 2L, itemId3 = 3L;
-        Integer from = 0, size = 3;
+        Long itemId = 1L;
+        Long itemId2 = 2L;
+        Long itemId3 = 3L;
+        Integer from = 0;
+        Integer size = 3;
         String text = "eas";
         Pageable pageable = PageRequest.of(from / size, size);
         Item item = new Item(itemId, "Name", "Some description", true);
@@ -32,10 +35,7 @@ public class ItemRepositoryTests {
         itemRepository.save(item);
         itemRepository.save(item2);
         itemRepository.save(item3);
-
         List<Item> items = itemRepository.findAllByText(text, pageable);
-
-        System.out.println(items);
 
         assertEquals(List.of(item2, item3), items);
     }

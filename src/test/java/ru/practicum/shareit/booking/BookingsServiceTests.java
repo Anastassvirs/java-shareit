@@ -60,9 +60,14 @@ public class BookingsServiceTests {
 
     @Test
     public void findAllByUserTest() {
-        Integer from = 0, size = 1;
-        Long bookingId = 1L, userId = 1L, itemId = 1L, requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1), end = LocalDateTime.now().plusDays(1);
+        Integer from = 0;
+        Integer size = 1;
+        Long bookingId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
+        Long requestId = 1L;
+        LocalDateTime start = LocalDateTime.now().minusDays(1);
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
         User user = new User(userId, "Anastasia", "anastasia.svir@mail.com");
         ItemRequest itemRequest = new ItemRequest(requestId, "desc", user, LocalDateTime.now().minusDays(2));
         Item item = new Item(itemId, "itemName", "descdesc", true, user, itemRequest);
@@ -113,7 +118,8 @@ public class BookingsServiceTests {
 
     @Test
     public void findAllByUserErrorsTest() {
-        Integer from = 0, size = 1;
+        Integer from = 0;
+        Integer size = 1;
         Long userId = 1L;
 
         when(userService.userExistById(any(Long.class))).thenReturn(false);
@@ -135,9 +141,14 @@ public class BookingsServiceTests {
 
     @Test
     public void findAllByOwnerTest() {
-        Integer from = 0, size = 1;
-        Long bookingId = 1L, userId = 1L, itemId = 1L, requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1), end = LocalDateTime.now().plusDays(1);
+        Integer from = 0;
+        Integer size = 1;
+        Long bookingId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
+        Long requestId = 1L;
+        LocalDateTime start = LocalDateTime.now().minusDays(1);
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
         User user = new User(userId, "Anastasia", "anastasia.svir@mail.com");
         ItemRequest itemRequest = new ItemRequest(requestId, "desc", user, LocalDateTime.now().minusDays(2));
         Item item = new Item(itemId, "itemName", "descdesc", true, user, itemRequest);
@@ -188,7 +199,8 @@ public class BookingsServiceTests {
 
     @Test
     public void findAllByOwnerErrorsTest() {
-        Integer from = 0, size = 1;
+        Integer from = 0;
+        Integer size = 1;
         Long userId = 1L;
 
         when(userService.userExistById(any(Long.class))).thenReturn(false);
@@ -210,8 +222,12 @@ public class BookingsServiceTests {
 
     @Test
     public void findByIdTest() {
-        Long bookingId = 1L, userId = 1L, itemId = 1L, requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1), end = LocalDateTime.now().plusDays(1);
+        Long bookingId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
+        Long requestId = 1L;
+        LocalDateTime start = LocalDateTime.now().minusDays(1);
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
         User user = new User(userId, "Anastasia", "anastasia.svir@mail.com");
         ItemRequest itemRequest = new ItemRequest(requestId, "desc", user, LocalDateTime.now().minusDays(2));
         Item item = new Item(itemId, "itemName", "descdesc", true, user, itemRequest);
@@ -225,8 +241,12 @@ public class BookingsServiceTests {
 
     @Test
     public void findByIdErrorsTest() {
-        Long bookingId = 1L, userId = 1L, itemId = 1L, requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1), end = LocalDateTime.now().plusDays(1);
+        Long bookingId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
+        Long requestId = 1L;
+        LocalDateTime start = LocalDateTime.now().minusDays(1);
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
         User user = new User(userId, "Anastasia", "anastasia.svir@mail.com");
         ItemRequest itemRequest = new ItemRequest(requestId, "desc", user, LocalDateTime.now().minusDays(2));
         Item item = new Item(itemId, "itemName", "descdesc", true, user, itemRequest);
@@ -253,8 +273,13 @@ public class BookingsServiceTests {
 
     @Test
     public void saveTest() {
-        Long bookingId = 1L, userId = 1L, ownerId = 2L, itemId = 1L, requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1), end = LocalDateTime.now().plusDays(1);
+        Long bookingId = 1L;
+        Long itemId = 1L;
+        Long ownerId = 2L;
+        Long userId = 1L;
+        Long requestId = 1L;
+        LocalDateTime start = LocalDateTime.now().minusDays(1);
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
         User user = new User(ownerId, "hehehaha", "hoho.hyhy@mail.com");
         User owner = new User(ownerId, "Anastasia", "anastasia.svir@mail.com");
         ItemRequest itemRequest = new ItemRequest(requestId, "desc", owner, LocalDateTime.now().minusDays(2));
@@ -274,8 +299,12 @@ public class BookingsServiceTests {
 
     @Test
     public void saveErrorTest() {
-        Long userId = 1L, ownerId = 2L, itemId = 1L, requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1), end = LocalDateTime.now().plusDays(1);
+        Long itemId = 1L;
+        Long ownerId = 2L;
+        Long userId = 1L;
+        Long requestId = 1L;
+        LocalDateTime start = LocalDateTime.now().minusDays(1);
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
         User user = new User(ownerId, "hehehaha", "hoho.hyhy@mail.com");
         User owner = new User(ownerId, "Anastasia", "anastasia.svir@mail.com");
         ItemRequest itemRequest = new ItemRequest(requestId, "desc", owner, LocalDateTime.now().minusDays(2));
@@ -321,8 +350,12 @@ public class BookingsServiceTests {
 
     @Test
     public void saveWrongStartEndTest() {
-        Long userId = 1L, ownerId = 2L, itemId = 1L, requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1), end = LocalDateTime.now().plusDays(1);
+        Long itemId = 1L;
+        Long ownerId = 2L;
+        Long userId = 1L;
+        Long requestId = 1L;
+        LocalDateTime start = LocalDateTime.now().minusDays(1);
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
         User user = new User(ownerId, "hehehaha", "hoho.hyhy@mail.com");
         User owner = new User(ownerId, "Anastasia", "anastasia.svir@mail.com");
         ItemRequest itemRequest = new ItemRequest(requestId, "desc", owner, LocalDateTime.now().minusDays(2));
@@ -344,7 +377,10 @@ public class BookingsServiceTests {
 
     @Test
     public void changeStatusTest() {
-        Long bookingId = 1L, userId = 1L, itemId = 1L, requestId = 1L;
+        Long bookingId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
+        Long requestId = 1L;
         LocalDateTime start = LocalDateTime.now().minusDays(1), end = LocalDateTime.now().plusDays(1);
         User user = new User(userId, "hehehaha", "hoho.hyhy@mail.com");
         ItemRequest itemRequest = new ItemRequest(requestId, "desc", user, LocalDateTime.now().minusDays(2));
@@ -365,8 +401,12 @@ public class BookingsServiceTests {
 
     @Test
     public void changeStatusErrorsTest() {
-        Long bookingId = 1L, userId = 1L, itemId = 1L, requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1), end = LocalDateTime.now().plusDays(1);
+        Long bookingId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
+        Long requestId = 1L;
+        LocalDateTime start = LocalDateTime.now().minusDays(1);
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
         User user = new User(userId, "hehehaha", "hoho.hyhy@mail.com");
         ItemRequest itemRequest = new ItemRequest(requestId, "desc", user, LocalDateTime.now().minusDays(2));
         Item item = new Item(itemId, "itemName", "descdesc", true, user, itemRequest);

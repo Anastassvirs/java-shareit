@@ -79,10 +79,20 @@ public class ItemServiceTests {
     @Test
     public void findAllByUserTest() {
         Boolean avaliable = true;
-        Long requestId = 1L, itemId = 1L, requestorId = 1L, commentId = 1L, userId = 1L, bookingId = 1L, bookerId = 2L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1), end = LocalDateTime.now().plusDays(1);
-        String description = "description", nameItem = "Name", userName = "Anastasia",
-                descriptionItem = "Some description", commentText = "comment text";
+        Long requestId = 1L;
+        Long itemId = 1L;
+        Long requestorId = 1L;
+        Long commentId = 1L;
+        Long userId = 1L;
+        Long bookingId = 1L;
+        Long bookerId = 2L;
+        LocalDateTime start = LocalDateTime.now().minusDays(1);
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
+        String description = "description";
+        String nameItem = "Name";
+        String userName = "Anastasia";
+        String descriptionItem = "Some description";
+        String commentText = "comment text";
         LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
         User user = new User(requestorId, userName, "anastasia.svir@mail.com");
         ItemRequest itemRequest = new ItemRequest(requestId, description, user, created);
@@ -115,7 +125,8 @@ public class ItemServiceTests {
     @Test
     public void findAllByUserErrorTest() {
         Long userId = 1L;
-        Integer from = 0, size = 1;
+        Integer from = 0;
+        Integer size = 1;
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
             itemService.findAllByUser(from, size, userId);
@@ -129,10 +140,22 @@ public class ItemServiceTests {
     public void findAllByTextTest() {
         String text = "DeScr";
         Boolean avaliable = true;
-        Long requestId = 1L, itemId = 1L, requestorId = 1L, commentId = 1L, userId = 1L, bookingId = 1L, bookerId = 2L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1), end = LocalDateTime.now().plusDays(1);
-        String description = "description", nameItem = "Name", userName = "Anastasia",
-                descriptionItem = "Some description", commentText = "comment text";
+        Long requestId = 1L;
+        Long itemId = 1L;
+        Long requestorId = 1L;
+        Long commentId = 1L;
+        Long userId = 1L;
+        Long bookingId = 1L;
+        Long bookerId = 2L;
+        Integer from = 0;
+        Integer size = 1;
+        LocalDateTime start = LocalDateTime.now().minusDays(1);
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
+        String description = "description";
+        String nameItem = "Name";
+        String userName = "Anastasia";
+        String descriptionItem = "Some description";
+        String commentText = "comment text";
         LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
         User user = new User(requestorId, userName, "anastasia.svir@mail.com");
         ItemRequest itemRequest = new ItemRequest(requestId, description, user, created);
@@ -142,7 +165,6 @@ public class ItemServiceTests {
                 new User(bookerId, "name", "email@gmail.com"), StatusOfBooking.WAITING);
         Comment comment = new Comment(commentId, commentText, item, user, created);
         CommentDto commentDto = new CommentDto(commentId, commentText, userName, created);
-        Integer from = 0, size = 1;
         ItemDtoBookingsComments itemDto = new ItemDtoBookingsComments(itemId, "Name", "Some description", true);
         List<ItemDtoBookingsComments> itemDtos = List.of(itemDto);
         List<Item> items = List.of(item);
@@ -166,7 +188,8 @@ public class ItemServiceTests {
     public void findAllByTextErrorsTest() {
         String text = "DeScr";
         Long userId = 1L;
-        Integer from = 0, size = 1;
+        Integer from = 0;
+        Integer size = 1;
 
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
@@ -183,10 +206,20 @@ public class ItemServiceTests {
     @Test
     public void findDtoByIdTest() {
         Boolean avaliable = true;
-        Long requestId = 1L, itemId = 1L, requestorId = 1L, commentId = 1L, userId = 1L, bookingId = 1L, bookerId = 2L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1), end = LocalDateTime.now().plusDays(1);
-        String description = "description", nameItem = "Name", userName = "Anastasia",
-                descriptionItem = "Some description", commentText = "comment text";
+        Long requestId = 1L;
+        Long itemId = 1L;
+        Long requestorId = 1L;
+        Long commentId = 1L;
+        Long userId = 1L;
+        Long bookingId = 1L;
+        Long bookerId = 2L;
+        LocalDateTime start = LocalDateTime.now().minusDays(1);
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
+        String description = "description";
+        String nameItem = "Name";
+        String userName = "Anastasia";
+        String descriptionItem = "Some description";
+        String commentText = "comment text";
         LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
         User user = new User(requestorId, userName, "anastasia.svir@mail.com");
         ItemRequest itemRequest = new ItemRequest(requestId, description, user, created);
@@ -214,7 +247,8 @@ public class ItemServiceTests {
 
     @Test
     public void findDtoByIdErrorTest() {
-        Long itemId = 1L, userId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
             itemService.findDtoById(itemId, userId);
@@ -226,7 +260,7 @@ public class ItemServiceTests {
 
     @Test
     public void findByIdTest() {
-        Long itemId = 1L, userId = 1L;
+        Long itemId = 1L;
         Item item = new Item(itemId, "Name", "Some description", true);
 
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
@@ -236,7 +270,8 @@ public class ItemServiceTests {
 
     @Test
     public void saveTest() {
-        Long itemId = 1L, userId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
         ItemDto itemDto = new ItemDto(itemId, "Name", "Some description", true);
         Item item = new Item(itemId, "Name", "Some description", true);
 
@@ -250,7 +285,8 @@ public class ItemServiceTests {
 
     @Test
     public void saveNoUserTest() {
-        Long itemId = 1L, userId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
         ItemDto itemDto = new ItemDto(itemId, "Name", "Some description", true);
 
         when(userService.userExistById(any(Long.class))).thenReturn(false);
@@ -264,7 +300,8 @@ public class ItemServiceTests {
 
     @Test
     public void updateTest() {
-        Long itemId = 1L, userId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
         User user = new User(userId, "Anastasia", "an.svir@mail.com");
         ItemDto itemDto = new ItemDto(itemId, "Name", "Some description", true);
         Item item = new Item(itemId, "Name", "Some description", true, user);
@@ -280,7 +317,8 @@ public class ItemServiceTests {
 
     @Test
     public void updateErrorsTest() {
-        Long itemId = 1L, userId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
         ItemDto itemDto = new ItemDto(itemId, "Name", "Some description", true);
         User user = new User(userId, "Anastasia", "an.svir@mail.com");
         Item item = new Item(itemId, "Name", "Some description", true, user);
@@ -314,7 +352,8 @@ public class ItemServiceTests {
 
     @Test
     public void deleteTest() {
-        Long itemId = 1L, userId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
         User user = new User(userId, "Anastasia", "an.svir@mail.com");
         Item item = new Item(itemId, "Name", "Some description", true, user);
 
@@ -328,7 +367,8 @@ public class ItemServiceTests {
 
     @Test
     public void deleteErrorsTest() {
-        Long itemId = 1L, userId = 1L;
+        Long itemId = 1L;
+        Long userId = 1L;
         User user = new User(userId, "Anastasia", "an.svir@mail.com");
         Item item = new Item(itemId, "Name", "Some description", true, user);
 
@@ -363,10 +403,19 @@ public class ItemServiceTests {
     @Test
     public void saveCommentTest() {
         Boolean avaliable = true;
-        Long requestId = 1L, itemId = 1L, requestorId = 1L, commentId = 1L, userId = 1L, bookingId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1), end = LocalDateTime.now().plusDays(1);
-        String description = "description", nameItem = "Name", userName = "Anastasia",
-                descriptionItem = "description of item", commentText = "comment text";
+        Long requestId = 1L;
+        Long itemId = 1L;
+        Long requestorId = 1L;
+        Long commentId = 1L;
+        Long userId = 1L;
+        Long bookingId = 1L;
+        LocalDateTime start = LocalDateTime.now().minusDays(1);
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
+        String description = "description";
+        String nameItem = "Name";
+        String userName = "Anastasia";
+        String descriptionItem = "description of item";
+        String commentText = "comment text";
         LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
         User user = new User(requestorId, userName, "anastasia.svir@mail.com");
         ItemRequest itemRequest = new ItemRequest(requestId, description, user, created);
@@ -391,10 +440,19 @@ public class ItemServiceTests {
     @Test
     public void saveCommentErrorsTest() {
         Boolean avaliable = true;
-        Long requestId = 1L, itemId = 1L, requestorId = 1L, commentId = 1L, userId = 1L, bookingId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1), end = LocalDateTime.now().plusDays(1);
-        String description = "description", nameItem = "Name", userName = "Anastasia",
-                descriptionItem = "description of item", commentText = "comment text";
+        Long requestId = 1L;
+        Long itemId = 1L;
+        Long requestorId = 1L;
+        Long commentId = 1L;
+        Long userId = 1L;
+        Long bookingId = 1L;
+        LocalDateTime start = LocalDateTime.now().minusDays(1);
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
+        String description = "description";
+        String nameItem = "Name";
+        String userName = "Anastasia";
+        String descriptionItem = "description of item";
+        String commentText = "comment text";
         LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
         User user = new User(requestorId, userName, "anastasia.svir@mail.com");
         ItemRequest itemRequest = new ItemRequest(requestId, description, user, created);

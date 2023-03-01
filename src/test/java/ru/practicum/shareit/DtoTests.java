@@ -90,8 +90,12 @@ public class DtoTests {
     @Test
     void testItemDto() {
         Boolean avaliable = true;
-        Long requestId = 1L, itemId = 1L, requestorId = 1L;
-        String description = "description", nameItem = "Name", descriptionItem = "description of item";
+        Long requestId = 1L;
+        Long itemId = 1L;
+        Long requestorId = 1L;
+        String description = "description";
+        String nameItem = "Name";
+        String descriptionItem = "description of item";
         LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
         ItemDto itemDto = new ItemDto(itemId, nameItem, descriptionItem, avaliable, requestId);
         ItemDtoBookingsComments itemDtoBookingsComments = new ItemDtoBookingsComments(itemId, nameItem, descriptionItem, avaliable, requestId);
@@ -113,9 +117,15 @@ public class DtoTests {
     @Test
     void testCommentDto() {
         Boolean avaliable = true;
-        Long requestId = 1L, itemId = 1L, requestorId = 1L, commentId = 1L;
-        String description = "description", nameItem = "Name", userName = "Anastasia",
-                descriptionItem = "description of item", commentText = "comment text";
+        Long requestId = 1L;
+        Long itemId = 1L;
+        Long requestorId = 1L;
+        Long commentId = 1L;
+        String description = "description";
+        String nameItem = "Name";
+        String userName = "Anastasia";
+        String descriptionItem = "description of item";
+        String commentText = "comment text";
         LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
         User user = new User(requestorId, userName, "anastasia.svir@mail.com");
         ItemRequest itemRequest = new ItemRequest(requestId, description, user, created);
@@ -133,10 +143,12 @@ public class DtoTests {
 
     @Test
     void testBookingDto() throws Exception {
-        Long bookingId = 1L, bookerId = 1L, itemId = 1L;
+        Long bookingId = 1L;
+        Long bookerId = 1L;
+        Long itemId = 1L;
         Item item = new Item(itemId, "ha", "he", true);
-        LocalDateTime start = LocalDateTime.of(2023, 1, 18, 18, 18),
-                end = LocalDateTime.of(2023, 1, 18, 18, 18).plusDays(1);
+        LocalDateTime start = LocalDateTime.of(2023, 1, 18, 18, 18);
+        LocalDateTime end = LocalDateTime.of(2023, 1, 18, 18, 18).plusDays(1);
         CreateBookingDto bookingCreationDto = new CreateBookingDto(start, end, itemId);
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
         Booking booking = new Booking(start, end, item);
@@ -157,8 +169,12 @@ public class DtoTests {
     @Test
     void testRequestDto() throws Exception {
         Boolean avaliable = true;
-        Long requestId = 1L, itemId = 1L, requestorId = 1L;
-        String description = "description", nameItem = "Name", descriptionItem = "description of item";
+        Long requestId = 1L;
+        Long itemId = 1L;
+        Long requestorId = 1L;
+        String description = "description";
+        String nameItem = "Name";
+        String descriptionItem = "description of item";
         LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
         ItemDto itemDto = new ItemDto(itemId, nameItem, descriptionItem, avaliable, requestId);
         ItemRequestDto itemRequestDto = new ItemRequestDto(requestId, description, created, List.of(itemDto));
