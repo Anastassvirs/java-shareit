@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.dto.RequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.service.RequestService;
 
@@ -28,25 +28,36 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = ItemRequestController.class)
 public class RequestControllerTests {
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @MockBean
-    RequestService requestService;
-
-    @MockBean
-    RequestMapper requestMapper;
+    private RequestService requestService;
 
     @Autowired
     private MockMvc mvc;
 
+    private Integer from;
+    private Integer size;
+    private Long requestId;
+    private Long userId;
+    private ItemRequest request;
+    private ItemRequestDto itemRequestDto;
+    private List<ItemRequestDto> requestDtos;
+
+    @BeforeEach
+    void init() {
+        from = 0;
+        size = 1;
+        requestId = 1L;
+        userId = 1L;
+        request = new ItemRequest("Some description");
+        request.setId(requestId);
+        itemRequestDto = new ItemRequestDto(requestId, "Some description", LocalDateTime.now());
+        requestDtos = List.of(itemRequestDto);
+    }
+
     @Test
     void createRequest() throws Exception {
-        ItemRequest request = new ItemRequest("Some description");
-        Long requestId = 1L;
-        Long userId = 1L;
-        request.setId(requestId);
-        ItemRequestDto itemRequestDto = new ItemRequestDto(requestId, "Some description", LocalDateTime.now());
-
         when(requestService.create(itemRequestDto, userId)).thenReturn(request);
 
         mvc.perform(post("/requests")
@@ -64,12 +75,7 @@ public class RequestControllerTests {
 
     @Test
     void createRequestFutureCreated() throws Exception {
-        ItemRequest request = new ItemRequest("Some description");
-        Long requestId = 1L;
-        Long userId = 1L;
-        request.setId(requestId);
-        ItemRequestDto itemRequestDto = new ItemRequestDto(requestId, "Some description", LocalDateTime.now().plusDays(1));
-
+        itemRequestDto = new ItemRequestDto(requestId, "Some description", LocalDateTime.now().plusDays(1));
         when(requestService.create(itemRequestDto, userId)).thenReturn(request);
 
         mvc.perform(post("/requests")
@@ -85,11 +91,6 @@ public class RequestControllerTests {
 
     @Test
     void findAllOne() throws Exception {
-        Long userId = 1L;
-        Integer from = 0;
-        Integer size = 1;
-        List<ItemRequestDto> requestDtos = List.of(new ItemRequestDto());
-
         when(requestService.findAll(from, size, userId)).thenReturn(requestDtos);
 
         String result = mvc.perform(get("/requests/all")
@@ -111,9 +112,6 @@ public class RequestControllerTests {
 
     @Test
     void findAllByOwnerWithResponses() throws Exception {
-        Long userId = 1L;
-        List<ItemRequestDto> requestDtos = List.of(new ItemRequestDto());
-
         when(requestService.findAllByOwnerWithResponses(userId)).thenReturn(requestDtos);
 
         String result = mvc.perform(get("/requests")
@@ -133,12 +131,6 @@ public class RequestControllerTests {
 
     @Test
     void findRequestById() throws Exception {
-        ItemRequest request = new ItemRequest("Some description");
-        Long requestId = 1L;
-        Long userId = 1L;
-        request.setId(requestId);
-        ItemRequestDto itemRequestDto = new ItemRequestDto(requestId, "Some description", LocalDateTime.now());
-
         when(requestService.findByIdWithResponses(requestId, userId)).thenReturn(itemRequestDto);
 
         mvc.perform(get("/requests/{requestId}", requestId)

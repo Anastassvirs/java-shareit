@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StatusOfBooking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -43,32 +45,91 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ItemServiceTests {
-    @Autowired
-    ObjectMapper mapper;
-
     @InjectMocks
-    ItemServiceImpl itemService;
+    private ItemServiceImpl itemService;
 
     @Mock
-    UserService userService;
+    private UserService userService;
 
     @Mock
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
 
     @Mock
-    BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
 
     @Mock
-    CommentRepository commentRepository;
+    private CommentRepository commentRepository;
 
     @Mock
-    ItemMapper itemMapper;
+    private ItemMapper itemMapper;
 
     @Mock
-    CommentMapper commentMapper;
+    private CommentMapper commentMapper;
 
     @Mock
-    BookingMapper bookingMapper;
+    private BookingMapper bookingMapper;
+
+    private Long userId;
+    private Long itemId;
+    private Long bookingId;
+    private Long bookerId;
+    private Long commentId;
+    private String text;
+    private String userName;
+    private Item item;
+    private ItemDto shortItemDto;
+    private ItemDtoBookingsComments itemDto;
+    private User user;
+    private BookingDto shortBookingDto;
+    private Booking booking;
+    private Comment comment;
+    private CommentDto commentDto;
+    private Integer from;
+    private Integer size;
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private LocalDateTime created;
+    private List<Item> items;
+    private List<ItemDtoBookingsComments> itemDtos;
+    private List<Booking> bookings;
+    private List<Comment> comments;
+    private Pageable pageable;
+
+    @BeforeEach
+    void init() {
+        Boolean avaliable = true;
+        userId = 1L;
+        itemId = 1L;
+        bookingId = 1L;
+        bookerId = 2L;
+        Long requestId = 1L;
+        Long requestorId = 1L;
+        commentId = 1L;
+        from = 0;
+        size = 1;
+        text = "DeScr";
+        String nameItem = "Name";
+        userName = "Anastasia";
+        String descriptionItem = "Some description";
+        start = LocalDateTime.now().minusDays(1);
+        end = LocalDateTime.now().plusDays(1);
+        created = LocalDateTime.of(2023, 1, 18, 18, 18);
+        user = new User(requestorId, userName, "anastasia.svir@mail.com");
+        ItemRequest itemRequest = new ItemRequest(requestId, "description", user, created);
+        item = new Item(itemId, nameItem, descriptionItem, avaliable, user, itemRequest);
+        shortItemDto = new ItemDto(itemId, nameItem, descriptionItem, true);
+        shortBookingDto = new BookingDto(bookingId, start, end, bookerId, itemId);
+        booking = new Booking(bookerId, start, end, item,
+                new User(bookerId, "name", "email@gmail.com"), StatusOfBooking.WAITING);
+        comment = new Comment(commentId, "comment text", item, user, created);
+        commentDto = new CommentDto(commentId, "comment text", userName, created);
+        itemDto = new ItemDtoBookingsComments(itemId, nameItem, descriptionItem, true);
+        itemDtos = List.of(itemDto);
+        items = List.of(item);
+        bookings = List.of(booking);
+        comments = List.of(comment);
+        pageable = PageRequest.of(from / size, size);
+    }
 
     @Test
     public void findAllTest() {
@@ -78,45 +139,13 @@ public class ItemServiceTests {
 
     @Test
     public void findAllByUserTest() {
-        Boolean avaliable = true;
-        Long requestId = 1L;
-        Long itemId = 1L;
-        Long requestorId = 1L;
-        Long commentId = 1L;
-        Long userId = 1L;
-        Long bookingId = 1L;
-        Long bookerId = 2L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        String description = "description";
-        String nameItem = "Name";
-        String userName = "Anastasia";
-        String descriptionItem = "Some description";
-        String commentText = "comment text";
-        LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
-        User user = new User(requestorId, userName, "anastasia.svir@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, description, user, created);
-        Item item = new Item(itemId, nameItem, descriptionItem, avaliable, user, itemRequest);
-        BookingDto bookingDto = new BookingDto(bookingId, start, end, bookerId, itemId);
-        Booking booking = new Booking(bookerId, start, end, item,
-                new User(bookerId, "name", "email@gmail.com"), StatusOfBooking.WAITING);
-        Comment comment = new Comment(commentId, commentText, item, user, created);
-        CommentDto commentDto = new CommentDto(commentId, commentText, userName, created);
-        Integer from = 0, size = 1;
-        ItemDtoBookingsComments itemDto = new ItemDtoBookingsComments(itemId, "Name", "Some description", true);
-        List<ItemDtoBookingsComments> itemDtos = List.of(itemDto);
-        List<Item> items = List.of(item);
-        List<Booking> bookings = List.of(booking);
-        List<Comment> comments = List.of(comment);
-
-        Pageable pageable = PageRequest.of(from / size, size);
         when(itemRepository.findAllByOwnerIdOrderById(userId, pageable)).thenReturn(items);
         when(bookingRepository.findAllByItemIdAndEndBeforeOrderByEndDesc(any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
         when(userService.userExistById(any(Long.class))).thenReturn(true);
         when(bookingRepository.findAllByItemIdAndStartAfterOrderByStartDesc(any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
         when(commentRepository.findAllByItemId(any(Long.class))).thenReturn(comments);
         when(itemMapper.toItemDtoBookingsComments(item)).thenReturn(itemDto);
-        when(bookingMapper.toBookingDto(booking)).thenReturn(bookingDto);
+        when(bookingMapper.toBookingDto(booking)).thenReturn(shortBookingDto);
         when(commentMapper.toCommentDto(comment)).thenReturn(commentDto);
 
         assertEquals(itemService.findAllByUser(from, size, userId), itemDtos);
@@ -124,9 +153,6 @@ public class ItemServiceTests {
 
     @Test
     public void findAllByUserErrorTest() {
-        Long userId = 1L;
-        Integer from = 0;
-        Integer size = 1;
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
             itemService.findAllByUser(from, size, userId);
@@ -138,46 +164,12 @@ public class ItemServiceTests {
 
     @Test
     public void findAllByTextTest() {
-        String text = "DeScr";
-        Boolean avaliable = true;
-        Long requestId = 1L;
-        Long itemId = 1L;
-        Long requestorId = 1L;
-        Long commentId = 1L;
-        Long userId = 1L;
-        Long bookingId = 1L;
-        Long bookerId = 2L;
-        Integer from = 0;
-        Integer size = 1;
-        LocalDateTime start = LocalDateTime.now().minusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        String description = "description";
-        String nameItem = "Name";
-        String userName = "Anastasia";
-        String descriptionItem = "Some description";
-        String commentText = "comment text";
-        LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
-        User user = new User(requestorId, userName, "anastasia.svir@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, description, user, created);
-        Item item = new Item(itemId, nameItem, descriptionItem, avaliable, user, itemRequest);
-        BookingDto bookingDto = new BookingDto(bookingId, start, end, bookerId, itemId);
-        Booking booking = new Booking(bookerId, start, end, item,
-                new User(bookerId, "name", "email@gmail.com"), StatusOfBooking.WAITING);
-        Comment comment = new Comment(commentId, commentText, item, user, created);
-        CommentDto commentDto = new CommentDto(commentId, commentText, userName, created);
-        ItemDtoBookingsComments itemDto = new ItemDtoBookingsComments(itemId, "Name", "Some description", true);
-        List<ItemDtoBookingsComments> itemDtos = List.of(itemDto);
-        List<Item> items = List.of(item);
-        List<Booking> bookings = List.of(booking);
-        List<Comment> comments = List.of(comment);
-
-        Pageable pageable = PageRequest.of(from / size, size);
         when(userService.userExistById(any(Long.class))).thenReturn(true);
         when(bookingRepository.findAllByItemIdAndStartAfterOrderByStartDesc(any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
         when(bookingRepository.findAllByItemIdAndEndBeforeOrderByEndDesc(any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
         when(commentRepository.findAllByItemId(any(Long.class))).thenReturn(comments);
         when(itemMapper.toItemDtoBookingsComments(item)).thenReturn(itemDto);
-        when(bookingMapper.toBookingDto(booking)).thenReturn(bookingDto);
+        when(bookingMapper.toBookingDto(booking)).thenReturn(shortBookingDto);
         when(itemRepository.findAllByText(text, pageable)).thenReturn(items);
         when(commentMapper.toCommentDto(comment)).thenReturn(commentDto);
 
@@ -186,11 +178,6 @@ public class ItemServiceTests {
 
     @Test
     public void findAllByTextErrorsTest() {
-        String text = "DeScr";
-        Long userId = 1L;
-        Integer from = 0;
-        Integer size = 1;
-
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
             itemService.findAllByText(from, size, text, userId);
@@ -205,40 +192,12 @@ public class ItemServiceTests {
 
     @Test
     public void findDtoByIdTest() {
-        Boolean avaliable = true;
-        Long requestId = 1L;
-        Long itemId = 1L;
-        Long requestorId = 1L;
-        Long commentId = 1L;
-        Long userId = 1L;
-        Long bookingId = 1L;
-        Long bookerId = 2L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        String description = "description";
-        String nameItem = "Name";
-        String userName = "Anastasia";
-        String descriptionItem = "Some description";
-        String commentText = "comment text";
-        LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
-        User user = new User(requestorId, userName, "anastasia.svir@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, description, user, created);
-        Item item = new Item(itemId, nameItem, descriptionItem, avaliable, user, itemRequest);
-        BookingDto bookingDto = new BookingDto(bookingId, start, end, bookerId, itemId);
-        Booking booking = new Booking(bookerId, start, end, item,
-                new User(bookerId, "name", "email@gmail.com"), StatusOfBooking.WAITING);
-        Comment comment = new Comment(commentId, commentText, item, user, created);
-        CommentDto commentDto = new CommentDto(commentId, commentText, userName, created);
-        ItemDtoBookingsComments itemDto = new ItemDtoBookingsComments(itemId, "Name", "Some description", true);
-        List<Booking> bookings = List.of(booking);
-        List<Comment> comments = List.of(comment);
-
         when(userService.userExistById(any(Long.class))).thenReturn(true);
         when(bookingRepository.findAllByItemOwnerIdAndItemIdAndStartAfterOrderByStartDesc(any(Long.class), any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
         when(bookingRepository.findAllByItemOwnerIdAndItemIdAndEndBeforeOrderByEndDesc(any(Long.class), any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
         when(commentRepository.findAllByItemId(any(Long.class))).thenReturn(comments);
         when(itemMapper.toItemDtoBookingsComments(item)).thenReturn(itemDto);
-        when(bookingMapper.toBookingDto(booking)).thenReturn(bookingDto);
+        when(bookingMapper.toBookingDto(booking)).thenReturn(shortBookingDto);
         when(commentMapper.toCommentDto(comment)).thenReturn(commentDto);
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
@@ -247,8 +206,6 @@ public class ItemServiceTests {
 
     @Test
     public void findDtoByIdErrorTest() {
-        Long itemId = 1L;
-        Long userId = 1L;
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
             itemService.findDtoById(itemId, userId);
@@ -260,9 +217,6 @@ public class ItemServiceTests {
 
     @Test
     public void findByIdTest() {
-        Long itemId = 1L;
-        Item item = new Item(itemId, "Name", "Some description", true);
-
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
         assertEquals(itemService.findById(itemId), item);
@@ -270,28 +224,19 @@ public class ItemServiceTests {
 
     @Test
     public void saveTest() {
-        Long itemId = 1L;
-        Long userId = 1L;
-        ItemDto itemDto = new ItemDto(itemId, "Name", "Some description", true);
-        Item item = new Item(itemId, "Name", "Some description", true);
-
         when(itemRepository.save(any(Item.class))).thenReturn(item);
         when(userService.userExistById(any(Long.class))).thenReturn(true);
-        when(itemMapper.toItemDto(any(Item.class))).thenReturn(itemDto);
+        when(itemMapper.toItemDto(any(Item.class))).thenReturn(shortItemDto);
         when(itemMapper.toItem(any(ItemDto.class))).thenReturn(item);
 
-        assertEquals(itemDto, itemService.createItem(itemDto, userId));
+        assertEquals(shortItemDto, itemService.createItem(shortItemDto, userId));
     }
 
     @Test
     public void saveNoUserTest() {
-        Long itemId = 1L;
-        Long userId = 1L;
-        ItemDto itemDto = new ItemDto(itemId, "Name", "Some description", true);
-
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
-            itemService.createItem(itemDto, userId);
+            itemService.createItem(shortItemDto, userId);
         });
         assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
         assertThat(thrown.getMessage()).isNotBlank();
@@ -300,31 +245,20 @@ public class ItemServiceTests {
 
     @Test
     public void updateTest() {
-        Long itemId = 1L;
-        Long userId = 1L;
-        User user = new User(userId, "Anastasia", "an.svir@mail.com");
-        ItemDto itemDto = new ItemDto(itemId, "Name", "Some description", true);
-        Item item = new Item(itemId, "Name", "Some description", true, user);
-
         when(itemRepository.save(any(Item.class))).thenReturn(item);
         when(userService.userExistById(any(Long.class))).thenReturn(true);
-        when(itemMapper.toItemDto(any(Item.class))).thenReturn(itemDto);
+        when(itemMapper.toItemDto(any(Item.class))).thenReturn(shortItemDto);
         when(itemRepository.findAll()).thenReturn(List.of(item));
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
-        assertEquals(itemDto, itemService.updateItem(itemId, itemDto, userId));
+        assertEquals(shortItemDto, itemService.updateItem(itemId, shortItemDto, userId));
     }
 
     @Test
     public void updateErrorsTest() {
-        Long itemId = 1L;
-        Long userId = 1L;
-        ItemDto itemDto = new ItemDto(itemId, "Name", "Some description", true);
-        User user = new User(userId, "Anastasia", "an.svir@mail.com");
-        Item item = new Item(itemId, "Name", "Some description", true, user);
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
-            itemService.updateItem(itemId, itemDto, userId);
+            itemService.updateItem(itemId, shortItemDto, userId);
         });
         assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
         assertThat(thrown.getMessage()).isNotBlank();
@@ -333,7 +267,7 @@ public class ItemServiceTests {
         when(userService.userExistById(any(Long.class))).thenReturn(true);
         when(itemRepository.findAll()).thenReturn(List.of());
         thrown = catchThrowable(() -> {
-            itemService.updateItem(itemId, itemDto, userId);
+            itemService.updateItem(itemId, shortItemDto, userId);
         });
         assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
         assertThat(thrown.getMessage()).isNotBlank();
@@ -342,7 +276,7 @@ public class ItemServiceTests {
         when(itemRepository.findAll()).thenReturn(List.of(item));
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
         thrown = catchThrowable(() -> {
-            itemService.updateItem(itemId, itemDto, userId + 1L);
+            itemService.updateItem(itemId, shortItemDto, userId + 1L);
         });
         assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
         assertThat(thrown.getMessage()).isNotBlank();
@@ -352,11 +286,6 @@ public class ItemServiceTests {
 
     @Test
     public void deleteTest() {
-        Long itemId = 1L;
-        Long userId = 1L;
-        User user = new User(userId, "Anastasia", "an.svir@mail.com");
-        Item item = new Item(itemId, "Name", "Some description", true, user);
-
         when(userService.userExistById(any(Long.class))).thenReturn(true);
         when(itemRepository.findAll()).thenReturn(List.of(item));
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
@@ -367,11 +296,6 @@ public class ItemServiceTests {
 
     @Test
     public void deleteErrorsTest() {
-        Long itemId = 1L;
-        Long userId = 1L;
-        User user = new User(userId, "Anastasia", "an.svir@mail.com");
-        Item item = new Item(itemId, "Name", "Some description", true, user);
-
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
             itemService.deleteItem(itemId, userId);
@@ -402,31 +326,9 @@ public class ItemServiceTests {
 
     @Test
     public void saveCommentTest() {
-        Boolean avaliable = true;
-        Long requestId = 1L;
-        Long itemId = 1L;
-        Long requestorId = 1L;
-        Long commentId = 1L;
-        Long userId = 1L;
-        Long bookingId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        String description = "description";
-        String nameItem = "Name";
-        String userName = "Anastasia";
-        String descriptionItem = "description of item";
-        String commentText = "comment text";
-        LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
-        User user = new User(requestorId, userName, "anastasia.svir@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, description, user, created);
-        Item item = new Item(itemId, nameItem, descriptionItem, avaliable, user, itemRequest);
-        Comment comment = new Comment(commentId, commentText, item, user, created);
-        CommentDto commentDto = new CommentDto(commentId, commentText, userName, created);
-        Booking booking = new Booking(bookingId, start, end, item, user, StatusOfBooking.WAITING);
-
         when(userService.userExistById(any(Long.class))).thenReturn(true);
         when(itemRepository.findAll()).thenReturn(List.of(item));
-        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(itemRepository.findById(any(Long.class))).thenReturn(Optional.of(item));
         when(userService.findById(any(Long.class))).thenReturn(user);
         when(bookingRepository.findAllByItemIdAndEndBeforeOrderByEndDesc(any(Long.class),
                 any(LocalDateTime.class))).thenReturn(List.of(booking));
@@ -434,31 +336,11 @@ public class ItemServiceTests {
                 any(Item.class), any(User.class), any(LocalDateTime.class))).thenReturn(comment);
         when(commentMapper.toCommentDto(any(Comment.class))).thenReturn(commentDto);
         when(commentRepository.save(comment)).thenReturn(comment);
-        assertEquals(commentDto, itemService.createComment(commentDto, itemId, userId));
+        assertEquals(commentDto, itemService.createComment(commentDto, itemId, bookerId));
     }
 
     @Test
     public void saveCommentErrorsTest() {
-        Boolean avaliable = true;
-        Long requestId = 1L;
-        Long itemId = 1L;
-        Long requestorId = 1L;
-        Long commentId = 1L;
-        Long userId = 1L;
-        Long bookingId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        String description = "description";
-        String nameItem = "Name";
-        String userName = "Anastasia";
-        String descriptionItem = "description of item";
-        String commentText = "comment text";
-        LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
-        User user = new User(requestorId, userName, "anastasia.svir@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, description, user, created);
-        Item item = new Item(itemId, nameItem, descriptionItem, avaliable, user, itemRequest);
-        CommentDto commentDto = new CommentDto(commentId, commentText, userName, created);
-
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
             itemService.createComment(commentDto, itemId, userId);

@@ -1,12 +1,11 @@
 package ru.practicum.shareit.request;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,27 +28,46 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class RequestServiceTests {
-    @Autowired
-    ObjectMapper mapper;
-
     @InjectMocks
-    RequestServiceImpl requestService;
+    private RequestServiceImpl requestService;
 
     @Mock
-    RequestRepository requestRepository;
+    private RequestRepository requestRepository;
 
     @Mock
-    UserService userService;
+    private UserService userService;
 
     @Mock
-    RequestMapper requestMapper;
+    private RequestMapper requestMapper;
+
+    private Integer from;
+    private Integer size;
+    private Long userId;
+    private Long requestId = 1L;
+    private ItemRequest request;
+    private ItemRequestDto requestDto;
+    private List<ItemRequestDto> requestDtos;
+    private List<ItemRequest> requests;
+    private Pageable pageable;
+    private Page<ItemRequest> page;
+
+    @BeforeEach
+    void init() {
+        from = 0;
+        size = 1;
+        userId = 1L;
+        requestId = 1L;
+        request = new ItemRequest("Description");
+        request.setId(userId);
+        requestDto = new ItemRequestDto("Description");
+        requestDtos = List.of(requestDto);
+        requests = List.of(new ItemRequest("desc"), new ItemRequest("description"));
+        pageable = PageRequest.of(from / size, size);
+        page = Page.empty();
+    }
 
     @Test
     public void saveTest() {
-        Long userId = 1L;
-        ItemRequest request = new ItemRequest("Description");
-        request.setId(userId);
-        ItemRequestDto requestDto = new ItemRequestDto("Description");
         when(requestRepository.save(any(ItemRequest.class))).thenReturn(request);
         when(userService.userExistById(any(Long.class))).thenReturn(true);
         when(requestMapper.toItemRequest(any(ItemRequestDto.class))).thenReturn(request);
@@ -59,8 +77,6 @@ public class RequestServiceTests {
 
     @Test
     public void saveNoUserTest() {
-        Long userId = 1L;
-        ItemRequestDto requestDto = new ItemRequestDto("Description");
         when(userService.userExistById(any(Long.class))).thenReturn(false);
 
         Throwable thrown = catchThrowable(() -> {
@@ -73,7 +89,6 @@ public class RequestServiceTests {
 
     @Test
     void findAllByOwnerTest() {
-        Long userId = 1L;
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
             requestService.findAllByOwnerWithResponses(userId);
@@ -81,11 +96,6 @@ public class RequestServiceTests {
         assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
         assertThat(thrown.getMessage()).isNotBlank();
         assertEquals("Пользователя, от лица которого происходит поиск запросов, не существует", thrown.getMessage());
-
-        List<ItemRequestDto> requestDtos =
-                List.of(new ItemRequestDto("desc"), new ItemRequestDto("description"));
-        List<ItemRequest> requests =
-                List.of(new ItemRequest("desc"), new ItemRequest("description"));
 
         when(requestRepository.findAllByRequestorId(userId)).thenReturn(requests);
         when(userService.userExistById(any(Long.class))).thenReturn(true);
@@ -96,9 +106,6 @@ public class RequestServiceTests {
 
     @Test
     void findAll() {
-        Long userId = 1L;
-        Integer from = 0;
-        Integer size = 1;
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
             requestService.findAll(from, size, userId);
@@ -107,12 +114,6 @@ public class RequestServiceTests {
         assertThat(thrown.getMessage()).isNotBlank();
         assertEquals("Пользователя, от лица которого происходит поиск запросов, не существует", thrown.getMessage());
 
-        ItemRequestDto itemRequestDto = new ItemRequestDto();
-        itemRequestDto.setId(1L);
-        List<ItemRequestDto> requestDtos = List.of(itemRequestDto);
-
-        Pageable pageable = PageRequest.of(from / size, size);
-        Page<ItemRequest> page = Page.empty();
         when(requestRepository.findAllByRequestorIdNotOrderByCreatedDesc(userId, pageable)).thenReturn(page);
         when(userService.userExistById(any(Long.class))).thenReturn(true);
         when(requestMapper.toListRequestDto(page.getContent())).thenReturn(requestDtos);
@@ -122,9 +123,6 @@ public class RequestServiceTests {
 
     @Test
     public void findByIdWithResponsesTest() {
-        Long userId = 1L;
-        Long requestId = 1L;
-
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
             requestService.findByIdWithResponses(requestId, userId);
@@ -132,10 +130,6 @@ public class RequestServiceTests {
         assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
         assertThat(thrown.getMessage()).isNotBlank();
         assertEquals("Пользователя, от лица которого происходит поиск запросов, не существует", thrown.getMessage());
-
-        ItemRequest request = new ItemRequest("Description");
-        request.setId(userId);
-        ItemRequestDto requestDto = new ItemRequestDto("Description");
 
         when(userService.userExistById(any(Long.class))).thenReturn(true);
         when(requestRepository.findById(requestId)).thenReturn(Optional.of(request));
@@ -145,20 +139,12 @@ public class RequestServiceTests {
 
     @Test
     public void findByIdTest() {
-        Long userId = 1L;
-        Long requestId = 1L;
-        ItemRequest request = new ItemRequest("Description");
-        request.setId(userId);
-
         when(requestRepository.findById(requestId)).thenReturn(Optional.of(request));
         assertEquals(request, requestService.findById(requestId));
     }
 
     @Test
     public void updateTest() {
-        Long userId = 1L;
-        ItemRequest request = new ItemRequest("Description");
-        request.setId(userId);
         when(requestRepository.save(any(ItemRequest.class))).thenReturn(request);
         when(requestRepository.findAll()).thenReturn(List.of(request));
 
@@ -167,9 +153,6 @@ public class RequestServiceTests {
 
     @Test
     public void updateNotExistTest() {
-        Long userId = 1L;
-        ItemRequest request = new ItemRequest("Description");
-        request.setId(userId);
         when(requestRepository.findAll()).thenReturn(List.of());
 
         Throwable thrown = catchThrowable(() -> {
@@ -182,9 +165,7 @@ public class RequestServiceTests {
 
     @Test
     public void deleteTest() {
-        Long userId = 1L;
         requestService.deleteById(userId);
-
         verify(requestRepository).deleteById(userId);
     }
 }

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +28,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTests {
 
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @MockBean
-    UserService userService;
+    private UserService userService;
 
     @Autowired
     private MockMvc mvc;
 
+    private Long userId;
+    private User user;
+    private UserDto userDto;
+    private List<User> users;
+
+    @BeforeEach
+    void init() {
+        userId = 1L;
+        user = new User("AnastasiaUpdate", "update.svir@mail.com");
+        user.setId(userId);
+        userDto = new UserDto("Anastasia", "anastasia.svir@mail.com");
+        users = List.of(user);
+    }
+
     @Test
     void findAllUser() throws Exception {
-        List<User> users = List.of(new User());
-
         when(userService.findAll()).thenReturn(users);
 
         String result = mvc.perform(get("/users")
@@ -57,12 +70,6 @@ public class UserControllerTests {
 
     @Test
     void findUser() throws Exception {
-        User user = new User(
-                "AnastasiaUpdate",
-                "update.svir@mail.com");
-        Long userId = 1L;
-        user.setId(userId);
-
         when(userService.findById(userId)).thenReturn(user);
 
         mvc.perform(get("/users/{userId}", userId)
@@ -80,15 +87,6 @@ public class UserControllerTests {
 
     @Test
     void saveNewUserValid() throws Exception {
-        UserDto userDto = new UserDto(
-                "Anastasia",
-                "anastasia.svir@mail.com");
-        User user = new User(
-                "Anastasia",
-                "anastasia.svir@mail.com");
-        Long userId = 1L;
-        user.setId(userId);
-
         when(userService.createUser(userDto)).thenReturn(user);
 
         mvc.perform(post("/users")
@@ -106,9 +104,7 @@ public class UserControllerTests {
 
     @Test
     void saveNewUserNotValid() throws Exception {
-        UserDto userDto = new UserDto(
-                "name",
-                "mail.com");
+        userDto = new UserDto("name", "mail.com");
         mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -121,15 +117,6 @@ public class UserControllerTests {
 
     @Test
     void updateUserValid() throws Exception {
-        UserDto userDto = new UserDto(
-                "AnastasiaUpdate",
-                "update.svir@mail.com");
-        User user = new User(
-                "AnastasiaUpdate",
-                "update.svir@mail.com");
-        Long userId = 1L;
-        user.setId(userId);
-
         when(userService.updateUser(userId, userDto)).thenReturn(user);
 
         mvc.perform(patch("/users/{userId}", userId)
@@ -147,15 +134,7 @@ public class UserControllerTests {
 
     @Test
     void updateUserNotValid() throws Exception {
-        UserDto userDto = new UserDto(
-                "AnastasiaUpdate",
-                "update.svir.com");
-        User user = new User(
-                "AnastasiaUpdate",
-                "update.svir.com");
-        Long userId = 1L;
-        user.setId(userId);
-
+        userDto = new UserDto("name", "mail.com");
         when(userService.updateUser(userId, userDto)).thenReturn(user);
 
         mvc.perform(patch("/users/{userId}", userId)
@@ -170,8 +149,6 @@ public class UserControllerTests {
 
     @Test
     void delete() throws Exception {
-        Long userId = 1L;
-
         mvc.perform(MockMvcRequestBuilders.delete("/users/{userId}", userId)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)

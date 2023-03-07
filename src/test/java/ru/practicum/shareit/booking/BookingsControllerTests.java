@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
@@ -28,27 +28,38 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = BookingController.class)
 public class BookingsControllerTests {
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @MockBean
-    BookingService bookingService;
-
-    @MockBean
-    BookingMapper bookingMapper;
+    private BookingService bookingService;
 
     @Autowired
-    MockMvc mvc;
+    private MockMvc mvc;
+
+    private Long userId;
+    private Long itemId;
+    private Long bookingId;
+    private Item item;
+    private CreateBookingDto bookingDto;
+    private Booking booking;
+    private Integer from;
+    private Integer size;
+
+    @BeforeEach
+    void init() {
+        userId = 1L;
+        itemId = 1L;
+        bookingId = 1L;
+        from = 0;
+        size = 1;
+        item = new Item();
+        item.setId(itemId);
+        bookingDto = new CreateBookingDto(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), itemId);
+        booking = new Booking(itemId, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item);
+    }
 
     @Test
     void createTest() throws Exception {
-        Long userId = 1L;
-        Long itemId = 1L;
-        Item item = new Item();
-        item.setId(itemId);
-        CreateBookingDto bookingDto =
-                new CreateBookingDto(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), itemId);
-        Booking booking =
-                new Booking(itemId, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item);
         when(bookingService.create(bookingDto, userId)).thenReturn(booking);
 
         String result = mvc.perform(post("/bookings")
@@ -68,13 +79,6 @@ public class BookingsControllerTests {
 
     @Test
     void approveTest() throws Exception {
-        Long bookingId = 1L;
-        Long userId = 1L;
-        Long itemId = 1L;
-        Item item = new Item();
-        item.setId(itemId);
-        Booking booking =
-                new Booking(itemId, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item);
         when(bookingService.changeStatus(bookingId, userId, Boolean.TRUE)).thenReturn(booking);
 
         String result = mvc.perform(patch("/bookings/{bookingId}", bookingId)
@@ -95,11 +99,6 @@ public class BookingsControllerTests {
 
     @Test
     void findTest() throws Exception {
-        Long bookingId = 1L;
-        Long userId = 1L;
-        Item item = new Item();
-        Booking booking =
-                new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item);
         when(bookingService.findById(bookingId, userId)).thenReturn(booking);
 
         String result = mvc.perform(get("/bookings/{bookingId}", bookingId)
@@ -119,13 +118,6 @@ public class BookingsControllerTests {
 
     @Test
     void findAllByUser() throws Exception {
-        Integer from = 0;
-        Integer size = 1;
-        Long bookingId = 1L;
-        Long userId = 1L;
-        Item item = new Item();
-        Booking booking =
-                new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item);
         List<Booking> bookings = List.of(booking);
         when(bookingService.findAllByUser(from, size, userId, State.ALL)).thenReturn(bookings);
 
@@ -149,13 +141,6 @@ public class BookingsControllerTests {
 
     @Test
     void findAllByOwner() throws Exception {
-        Integer from = 0;
-        Integer size = 1;
-        Long bookingId = 1L;
-        Long userId = 1L;
-        Item item = new Item();
-        Booking booking =
-                new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item);
         List<Booking> bookings = List.of(booking);
         when(bookingService.findAllByOwner(from, size, userId, State.ALL)).thenReturn(bookings);
 

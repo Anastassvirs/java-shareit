@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -44,34 +45,57 @@ public class BookingsServiceTests {
     ObjectMapper mapper;
 
     @InjectMocks
-    BookingServiceImpl bookingService;
+    private BookingServiceImpl bookingService;
 
     @Mock
-    UserService userService;
+    private UserService userService;
 
     @Mock
-    ItemService itemService;
+    private ItemService itemService;
 
     @Mock
-    BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
 
     @Mock
-    BookingMapper bookingMapper;
+    private BookingMapper bookingMapper;
+
+    private Long userId;
+    private Long ownerId;
+    private Long itemId;
+    private Long bookingId;
+    private Long requestId;
+    private Item item;
+    private User user;
+    private User owner;
+    private ItemRequest itemRequest;
+    private CreateBookingDto bookingDto;
+    private Booking booking;
+    private Integer from;
+    private Integer size;
+    private LocalDateTime start;
+    private LocalDateTime end;
+
+    @BeforeEach
+    void init() {
+        userId = 1L;
+        ownerId = 2L;
+        itemId = 1L;
+        bookingId = 1L;
+        requestId = 1L;
+        from = 0;
+        size = 1;
+        start = LocalDateTime.now().minusDays(1);
+        end = LocalDateTime.now().plusDays(1);
+        user = new User(userId, "Anastasia", "anastasia.svir@mail.com");
+        owner = new User(ownerId, "Anastasia", "anastasia.svir@mail.com");
+        itemRequest = new ItemRequest(requestId, "desc", user, start.minusDays(1));
+        item = new Item(itemId, "itemName", "descdesc", true, user, itemRequest);
+        bookingDto = new CreateBookingDto(end, end.plusDays(1), itemId);
+        booking = new Booking(bookingId, start, end, item, user, StatusOfBooking.WAITING);
+    }
 
     @Test
     public void findAllByUserTest() {
-        Integer from = 0;
-        Integer size = 1;
-        Long bookingId = 1L;
-        Long itemId = 1L;
-        Long userId = 1L;
-        Long requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        User user = new User(userId, "Anastasia", "anastasia.svir@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, "desc", user, LocalDateTime.now().minusDays(2));
-        Item item = new Item(itemId, "itemName", "descdesc", true, user, itemRequest);
-        Booking booking = new Booking(bookingId, start, end, item, user, StatusOfBooking.WAITING);
         Booking booking2 = new Booking(bookingId, start, end, item, user, StatusOfBooking.REJECTED);
         Booking booking3 = new Booking(bookingId, start.minusDays(5), end.minusDays(3), item, user, StatusOfBooking.APPROVED);
         Booking booking4 = new Booking(bookingId, start.plusDays(3), end.plusDays(5), item, user, StatusOfBooking.WAITING);
@@ -118,10 +142,6 @@ public class BookingsServiceTests {
 
     @Test
     public void findAllByUserErrorsTest() {
-        Integer from = 0;
-        Integer size = 1;
-        Long userId = 1L;
-
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
             bookingService.findAllByUser(from, size, userId + 1L, State.ALL);
@@ -141,18 +161,6 @@ public class BookingsServiceTests {
 
     @Test
     public void findAllByOwnerTest() {
-        Integer from = 0;
-        Integer size = 1;
-        Long bookingId = 1L;
-        Long itemId = 1L;
-        Long userId = 1L;
-        Long requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        User user = new User(userId, "Anastasia", "anastasia.svir@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, "desc", user, LocalDateTime.now().minusDays(2));
-        Item item = new Item(itemId, "itemName", "descdesc", true, user, itemRequest);
-        Booking booking = new Booking(bookingId, start, end, item, user, StatusOfBooking.WAITING);
         Booking booking2 = new Booking(bookingId, start, end, item, user, StatusOfBooking.REJECTED);
         Booking booking3 = new Booking(bookingId, start.minusDays(5), end.minusDays(3), item, user, StatusOfBooking.APPROVED);
         Booking booking4 = new Booking(bookingId, start.plusDays(3), end.plusDays(5), item, user, StatusOfBooking.WAITING);
@@ -199,10 +207,6 @@ public class BookingsServiceTests {
 
     @Test
     public void findAllByOwnerErrorsTest() {
-        Integer from = 0;
-        Integer size = 1;
-        Long userId = 1L;
-
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
             bookingService.findAllByOwner(from, size, userId + 1L, State.ALL);
@@ -222,17 +226,6 @@ public class BookingsServiceTests {
 
     @Test
     public void findByIdTest() {
-        Long bookingId = 1L;
-        Long itemId = 1L;
-        Long userId = 1L;
-        Long requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        User user = new User(userId, "Anastasia", "anastasia.svir@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, "desc", user, LocalDateTime.now().minusDays(2));
-        Item item = new Item(itemId, "itemName", "descdesc", true, user, itemRequest);
-        Booking booking = new Booking(bookingId, start, end, item, user, StatusOfBooking.WAITING);
-
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         when(userService.userExistById(any(Long.class))).thenReturn(true);
 
@@ -241,17 +234,6 @@ public class BookingsServiceTests {
 
     @Test
     public void findByIdErrorsTest() {
-        Long bookingId = 1L;
-        Long itemId = 1L;
-        Long userId = 1L;
-        Long requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        User user = new User(userId, "Anastasia", "anastasia.svir@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, "desc", user, LocalDateTime.now().minusDays(2));
-        Item item = new Item(itemId, "itemName", "descdesc", true, user, itemRequest);
-        Booking booking = new Booking(bookingId, start, end, item, user, StatusOfBooking.WAITING);
-
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
             bookingService.findById(bookingId, userId + 1L);
@@ -273,47 +255,21 @@ public class BookingsServiceTests {
 
     @Test
     public void saveTest() {
-        Long bookingId = 1L;
-        Long itemId = 1L;
-        Long ownerId = 2L;
-        Long userId = 1L;
-        Long requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        User user = new User(ownerId, "hehehaha", "hoho.hyhy@mail.com");
-        User owner = new User(ownerId, "Anastasia", "anastasia.svir@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, "desc", owner, LocalDateTime.now().minusDays(2));
-        Item item = new Item(itemId, "itemName", "descdesc", true, user, itemRequest);
-        Booking booking = new Booking(bookingId, start, end, item, user, StatusOfBooking.WAITING);
-        CreateBookingDto bookingDto = new CreateBookingDto(start, end, itemId);
-
         when(bookingRepository.save(booking)).thenReturn(booking);
         when(userService.userExistById(any(Long.class))).thenReturn(true);
         when(itemService.itemExistById(any(Long.class))).thenReturn(true);
         when(itemService.findById(itemId)).thenReturn(item);
-        when(userService.findById(ownerId)).thenReturn(user);
+        when(userService.findById(userId)).thenReturn(user);
         when(bookingMapper.toBookingCreation(bookingDto)).thenReturn(booking);
 
-        assertEquals(bookingService.create(bookingDto, userId), booking);
+        assertEquals(bookingService.create(bookingDto, ownerId), booking);
     }
 
     @Test
     public void saveErrorTest() {
-        Long itemId = 1L;
-        Long ownerId = 2L;
-        Long userId = 1L;
-        Long requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        User user = new User(ownerId, "hehehaha", "hoho.hyhy@mail.com");
-        User owner = new User(ownerId, "Anastasia", "anastasia.svir@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, "desc", owner, LocalDateTime.now().minusDays(2));
-        Item item = new Item(itemId, "itemName", "descdesc", true, user, itemRequest);
-        CreateBookingDto bookingDto = new CreateBookingDto(start, end, itemId);
-
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
-            bookingService.create(bookingDto, userId);
+            bookingService.create(bookingDto, ownerId);
         });
         assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
         assertThat(thrown.getMessage()).isNotBlank();
@@ -322,7 +278,7 @@ public class BookingsServiceTests {
         when(userService.userExistById(any(Long.class))).thenReturn(true);
         when(itemService.itemExistById(any(Long.class))).thenReturn(false);
         thrown = catchThrowable(() -> {
-            bookingService.create(bookingDto, userId);
+            bookingService.create(bookingDto, ownerId);
         });
         assertThat(thrown).isInstanceOf(NotFoundAnythingException.class);
         assertThat(thrown.getMessage()).isNotBlank();
@@ -330,9 +286,9 @@ public class BookingsServiceTests {
 
         when(itemService.itemExistById(any(Long.class))).thenReturn(true);
         when(itemService.findById(itemId)).thenReturn(item);
-        when(userService.findById(ownerId)).thenReturn(user);
+        when(userService.findById(userId)).thenReturn(user);
         thrown = catchThrowable(() -> {
-            bookingService.create(bookingDto, ownerId);
+            bookingService.create(bookingDto, userId);
         });
         assertThat(thrown).isInstanceOf(AuntificationException.class);
         assertThat(thrown.getMessage()).isNotBlank();
@@ -341,7 +297,7 @@ public class BookingsServiceTests {
         item = new Item(itemId, "itemName", "descdesc", false, user, itemRequest);
         when(itemService.findById(itemId)).thenReturn(item);
         thrown = catchThrowable(() -> {
-            bookingService.create(bookingDto, userId);
+            bookingService.create(bookingDto, ownerId);
         });
         assertThat(thrown).isInstanceOf(AlreadyBookedException.class);
         assertThat(thrown.getMessage()).isNotBlank();
@@ -350,25 +306,14 @@ public class BookingsServiceTests {
 
     @Test
     public void saveWrongStartEndTest() {
-        Long itemId = 1L;
-        Long ownerId = 2L;
-        Long userId = 1L;
-        Long requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        User user = new User(ownerId, "hehehaha", "hoho.hyhy@mail.com");
-        User owner = new User(ownerId, "Anastasia", "anastasia.svir@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, "desc", owner, LocalDateTime.now().minusDays(2));
-        Item item = new Item(itemId, "itemName", "descdesc", true, user, itemRequest);
-        CreateBookingDto bookingDto = new CreateBookingDto(end, start, itemId);
-
+        bookingDto = new CreateBookingDto(end, start, itemId);
         when(userService.userExistById(any(Long.class))).thenReturn(true);
         when(itemService.itemExistById(any(Long.class))).thenReturn(true);
         when(itemService.findById(itemId)).thenReturn(item);
-        when(userService.findById(ownerId)).thenReturn(user);
+        when(userService.findById(userId)).thenReturn(user);
 
         Throwable thrown = catchThrowable(() -> {
-            bookingService.create(bookingDto, userId);
+            bookingService.create(bookingDto, ownerId);
         });
         assertThat(thrown).isInstanceOf(WrongParametersException.class);
         assertThat(thrown.getMessage()).isNotBlank();
@@ -377,16 +322,6 @@ public class BookingsServiceTests {
 
     @Test
     public void changeStatusTest() {
-        Long bookingId = 1L;
-        Long itemId = 1L;
-        Long userId = 1L;
-        Long requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1), end = LocalDateTime.now().plusDays(1);
-        User user = new User(userId, "hehehaha", "hoho.hyhy@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, "desc", user, LocalDateTime.now().minusDays(2));
-        Item item = new Item(itemId, "itemName", "descdesc", true, user, itemRequest);
-        Booking booking = new Booking(bookingId, start, end, item, user, StatusOfBooking.WAITING);
-
         when(userService.userExistById(any(Long.class))).thenReturn(true);
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
 
@@ -401,17 +336,6 @@ public class BookingsServiceTests {
 
     @Test
     public void changeStatusErrorsTest() {
-        Long bookingId = 1L;
-        Long itemId = 1L;
-        Long userId = 1L;
-        Long requestId = 1L;
-        LocalDateTime start = LocalDateTime.now().minusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        User user = new User(userId, "hehehaha", "hoho.hyhy@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, "desc", user, LocalDateTime.now().minusDays(2));
-        Item item = new Item(itemId, "itemName", "descdesc", true, user, itemRequest);
-        Booking booking;
-
         when(userService.userExistById(any(Long.class))).thenReturn(false);
         Throwable thrown = catchThrowable(() -> {
             bookingService.changeStatus(bookingId, userId, true);
@@ -449,6 +373,5 @@ public class BookingsServiceTests {
         assertThat(thrown).isInstanceOf(AuntificationException.class);
         assertThat(thrown.getMessage()).isNotBlank();
         assertEquals("У вас нет доступа к изменению статуса этого бронирования", thrown.getMessage());
-
     }
 }

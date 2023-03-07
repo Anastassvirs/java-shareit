@@ -1,5 +1,6 @@
 package ru.practicum.shareit;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -40,28 +41,28 @@ import static org.mockito.Mockito.when;
 public class DtoTests {
 
     @InjectMocks
-    UserMapper userMapper;
+    private UserMapper userMapper;
 
     @InjectMocks
-    BookingMapper bookingMapper;
+    private BookingMapper bookingMapper;
 
     @InjectMocks
-    RequestMapper requestMapper;
+    private RequestMapper requestMapper;
 
     @Mock
-    RequestRepository requestRepository;
+    private RequestRepository requestRepository;
 
     @InjectMocks
-    ItemMapper itemMapper;
+    private ItemMapper itemMapper;
 
     @Mock
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
 
     @Mock
-    ItemMapper itemMapperMock;
+    private ItemMapper itemMapperMock;
 
     @InjectMocks
-    CommentMapper commentMapper;
+    private CommentMapper commentMapper;
 
     @Autowired
     private JacksonTester<BookingDto> jsonBookingDto;
@@ -72,14 +73,68 @@ public class DtoTests {
     @Autowired
     private JacksonTester<UserDto> jsonUserDto;
 
+    private Boolean avaliable;
+    private Long requestId;
+    private Long itemId;
+    private Long requestorId;
+    private Long commentId;
+    private String nameItem;
+    private String descriptionItem;
+    private String description;
+    private String userName;
+    private Long bookingId;
+    private Long bookerId;
+    private String commentText;
+    private LocalDateTime created;
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private User user;
+    private UserDto userDto;
+    private ItemRequest itemRequest;
+    private ItemRequest itemRequestCreated;
+    private Item item;
+    private ItemDto itemDto;
+    private List<ItemDto> itemDtos;
+    private List<Item> items;
+    private ItemDtoBookingsComments itemDtoBookingsComments;
+    private ItemRequestDto itemRequestDto;
+    private Comment comment;
+    private CommentDto commentDto;
+
+
+    @BeforeEach
+    void init() {
+        avaliable = true;
+        requestId = 1L;
+        itemId = 1L;
+        requestorId = 1L;
+        commentId = 1L;
+        bookingId = 1L;
+        bookerId = 1L;
+        description = "description";
+        nameItem = "Name";
+        descriptionItem = "description of item";
+        userName = "Anastasia";
+        commentText = "comment text";
+        created = LocalDateTime.of(2023, 1, 18, 18, 18);
+        start = LocalDateTime.of(2023, 1, 18, 18, 18);
+        end = LocalDateTime.of(2023, 1, 18, 18, 18).plusDays(1);
+        user = new User(requestorId, "Anastasia", "anastasia.svir@mail.com");
+        userDto = new UserDto("Anastasia", "anastasia.svir@mail.com");
+        itemDto = new ItemDto(itemId, nameItem, descriptionItem, avaliable, requestId);
+        itemDtos = List.of(itemDto);
+        itemRequest = new ItemRequest(requestId, description, user, created);
+        itemRequestDto = new ItemRequestDto(requestId, description, created, itemDtos);
+        itemRequestCreated = new ItemRequest(description);
+        item = new Item(itemId, nameItem, descriptionItem, avaliable, user, itemRequest);
+        itemDtoBookingsComments = new ItemDtoBookingsComments(itemId, nameItem, descriptionItem, avaliable, requestId);
+        items = List.of(item);
+        comment = new Comment(commentId, commentText, item, user, created);
+        commentDto = new CommentDto(commentId, commentText, userName, created);
+    }
+
     @Test
     void testUserDto() throws Exception {
-        User user = new User("Anastasia",
-                "anastasia.svir@mail.com");
-
-        UserDto userDto = new UserDto(
-                "Anastasia",
-                "anastasia.svir@mail.com");
         JsonContent<UserDto> jsonDto = jsonUserDto.write(userDto);
 
         assertThat(jsonDto).extractingJsonPathStringValue("$.name").isEqualTo("Anastasia");
@@ -89,66 +144,26 @@ public class DtoTests {
 
     @Test
     void testItemDto() {
-        Boolean avaliable = true;
-        Long requestId = 1L;
-        Long itemId = 1L;
-        Long requestorId = 1L;
-        String description = "description";
-        String nameItem = "Name";
-        String descriptionItem = "description of item";
-        LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
-        ItemDto itemDto = new ItemDto(itemId, nameItem, descriptionItem, avaliable, requestId);
-        ItemDtoBookingsComments itemDtoBookingsComments = new ItemDtoBookingsComments(itemId, nameItem, descriptionItem, avaliable, requestId);
-        User user = new User(requestorId, "Anastasia", "anastasia.svir@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, description, user, created);
-        Item item = new Item(itemId, nameItem, descriptionItem, avaliable, user, itemRequest);
-        List<Item> items = List.of(item);
-        List<ItemDto> itemDtos = List.of(itemDto);
-
         when(requestRepository.findById(requestId)).thenReturn(Optional.of(itemRequest));
 
         assertEquals(itemDto, itemMapper.toItemDto(item));
         assertEquals(itemDtoBookingsComments, itemMapper.toItemDtoBookingsComments(item));
         assertEquals(itemDtos, itemMapper.toListItemDto(items));
-        item = new Item(itemId, nameItem, descriptionItem, avaliable, itemRequest);
+        item.setOwner(null);
         assertEquals(item, itemMapper.toItem(itemDto));
     }
 
     @Test
     void testCommentDto() {
-        Boolean avaliable = true;
-        Long requestId = 1L;
-        Long itemId = 1L;
-        Long requestorId = 1L;
-        Long commentId = 1L;
-        String description = "description";
-        String nameItem = "Name";
-        String userName = "Anastasia";
-        String descriptionItem = "description of item";
-        String commentText = "comment text";
-        LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
-        User user = new User(requestorId, userName, "anastasia.svir@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, description, user, created);
-        Item item = new Item(itemId, nameItem, descriptionItem, avaliable, user, itemRequest);
-        Comment comment = new Comment(commentId, commentText, item, user, created);
-        CommentDto commentDto = new CommentDto(commentId, commentText, userName, created);
-
         when(requestRepository.findById(requestId)).thenReturn(Optional.of(itemRequest));
-
         assertEquals(commentDto, commentMapper.toCommentDto(comment));
         LocalDateTime created2 = LocalDateTime.now();
-        comment = new Comment(commentText, item, user, created2);
+        comment = new Comment(commentText, item, user, LocalDateTime.now());
         assertEquals(comment, commentMapper.newtoComment(commentDto, item, user, created2));
     }
 
     @Test
     void testBookingDto() throws Exception {
-        Long bookingId = 1L;
-        Long bookerId = 1L;
-        Long itemId = 1L;
-        Item item = new Item(itemId, "ha", "he", true);
-        LocalDateTime start = LocalDateTime.of(2023, 1, 18, 18, 18);
-        LocalDateTime end = LocalDateTime.of(2023, 1, 18, 18, 18).plusDays(1);
         CreateBookingDto bookingCreationDto = new CreateBookingDto(start, end, itemId);
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
         Booking booking = new Booking(start, end, item);
@@ -168,21 +183,6 @@ public class DtoTests {
 
     @Test
     void testRequestDto() throws Exception {
-        Boolean avaliable = true;
-        Long requestId = 1L;
-        Long itemId = 1L;
-        Long requestorId = 1L;
-        String description = "description";
-        String nameItem = "Name";
-        String descriptionItem = "description of item";
-        LocalDateTime created = LocalDateTime.of(2023, 1, 18, 18, 18);
-        ItemDto itemDto = new ItemDto(itemId, nameItem, descriptionItem, avaliable, requestId);
-        ItemRequestDto itemRequestDto = new ItemRequestDto(requestId, description, created, List.of(itemDto));
-        User user = new User(requestorId, "Anastasia", "anastasia.svir@mail.com");
-        ItemRequest itemRequest = new ItemRequest(requestId, description, user, created);
-        ItemRequest itemRequestCreated = new ItemRequest(description);
-        Item item = new Item(itemId, nameItem, descriptionItem, avaliable, user, itemRequest);
-        List<Item> items = List.of(item);
         List<ItemRequestDto> itemRequestDtos = List.of(itemRequestDto);
         JsonContent<ItemRequestDto> jsonDto = jsonItemRequestDto.write(itemRequestDto);
 
