@@ -1,14 +1,10 @@
 package ru.practicum.shareit.request.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "requests")
@@ -16,6 +12,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class ItemRequest {
 
     @Id
@@ -35,18 +32,5 @@ public class ItemRequest {
 
     public ItemRequest(String description) {
         this.description = description;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ItemRequest)) return false;
-        ItemRequest request = (ItemRequest) o;
-        return Objects.equals(getId(), request.getId()) && Objects.equals(getDescription(), request.getDescription()) && Objects.equals(getRequestor(), request.getRequestor()) && Objects.equals(getCreated(), request.getCreated());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getDescription(), getRequestor(), getCreated());
     }
 }
