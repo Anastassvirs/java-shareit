@@ -117,13 +117,13 @@ public class ItemServiceTests {
         user = new User(requestorId, userName, "anastasia.svir@mail.com");
         ItemRequest itemRequest = new ItemRequest(requestId, "description", user, created);
         item = new Item(itemId, nameItem, descriptionItem, avaliable, user, itemRequest);
-        shortItemDto = new ItemDto(itemId, nameItem, descriptionItem, true);
+        shortItemDto = new ItemDto(itemId, nameItem, descriptionItem, true, 2L);
         shortBookingDto = new BookingDto(bookingId, start, end, bookerId, itemId);
         booking = new Booking(bookerId, start, end, item,
                 new User(bookerId, "name", "email@gmail.com"), StatusOfBooking.WAITING);
         comment = new Comment(commentId, "comment text", item, user, created);
         commentDto = new CommentDto(commentId, "comment text", userName, created);
-        itemDto = new ItemDtoBookingsComments(itemId, nameItem, descriptionItem, true);
+        itemDto = new ItemDtoBookingsComments(itemId, nameItem, descriptionItem, true, requestId);
         itemDtos = List.of(itemDto);
         items = List.of(item);
         bookings = List.of(booking);

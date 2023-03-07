@@ -16,6 +16,7 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.service.RequestServiceImpl;
 import ru.practicum.shareit.user.service.UserService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,7 +60,7 @@ public class RequestServiceTests {
         requestId = 1L;
         request = new ItemRequest("Description");
         request.setId(userId);
-        requestDto = new ItemRequestDto("Description");
+        requestDto = new ItemRequestDto(requestId, "Description", LocalDateTime.now());
         requestDtos = List.of(requestDto);
         requests = List.of(new ItemRequest("desc"), new ItemRequest("description"));
         pageable = PageRequest.of(from / size, size);

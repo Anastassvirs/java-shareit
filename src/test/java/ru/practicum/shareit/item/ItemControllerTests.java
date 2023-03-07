@@ -68,8 +68,8 @@ public class ItemControllerTests {
         user = new User(userId, "Anastasia", "anastasia.svir@mail.com");
         itemRequest = new ItemRequest(requestId, "desc", user, created.minusDays(1));
         item = new Item(itemId, "itemName", "descdesc", true, user, itemRequest);
-        itemDto = new ItemDtoBookingsComments(itemId, "Name", "Some description", true);
-        simpleItemDto = new ItemDto(itemId, "Name", "Some description", true);
+        itemDto = new ItemDtoBookingsComments(itemId, "Name", "Some description", true, requestId);
+        simpleItemDto = new ItemDto(itemId, "Name", "Some description", true, 2L);
         itemDtos = List.of(itemDto);
         commentDto = new CommentDto(itemId, "Comment text", "Name", LocalDateTime.now());
     }

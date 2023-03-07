@@ -26,8 +26,4 @@ public class ItemRequestDto {
         this.description = description;
         this.created = created;
     }
-
-    public ItemRequestDto(String description) {
-        this.description = description;
-    }
 }

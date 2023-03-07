@@ -46,11 +46,4 @@ public class Booking {
         this.end = end;
         this.item = item;
     }
-
-    public Booking(Long id, LocalDateTime start, LocalDateTime end, Item item) {
-        this.id = id;
-        this.start = start;
-        this.end = end;
-        this.item = item;
-    }
 }

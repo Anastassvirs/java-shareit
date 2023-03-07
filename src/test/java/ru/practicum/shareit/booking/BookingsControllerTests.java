@@ -55,7 +55,8 @@ public class BookingsControllerTests {
         item = new Item();
         item.setId(itemId);
         bookingDto = new CreateBookingDto(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), itemId);
-        booking = new Booking(itemId, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item);
+        booking = new Booking(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item);
+        booking.setId(bookingId);
     }
 
     @Test

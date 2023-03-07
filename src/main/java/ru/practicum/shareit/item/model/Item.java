@@ -52,14 +52,6 @@ public class Item {
         this.available = available;
     }
 
-    public Item(Long id, String name, String description, Boolean available, User owner) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.available = available;
-        this.owner = owner;
-    }
-
     @Override
     public String toString() {
         return "Item{" +
