@@ -158,7 +158,7 @@ public class DtoTests {
         when(requestRepository.findById(requestId)).thenReturn(Optional.of(itemRequest));
         assertEquals(commentDto, commentMapper.toCommentDto(comment));
         LocalDateTime created2 = LocalDateTime.now();
-        comment = new Comment(commentText, item, user, LocalDateTime.now());
+        comment = new Comment(commentText, item, user, created2);
         assertEquals(comment, commentMapper.newtoComment(commentDto, item, user, created2));
     }
 
