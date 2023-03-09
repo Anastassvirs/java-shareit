@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 
 @Component
 public class CommentMapper {
-    public Comment newtoComment(@NotNull CommentDto commentDto, @NotNull Item item, @NotNull User author) {
+    public Comment newtoComment(@NotNull CommentDto commentDto, @NotNull Item item, @NotNull User author, LocalDateTime created) {
         return new Comment(
                 commentDto.getText(),
                 item,
                 author,
-                LocalDateTime.now()
+                created
         );
     }
 

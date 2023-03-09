@@ -8,7 +8,8 @@ public enum State {
     PAST,
     FUTURE,
     WAITING,
-    REJECTED;
+    REJECTED,
+    NOT_SUPPORTED;
 
     public static State validateState(String text) {
         try {

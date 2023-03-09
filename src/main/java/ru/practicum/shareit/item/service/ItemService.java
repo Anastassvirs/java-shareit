@@ -11,17 +11,17 @@ public interface ItemService {
 
     List<Item> findAll();
 
-    List<ItemDtoBookingsComments> findAllByUser(Long userId);
+    List<ItemDtoBookingsComments> findAllByUser(Integer from, Integer size, Long userId);
 
-    List<ItemDtoBookingsComments> findAllByText(String text, Long userId);
+    List<ItemDtoBookingsComments> findAllByText(Integer from, Integer size, String text, Long userId);
 
     ItemDtoBookingsComments findDtoById(Long id, Long userId);
 
     Item findById(Long id);
 
-    Item createItem(ItemDto itemDto, Long ownerId);
+    ItemDto createItem(ItemDto itemDto, Long ownerId);
 
-    Item updateItem(Long itemId, ItemDto itemDto, Long ownerId);
+    ItemDto updateItem(Long itemId, ItemDto itemDto, Long ownerId);
 
     void deleteItem(Long itemId, Long userId);
 

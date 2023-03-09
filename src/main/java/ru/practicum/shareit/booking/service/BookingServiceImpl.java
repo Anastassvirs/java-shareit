@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -34,48 +36,50 @@ public class BookingServiceImpl implements BookingService {
     private final BookingMapper bookingMapper;
 
     @Override
-    public List<Booking> findAllByUser(Long userId, State state) {
+    public List<Booking> findAllByUser(Integer from, Integer size, Long userId, State state) {
         if (!userService.userExistById(userId)) {
             throw new NotFoundAnythingException("Пользователя, от лица которого создается бронирование, не существует");
         }
+        Pageable pageable = PageRequest.of(from / size, size);
         switch (state) {
             case ALL:
-                return repository.findAllByBookerIdOrderByEndDesc(userId);
+                return repository.findAllByBookerIdOrderByEndDesc(userId, pageable).getContent();
             case CURRENT:
                 return repository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByEndDesc(userId, LocalDateTime.now(),
-                        LocalDateTime.now());
+                        LocalDateTime.now(), pageable).getContent();
             case PAST:
-                return repository.findAllByBookerIdAndEndBeforeOrderByEndDesc(userId, LocalDateTime.now());
+                return repository.findAllByBookerIdAndEndBeforeOrderByEndDesc(userId, LocalDateTime.now(), pageable).getContent();
             case FUTURE:
-                return repository.findAllByBookerIdAndStartAfterOrderByEndDesc(userId, LocalDateTime.now());
+                return repository.findAllByBookerIdAndStartAfterOrderByEndDesc(userId, LocalDateTime.now(), pageable).getContent();
             case WAITING:
-                return repository.findAllByBookerIdAndStatusOrderByEndDesc(userId, StatusOfBooking.WAITING);
+                return repository.findAllByBookerIdAndStatusOrderByEndDesc(userId, StatusOfBooking.WAITING, pageable).getContent();
             case REJECTED:
-                return repository.findAllByBookerIdAndStatusOrderByEndDesc(userId, StatusOfBooking.REJECTED);
+                return repository.findAllByBookerIdAndStatusOrderByEndDesc(userId, StatusOfBooking.REJECTED, pageable).getContent();
             default:
                 throw new NotFoundAnythingException("Передан неверный статус");
         }
     }
 
     @Override
-    public List<Booking> findAllByOwner(Long userId, State state) {
+    public List<Booking> findAllByOwner(Integer from, Integer size, Long userId, State state) {
         if (!userService.userExistById(userId)) {
             throw new NotFoundAnythingException("Пользователя, от лица которого создается бронирование, не существует");
         }
+        Pageable pageable = PageRequest.of(from / size, size);
         switch (state) {
             case ALL:
-                return repository.findAllByItemOwnerIdOrderByEndDesc(userId);
+                return repository.findAllByItemOwnerIdOrderByEndDesc(userId, pageable).getContent();
             case CURRENT:
                 return repository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByEndDesc(userId,
-                        LocalDateTime.now(), LocalDateTime.now());
+                        LocalDateTime.now(), LocalDateTime.now(), pageable).getContent();
             case PAST:
-                return repository.findAllByItemOwnerIdAndEndBeforeOrderByEndDesc(userId, LocalDateTime.now());
+                return repository.findAllByItemOwnerIdAndEndBeforeOrderByEndDesc(userId, LocalDateTime.now(), pageable).getContent();
             case FUTURE:
-                return repository.findAllByItemOwnerIdAndStartAfterOrderByEndDesc(userId, LocalDateTime.now());
+                return repository.findAllByItemOwnerIdAndStartAfterOrderByEndDesc(userId, LocalDateTime.now(), pageable).getContent();
             case WAITING:
-                return repository.findAllByItemOwnerIdAndStatusOrderByEndDesc(userId, StatusOfBooking.WAITING);
+                return repository.findAllByItemOwnerIdAndStatusOrderByEndDesc(userId, StatusOfBooking.WAITING, pageable).getContent();
             case REJECTED:
-                return repository.findAllByItemOwnerIdAndStatusOrderByEndDesc(userId, StatusOfBooking.REJECTED);
+                return repository.findAllByItemOwnerIdAndStatusOrderByEndDesc(userId, StatusOfBooking.REJECTED, pageable).getContent();
             default:
                 throw new NotFoundAnythingException("Передан неверный статус");
         }
@@ -137,7 +141,6 @@ public class BookingServiceImpl implements BookingService {
         }
         if (!booking.getItem().getOwner().getId().equals(userId)) {
             throw new AuntificationException("У вас нет доступа к изменению статуса этого бронирования");
-
         }
         if (Boolean.TRUE.equals(approved)) {
             booking.setStatus(StatusOfBooking.APPROVED);

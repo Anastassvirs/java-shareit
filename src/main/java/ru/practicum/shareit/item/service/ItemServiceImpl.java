@@ -3,6 +3,8 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -40,6 +42,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentMapper commentMapper;
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
+    private final ItemMapper itemMapper;
 
     @Override
     public List<Item> findAll() {
@@ -48,7 +51,7 @@ public class ItemServiceImpl implements ItemService {
 
     private ItemDtoBookingsComments upgradeItem(Item item) {
         ItemDtoBookingsComments fullItem;
-        fullItem = ItemMapper.toItemDtoBookingsComments(item);
+        fullItem = itemMapper.toItemDtoBookingsComments(item);
         List<Booking> bookings;
         bookings = bookingRepository.findAllByItemIdAndStartAfterOrderByStartDesc(item.getId(), LocalDateTime.now());
         if (!bookings.isEmpty()) {
@@ -77,11 +80,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoBookingsComments> findAllByUser(Long userId) {
+    public List<ItemDtoBookingsComments> findAllByUser(Integer from, Integer size, Long userId) {
         if (!userService.userExistById(userId)) {
             throw new NotFoundAnythingException("Пользователя, по которому производится поиск вещи, не существует");
         }
-        List<Item> items = repository.findAllByOwnerIdOrderById(userId);
+        Pageable pageable = PageRequest.of(from / size, size);
+        List<Item> items = repository.findAllByOwnerIdOrderById(userId, pageable);
         List<ItemDtoBookingsComments> fullItems = new ArrayList<>();
         for (Item item : items) {
             if (item.getAvailable()) {
@@ -92,14 +96,15 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoBookingsComments> findAllByText(String text, Long userId) {
+    public List<ItemDtoBookingsComments> findAllByText(Integer from, Integer size, String text, Long userId) {
         if (!userService.userExistById(userId)) {
             throw new NotFoundAnythingException("Пользователя, от лица которого производится поиск вещи, не существует");
         }
-        if (StringUtils.isBlank(text)) {
-            return new ArrayList<>();
+        if (StringUtils.isBlank(text) || text.equals("")) {
+            return List.of();
         }
-        List<Item> items = repository.findAllByText(text);
+        Pageable pageable = PageRequest.of(from / size, size);
+        List<Item> items = repository.findAllByText(text, pageable);
         List<ItemDtoBookingsComments> fullItems = new ArrayList<>();
         for (Item item : items) {
             if (item.getAvailable()) {
@@ -116,7 +121,7 @@ public class ItemServiceImpl implements ItemService {
         }
         Item item = findById(id);
         ItemDtoBookingsComments fullItem;
-        fullItem = ItemMapper.toItemDtoBookingsComments(item);
+        fullItem = itemMapper.toItemDtoBookingsComments(item);
         List<Booking> bookings;
         bookings = bookingRepository.findAllByItemOwnerIdAndItemIdAndStartAfterOrderByStartDesc(userId, item.getId(),
                 LocalDateTime.now());
@@ -154,19 +159,19 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item createItem(ItemDto itemDto, Long ownerId) {
+    public ItemDto createItem(ItemDto itemDto, Long ownerId) {
         if (!userService.userExistById(ownerId)) {
             throw new NotFoundAnythingException("Пользователя, от лица которого производится создание вещи, не существует");
         }
         log.debug("Пользователем с id: {} была добавлена новая вещь: {}", ownerId, itemDto);
-        Item newItem = ItemMapper.toItem(itemDto);
+        Item newItem = itemMapper.toItem(itemDto);
         newItem.setOwner(userService.findById(ownerId));
-        return repository.save(newItem);
+        return itemMapper.toItemDto(repository.save(newItem));
     }
 
     @Override
     @Transactional
-    public Item updateItem(Long itemId, ItemDto itemDto, Long ownerId) {
+    public ItemDto updateItem(Long itemId, ItemDto itemDto, Long ownerId) {
         if (!userService.userExistById(ownerId)) {
             throw new NotFoundAnythingException("Пользователя, от лица которого производится изменение вещи, не существует");
         }
@@ -179,7 +184,7 @@ public class ItemServiceImpl implements ItemService {
             Optional.ofNullable(itemDto.getDescription()).ifPresent(item::setDescription);
             Optional.ofNullable(itemDto.getAvailable()).ifPresent(item::setAvailable);
             log.debug("Обновлена вещь: {}", item);
-            return repository.save(item);
+            return itemMapper.toItemDto(repository.save(item));
         } else {
             log.debug("Произошла ошибка: ID пользователя не соответсвует владельцу вещи");
             throw new NotFoundAnythingException("ID пользователя не соответсвует владельцу вещи");
@@ -199,7 +204,6 @@ public class ItemServiceImpl implements ItemService {
         if (!userId.equals(findById(itemId).getOwner().getId())) {
             log.debug("Произошла ошибка: ID пользователя не соответсвует владельцу вещи");
             throw new NotFoundAnythingException("ID пользователя не соответсвует владельцу вещи");
-
         }
         log.debug("Удалена вещь с id : {}", itemId);
         repository.deleteById(itemId);
@@ -228,7 +232,7 @@ public class ItemServiceImpl implements ItemService {
         if (Boolean.FALSE.equals(isBookedByThatUser)) {
             throw new WrongParametersException("Написать отзыв может только человек, бронировавший вещь!");
         }
-        Comment comment = commentMapper.newtoComment(commentDto, findById(itemId), author);
+        Comment comment = commentMapper.newtoComment(commentDto, findById(itemId), author, LocalDateTime.now());
         return commentMapper.toCommentDto(commentRepository.save(comment));
     }
 

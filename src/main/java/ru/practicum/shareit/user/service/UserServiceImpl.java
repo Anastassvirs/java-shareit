@@ -3,11 +3,14 @@ package ru.practicum.shareit.user.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exceptions.*;
+import ru.practicum.shareit.exceptions.NotFoundAnythingException;
+import ru.practicum.shareit.exceptions.SameFieldException;
+import ru.practicum.shareit.exceptions.SaveUserException;
+import ru.practicum.shareit.exceptions.WrongParametersException;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.model.UserDto;
-import ru.practicum.shareit.user.model.UserMapper;
 
 import java.util.List;
 import java.util.Objects;
@@ -41,11 +44,8 @@ public class UserServiceImpl implements UserService {
     public User createUser(UserDto userDto) {
         User user = userMapper.toUser(userDto);
 
-        if (userAlreadyExist(user)) {
-            log.debug("Произошла ошибка: Введенный пользователь уже зарегистрирован");
-            throw new AlreadyExistException("Такой пользователь уже зарегистрирован");
-        }
-        if (Objects.isNull(userDto.getEmail()) || !userDto.getEmail().contains("@")) {
+        if (Objects.isNull(userDto.getEmail()) || !userDto.getEmail().contains("@") ||
+                Objects.isNull(userDto.getName()) || userDto.getName().isEmpty() || userDto.getEmail().isEmpty()) {
             throw new WrongParametersException("Неправильно заполнены поля создаваемого пользователя");
         }
         log.debug("Добавлен новый пользователь: {}", user);
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
                 throw new SameFieldException("Данный email уже зарегистрирован");
             }
         }
-        if (userAlreadyExist(user)) {
+        if (userExistById(user.getId())) {
             log.debug("Обновлен пользователь: {}", user);
             return repository.save(user);
         } else {
@@ -88,18 +88,9 @@ public class UserServiceImpl implements UserService {
         repository.deleteById(id);
     }
 
-    private boolean emailAlreadyExist(String email) {
+    public boolean emailAlreadyExist(String email) {
         for (User oldUser : repository.findAll()) {
             if (Objects.equals(oldUser.getEmail(), email)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean userAlreadyExist(User user) {
-        for (User oldUser : repository.findAll()) {
-            if (Objects.equals(oldUser.getId(), user.getId())) {
                 return true;
             }
         }
