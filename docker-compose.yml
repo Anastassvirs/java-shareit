@@ -10,6 +10,9 @@ services:
       - server
     environment:
       - SHAREIT_SERVER_URL=http://server:9090
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
 
   server:
     build: server
@@ -24,7 +27,9 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=iamroot
-      - TZ=Europe/Moscow
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
 
   db:
     image:
@@ -37,4 +42,6 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=iamroot
-      - TZ=Europe/Moscow
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
