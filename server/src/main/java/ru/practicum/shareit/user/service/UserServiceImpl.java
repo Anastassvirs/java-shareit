@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
         User user = findById(userId);
         Optional.ofNullable(userDto.getName()).ifPresent(user::setName);
         if (userDto.getEmail() != null) {
-            if (!emailAlreadyExist(userDto.getEmail())) {
+            if (!emailAlreadyExist(userDto.getEmail(), userId)) {
                 try {
                     user.setEmail(userDto.getEmail());
                 } catch (Exception e) {
@@ -88,9 +88,11 @@ public class UserServiceImpl implements UserService {
         repository.deleteById(id);
     }
 
-    public boolean emailAlreadyExist(String email) {
+    @Override
+    public boolean emailAlreadyExist(String email, Long userId) {
         for (User oldUser : repository.findAll()) {
-            if (Objects.equals(oldUser.getEmail(), email)) {
+            if (Objects.equals(oldUser.getEmail(), email)
+                    && !Objects.equals(oldUser.getId(), userId)) {
                 return true;
             }
         }

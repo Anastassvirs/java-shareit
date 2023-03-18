@@ -115,7 +115,7 @@ public class BookingServiceImpl implements BookingService {
         if (!item.getAvailable()) {
             throw new AlreadyBookedException("Эта вещь уже забронирована!");
         }
-        if (bookingDto.getEnd().isBefore(bookingDto.getStart())) {
+        if (bookingDto.getEnd().isBefore(bookingDto.getStart()) || bookingDto.getEnd().isEqual(bookingDto.getStart())) {
             throw new WrongParametersException("Введены некорректные параметры даты старта/окончания бронирования");
         }
         log.debug("Добавлено новое бронирование: {}", bookingDto);

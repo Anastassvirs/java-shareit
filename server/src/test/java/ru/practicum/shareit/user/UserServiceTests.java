@@ -98,8 +98,9 @@ public class UserServiceTests {
     @Test
     public void updateErrorsTest() {
         userDto = new UserDto("Anastasia", "update.svir@mail.com");
+        User user2 = new User("Anastasiaa", "update.svir@mail.com");
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userRepository.findAll()).thenReturn(List.of(user));
+        when(userRepository.findAll()).thenReturn(List.of(user2));
 
         Throwable thrown = catchThrowable(() -> {
             userService.updateUser(userId, userDto);
@@ -130,10 +131,10 @@ public class UserServiceTests {
         String email = "update.svir@mail.com";
 
         when(userRepository.findAll()).thenReturn(List.of(user));
-        assertEquals(true, userService.emailAlreadyExist(email));
+        assertEquals(true, userService.emailAlreadyExist(email, userId + 1));
 
         when(userRepository.findAll()).thenReturn(List.of());
-        assertEquals(false, userService.emailAlreadyExist(email));
+        assertEquals(false, userService.emailAlreadyExist(email, userId + 1));
     }
 
     @Test

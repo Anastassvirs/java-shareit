@@ -17,7 +17,7 @@ public interface UserService {
 
     void deleteById(Long id);
 
-    boolean emailAlreadyExist(String email);
+    boolean emailAlreadyExist(String email, Long userId);
 
     boolean userExistById(Long id);
 }
