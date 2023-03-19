@@ -137,12 +137,10 @@ public class ItemServiceTests {
     @Test
     public void findAllByUserTest() {
         when(itemRepository.findAllByOwnerIdOrderById(userId, pageable)).thenReturn(items);
-        when(bookingRepository.findAllByItemIdAndEndBeforeOrderByEndDesc(any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
         when(userService.userExistById(any(Long.class))).thenReturn(true);
-        when(bookingRepository.findAllByItemIdAndStartAfterOrderByStartDesc(any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
+        when(bookingRepository.findAllByItemId(any(Long.class))).thenReturn(bookings);
         when(commentRepository.findAllByItemId(any(Long.class))).thenReturn(comments);
         when(itemMapper.toItemDtoBookingsComments(item)).thenReturn(itemDto);
-        when(bookingMapper.toBookingDto(booking)).thenReturn(shortBookingDto);
         when(commentMapper.toCommentDto(comment)).thenReturn(commentDto);
 
         assertEquals(itemService.findAllByUser(from, size, userId), itemDtos);
@@ -162,11 +160,9 @@ public class ItemServiceTests {
     @Test
     public void findAllByTextTest() {
         when(userService.userExistById(any(Long.class))).thenReturn(true);
-        when(bookingRepository.findAllByItemIdAndStartAfterOrderByStartDesc(any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
-        when(bookingRepository.findAllByItemIdAndEndBeforeOrderByEndDesc(any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
+        when(bookingRepository.findAllByItemId(any(Long.class))).thenReturn(bookings);
         when(commentRepository.findAllByItemId(any(Long.class))).thenReturn(comments);
         when(itemMapper.toItemDtoBookingsComments(item)).thenReturn(itemDto);
-        when(bookingMapper.toBookingDto(booking)).thenReturn(shortBookingDto);
         when(itemRepository.findAllByText(text, pageable)).thenReturn(items);
         when(commentMapper.toCommentDto(comment)).thenReturn(commentDto);
 

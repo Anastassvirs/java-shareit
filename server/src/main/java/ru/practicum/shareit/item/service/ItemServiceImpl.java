@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Comparator.comparing;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -52,21 +54,27 @@ public class ItemServiceImpl implements ItemService {
     private ItemDtoBookingsComments upgradeItem(Item item) {
         ItemDtoBookingsComments fullItem;
         fullItem = itemMapper.toItemDtoBookingsComments(item);
-        List<Booking> bookings = bookingRepository.findAllByItemIdAndStartAfterOrderByStartDesc(item.getId(), LocalDateTime.now());
+        List<Booking> bookings = bookingRepository.findAllByItemId(item.getId());
+
         if (!bookings.isEmpty()) {
-            Booking booking = bookings.stream().findFirst().orElse(null);
-            if (!Objects.isNull(booking)) {
-                BookingDto nextBooking = bookingMapper.toBookingDto(booking);
-                fullItem.setNextBooking(nextBooking);
+            Booking nextBooking = bookings.stream()
+                    .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
+                    .min(comparing(Booking::getEnd))
+                    .orElse(null);
+            if (!Objects.isNull(nextBooking)) {
+                BookingDto nextBookingDto = bookingMapper.toBookingDto(nextBooking);
+                fullItem.setNextBooking(nextBookingDto);
             }
         }
 
-        bookings = bookingRepository.findAllByItemIdAndEndBeforeOrderByEndDesc(item.getId(), LocalDateTime.now());
         if (!bookings.isEmpty()) {
-            Booking booking = bookings.stream().findFirst().orElse(null);
-            if (!Objects.isNull(booking)) {
-                BookingDto lastBooking = bookingMapper.toBookingDto(booking);
-                fullItem.setLastBooking(lastBooking);
+            Booking lastBooking = bookings.stream()
+                    .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
+                    .max(comparing(Booking::getEnd))
+                    .orElse(null);
+            if (!Objects.isNull(lastBooking)) {
+                BookingDto lastBookingDto = bookingMapper.toBookingDto(lastBooking);
+                fullItem.setLastBooking(lastBookingDto);
             }
         }
         List<Comment> comments = commentRepository.findAllByItemId(item.getId());
