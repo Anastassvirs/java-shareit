@@ -52,10 +52,7 @@ public class ItemServiceImpl implements ItemService {
     private ItemDtoBookingsComments upgradeItem(Item item) {
         ItemDtoBookingsComments fullItem;
         fullItem = itemMapper.toItemDtoBookingsComments(item);
-        List<Booking> bookings;
-        System.out.println(LocalDateTime.now());
-        bookings = bookingRepository.findAllByItemIdAndStartAfterOrderByStartDesc(item.getId(), LocalDateTime.now());
-        System.out.println(bookings);
+        List<Booking> bookings = bookingRepository.findAllByItemIdAndStartAfterOrderByStartDesc(item.getId(), LocalDateTime.now());
         if (!bookings.isEmpty()) {
             Booking booking = bookings.stream().findFirst().orElse(null);
             if (!Objects.isNull(booking)) {
