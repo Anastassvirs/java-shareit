@@ -53,7 +53,9 @@ public class ItemServiceImpl implements ItemService {
         ItemDtoBookingsComments fullItem;
         fullItem = itemMapper.toItemDtoBookingsComments(item);
         List<Booking> bookings;
+        System.out.println(LocalDateTime.now());
         bookings = bookingRepository.findAllByItemIdAndStartAfterOrderByStartDesc(item.getId(), LocalDateTime.now());
+        System.out.println(bookings);
         if (!bookings.isEmpty()) {
             Booking booking = bookings.stream().findFirst().orElse(null);
             if (!Objects.isNull(booking)) {
