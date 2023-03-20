@@ -54,11 +54,9 @@ public class ItemServiceImpl implements ItemService {
     private ItemDtoBookingsComments upgradeItem(Item item) {
         ItemDtoBookingsComments fullItem;
         fullItem = itemMapper.toItemDtoBookingsComments(item);
-        List<Booking> bookings = bookingRepository.findAllByItemId(item.getId());
-
+        List<Booking> bookings = bookingRepository.findAllByItemIdAndStartAfter(item.getId(), LocalDateTime.now());
         if (!bookings.isEmpty()) {
             Booking nextBooking = bookings.stream()
-                    .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
                     .min(comparing(Booking::getEnd))
                     .orElse(null);
             if (!Objects.isNull(nextBooking)) {
@@ -67,9 +65,9 @@ public class ItemServiceImpl implements ItemService {
             }
         }
 
+        bookings = bookingRepository.findAllByItemIdAndEndBefore(item.getId(), LocalDateTime.now());
         if (!bookings.isEmpty()) {
             Booking lastBooking = bookings.stream()
-                    .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
                     .max(comparing(Booking::getEnd))
                     .orElse(null);
             if (!Objects.isNull(lastBooking)) {
