@@ -187,11 +187,8 @@ public class ItemServiceTests {
     @Test
     public void findDtoByIdTest() {
         when(userService.userExistById(any(Long.class))).thenReturn(true);
-        when(bookingRepository.findAllByItemOwnerIdAndItemIdAndStartAfterOrderByStartDesc(any(Long.class), any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
-        when(bookingRepository.findAllByItemOwnerIdAndItemIdAndEndBeforeOrderByEndDesc(any(Long.class), any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
         when(commentRepository.findAllByItemId(any(Long.class))).thenReturn(comments);
         when(itemMapper.toItemDtoBookingsComments(item)).thenReturn(itemDto);
-        when(bookingMapper.toBookingDto(booking)).thenReturn(shortBookingDto);
         when(commentMapper.toCommentDto(comment)).thenReturn(commentDto);
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 

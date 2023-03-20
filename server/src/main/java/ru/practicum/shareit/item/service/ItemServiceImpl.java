@@ -51,30 +51,51 @@ public class ItemServiceImpl implements ItemService {
         return repository.findAll();
     }
 
-    private ItemDtoBookingsComments upgradeItem(Item item) {
-        ItemDtoBookingsComments fullItem;
-        fullItem = itemMapper.toItemDtoBookingsComments(item);
-        List<Booking> bookings = bookingRepository.findAllByItemIdAndStartAfter(item.getId(), LocalDateTime.now());
+    private BookingDto findNextBooking(Long itemId) {
+        System.out.println(LocalDateTime.now());
+        List<Booking> bookings = bookingRepository.findAllByItemIdAndStartAfter(itemId, LocalDateTime.now());
+        System.out.println("\nnextbookings: " + bookings + "\n");
         if (!bookings.isEmpty()) {
             Booking nextBooking = bookings.stream()
-                    .min(comparing(Booking::getEnd))
+                    .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
+                    .min(comparing(Booking::getStart))
                     .orElse(null);
             if (!Objects.isNull(nextBooking)) {
-                BookingDto nextBookingDto = bookingMapper.toBookingDto(nextBooking);
-                fullItem.setNextBooking(nextBookingDto);
+                System.out.println("\nnextbooking: " + nextBooking + "\n");
+                return bookingMapper.toBookingDto(nextBooking);
             }
         }
+        System.out.println("\nnextbooking: " + null + "\n");
+        return null;
+    }
 
-        bookings = bookingRepository.findAllByItemIdAndEndBefore(item.getId(), LocalDateTime.now());
+    private BookingDto findLastBooking(Long itemId) {
+        System.out.println(LocalDateTime.now());
+        List<Booking> bookings = bookingRepository.findAllByItemIdAndEndBefore(itemId, LocalDateTime.now());
+        System.out.println("\nlastbookings: " + bookings + "\n");
         if (!bookings.isEmpty()) {
-            Booking lastBooking = bookings.stream()
+            Booking nextBooking = bookings.stream()
+                    .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
                     .max(comparing(Booking::getEnd))
                     .orElse(null);
-            if (!Objects.isNull(lastBooking)) {
-                BookingDto lastBookingDto = bookingMapper.toBookingDto(lastBooking);
-                fullItem.setLastBooking(lastBookingDto);
+            if (!Objects.isNull(nextBooking)) {
+                System.out.println("\nlastbooking: " + nextBooking + "\n");
+                return bookingMapper.toBookingDto(nextBooking);
             }
         }
+        System.out.println("\nlastbooking: " + null + "\n");
+        return null;
+    }
+
+    private ItemDtoBookingsComments upgradeItem(Item item) {
+        ItemDtoBookingsComments fullItem = itemMapper.toItemDtoBookingsComments(item);
+
+        BookingDto nextBookingDto = findNextBooking(item.getId());
+        fullItem.setNextBooking(nextBookingDto);
+
+        BookingDto lastBookingDto = findLastBooking(item.getId());
+        fullItem.setLastBooking(lastBookingDto);
+
         List<Comment> comments = commentRepository.findAllByItemId(item.getId());
         List<CommentDto> commentsDto = new ArrayList<>();
         for (Comment comment : comments) {
@@ -125,35 +146,7 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundAnythingException("Пользователя, от лица которого производится поиск вещи, не существует");
         }
         Item item = findById(id);
-        ItemDtoBookingsComments fullItem;
-        fullItem = itemMapper.toItemDtoBookingsComments(item);
-        List<Booking> bookings;
-        bookings = bookingRepository.findAllByItemOwnerIdAndItemIdAndStartAfterOrderByStartDesc(userId, item.getId(),
-                LocalDateTime.now());
-        if (!bookings.isEmpty()) {
-            Booking booking = bookings.stream().findFirst().orElse(null);
-            if (!Objects.isNull(booking)) {
-                BookingDto nextBooking = bookingMapper.toBookingDto(booking);
-                fullItem.setNextBooking(nextBooking);
-            }
-        }
-        bookings = bookingRepository.findAllByItemOwnerIdAndItemIdAndEndBeforeOrderByEndDesc(userId, item.getId(),
-                LocalDateTime.now());
-
-        if (!bookings.isEmpty()) {
-            Booking booking = bookings.stream().findFirst().orElse(null);
-            if (!Objects.isNull(booking)) {
-                BookingDto lastBooking = bookingMapper.toBookingDto(booking);
-                fullItem.setLastBooking(lastBooking);
-            }
-        }
-        List<Comment> comments = commentRepository.findAllByItemId(item.getId());
-        List<CommentDto> commentsDto = new ArrayList<>();
-        for (Comment comment : comments) {
-            commentsDto.add(commentMapper.toCommentDto(comment));
-        }
-        fullItem.setComments(commentsDto);
-        return fullItem;
+        return upgradeItem(item);
     }
 
     @Override
