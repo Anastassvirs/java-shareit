@@ -118,11 +118,27 @@ public class BookingServiceImpl implements BookingService {
         if (bookingDto.getEnd().isBefore(bookingDto.getStart()) || bookingDto.getEnd().isEqual(bookingDto.getStart())) {
             throw new WrongParametersException("Введены некорректные параметры даты старта/окончания бронирования");
         }
+        if (checkIntersectionsWithExistedBookings(bookingDto)) {
+            throw new WrongParametersException("Введенное вами бронирование пересекается с уже существующими");
+        }
         log.debug("Добавлено новое бронирование: {}", bookingDto);
         Booking booking = bookingMapper.toBookingCreation(bookingDto);
         booking.setBooker(userService.findById(userId));
         booking.setStatus(StatusOfBooking.WAITING);
         return repository.save(booking);
+    }
+
+    private boolean checkIntersectionsWithExistedBookings(CreateBookingDto newBookingDto) {
+        for (Booking booking : repository.findAllByItemId(newBookingDto.getItemId())) {
+            if (booking.getStatus().equals(StatusOfBooking.APPROVED)
+                    && ((newBookingDto.getStart().isAfter(booking.getStart())
+                    && newBookingDto.getStart().isBefore(booking.getEnd()))
+                    || (newBookingDto.getEnd().isAfter(booking.getStart())
+                    && newBookingDto.getEnd().isBefore(booking.getEnd())))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Transactional

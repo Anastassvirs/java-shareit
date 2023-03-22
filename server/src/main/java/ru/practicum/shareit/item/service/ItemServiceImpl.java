@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.StatusOfBooking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.exceptions.WrongParametersException;
@@ -53,17 +54,15 @@ public class ItemServiceImpl implements ItemService {
 
     private BookingDto findNextBooking(Long itemId) {
         System.out.println(LocalDateTime.now());
-        List<Booking> bookings = bookingRepository.findAllByItemIdAndStartAfter(itemId, LocalDateTime.now());
+        List<Booking> bookings = bookingRepository.findAllByItemIdAndStartAfterAndStatus(itemId,
+                LocalDateTime.now(), StatusOfBooking.APPROVED);
         System.out.println("\nnextbookings: " + bookings + "\n");
         if (!bookings.isEmpty()) {
             Booking nextBooking = bookings.stream()
-                    .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
                     .min(comparing(Booking::getStart))
                     .orElse(null);
-            if (!Objects.isNull(nextBooking)) {
-                System.out.println("\nnextbooking: " + nextBooking + "\n");
-                return bookingMapper.toBookingDto(nextBooking);
-            }
+            System.out.println("\nnextbooking: " + nextBooking + "\n");
+            return bookingMapper.toBookingDto(nextBooking);
         }
         System.out.println("\nnextbooking: " + null + "\n");
         return null;
@@ -71,17 +70,15 @@ public class ItemServiceImpl implements ItemService {
 
     private BookingDto findLastBooking(Long itemId) {
         System.out.println(LocalDateTime.now());
-        List<Booking> bookings = bookingRepository.findAllByItemIdAndEndBefore(itemId, LocalDateTime.now());
+        List<Booking> bookings = bookingRepository.findAllByItemIdAndEndBeforeAndStatus(itemId,
+                LocalDateTime.now(), StatusOfBooking.APPROVED);
         System.out.println("\nlastbookings: " + bookings + "\n");
         if (!bookings.isEmpty()) {
             Booking nextBooking = bookings.stream()
-                    .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
                     .max(comparing(Booking::getEnd))
                     .orElse(null);
-            if (!Objects.isNull(nextBooking)) {
-                System.out.println("\nlastbooking: " + nextBooking + "\n");
-                return bookingMapper.toBookingDto(nextBooking);
-            }
+            System.out.println("\nlastbooking: " + nextBooking + "\n");
+            return bookingMapper.toBookingDto(nextBooking);
         }
         System.out.println("\nlastbooking: " + null + "\n");
         return null;

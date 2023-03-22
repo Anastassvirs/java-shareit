@@ -138,7 +138,8 @@ public class ItemServiceTests {
     public void findAllByUserTest() {
         when(itemRepository.findAllByOwnerIdOrderById(userId, pageable)).thenReturn(items);
         when(userService.userExistById(any(Long.class))).thenReturn(true);
-        when(bookingRepository.findAllByItemIdAndStartAfter(any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
+        when(bookingRepository.findAllByItemIdAndStartAfterAndStatus(any(Long.class),
+                any(LocalDateTime.class), any(StatusOfBooking.class))).thenReturn(bookings);
         when(commentRepository.findAllByItemId(any(Long.class))).thenReturn(comments);
         when(itemMapper.toItemDtoBookingsComments(item)).thenReturn(itemDto);
         when(commentMapper.toCommentDto(comment)).thenReturn(commentDto);
@@ -160,8 +161,10 @@ public class ItemServiceTests {
     @Test
     public void findAllByTextTest() {
         when(userService.userExistById(any(Long.class))).thenReturn(true);
-        when(bookingRepository.findAllByItemIdAndStartAfter(any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
-        when(bookingRepository.findAllByItemIdAndEndBefore(any(Long.class), any(LocalDateTime.class))).thenReturn(bookings);
+        when(bookingRepository.findAllByItemIdAndStartAfterAndStatus(any(Long.class),
+                any(LocalDateTime.class), any(StatusOfBooking.class))).thenReturn(bookings);
+        when(bookingRepository.findAllByItemIdAndEndBeforeAndStatus(any(Long.class),
+                any(LocalDateTime.class), any(StatusOfBooking.class))).thenReturn(bookings);
         when(commentRepository.findAllByItemId(any(Long.class))).thenReturn(comments);
         when(itemMapper.toItemDtoBookingsComments(item)).thenReturn(itemDto);
         when(itemRepository.findAllByText(text, pageable)).thenReturn(items);
