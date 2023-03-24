@@ -149,14 +149,14 @@ public class BookingServiceImpl implements BookingService {
         }
         Booking booking = repository.findById(bookingId).orElseThrow(() ->
                 new NotFoundAnythingException("Бронирования с данным id не существует"));
+        if (!booking.getItem().getOwner().getId().equals(userId)) {
+            throw new AuntificationException("У вас нет доступа к изменению статуса этого бронирования");
+        }
         if (!booking.getItem().getAvailable()) {
             throw new AlreadyBookedException("Эта вещь уже забронирована!");
         }
         if (booking.getStatus().equals(StatusOfBooking.APPROVED)) {
             throw new AlreadyBookedException("Эта бронь уже подтверждена!");
-        }
-        if (!booking.getItem().getOwner().getId().equals(userId)) {
-            throw new AuntificationException("У вас нет доступа к изменению статуса этого бронирования");
         }
         if (Boolean.TRUE.equals(approved)) {
             booking.setStatus(StatusOfBooking.APPROVED);

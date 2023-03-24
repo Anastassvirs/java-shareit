@@ -84,14 +84,15 @@ public class ItemServiceImpl implements ItemService {
         return null;
     }
 
-    private ItemDtoBookingsComments upgradeItem(Item item) {
+    private ItemDtoBookingsComments upgradeItem(Item item, Long userId) {
         ItemDtoBookingsComments fullItem = itemMapper.toItemDtoBookingsComments(item);
 
-        BookingDto nextBookingDto = findNextBooking(item.getId());
-        fullItem.setNextBooking(nextBookingDto);
-
-        BookingDto lastBookingDto = findLastBooking(item.getId());
-        fullItem.setLastBooking(lastBookingDto);
+        if (item.getOwner().getId().equals(userId)) {
+            BookingDto nextBookingDto = findNextBooking(item.getId());
+            fullItem.setNextBooking(nextBookingDto);
+            BookingDto lastBookingDto = findLastBooking(item.getId());
+            fullItem.setLastBooking(lastBookingDto);
+        }
 
         List<Comment> comments = commentRepository.findAllByItemId(item.getId());
         List<CommentDto> commentsDto = new ArrayList<>();
@@ -112,7 +113,7 @@ public class ItemServiceImpl implements ItemService {
         List<ItemDtoBookingsComments> fullItems = new ArrayList<>();
         for (Item item : items) {
             if (item.getAvailable()) {
-                fullItems.add(upgradeItem(item));
+                fullItems.add(upgradeItem(item, userId));
             }
         }
         return fullItems;
@@ -131,7 +132,7 @@ public class ItemServiceImpl implements ItemService {
         List<ItemDtoBookingsComments> fullItems = new ArrayList<>();
         for (Item item : items) {
             if (item.getAvailable()) {
-                fullItems.add(upgradeItem(item));
+                fullItems.add(upgradeItem(item, userId));
             }
         }
         return fullItems;
@@ -143,7 +144,7 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundAnythingException("Пользователя, от лица которого производится поиск вещи, не существует");
         }
         Item item = findById(id);
-        return upgradeItem(item);
+        return upgradeItem(item, userId);
     }
 
     @Override
