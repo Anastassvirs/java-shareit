@@ -17,10 +17,33 @@
     <name>ShareIt</name>
 
     <properties>
+        <java.version>11</java.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jpa.version>2.2.6.RELEASE</jpa.version>
+        <postgres.version>42.3.2</postgres.version>
+        <maven-checkstyle.version>3.1.2</maven-checkstyle.version>
+        <puppycrawl-checkstyle.version>10.3</puppycrawl-checkstyle.version>
+        <spotbugs.version>4.7.0.0</spotbugs.version>
+        <jacoco.version>0.8.8</jacoco.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgres.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-jpa</artifactId>
+                <version>${jpa.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <modules>
         <module>gateway</module>
@@ -54,7 +77,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>${maven-checkstyle.version}</version>
                     <configuration>
                         <configLocation>checkstyle.xml</configLocation>
                         <failOnViolation>true</failOnViolation>
@@ -73,14 +96,14 @@
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
                             <artifactId>checkstyle</artifactId>
-                            <version>10.3</version>
+                            <version>${puppycrawl-checkstyle.version}</version>
                         </dependency>
                     </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
-                    <version>4.7.0.0</version>
+                    <version>${spotbugs.version}</version>
                     <configuration>
                         <effort>Max</effort>
                         <threshold>High</threshold>
@@ -96,7 +119,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.8</version>
+                    <version>${jacoco.version}</version>
                     <configuration>
                         <output>file</output>
                     </configuration>
