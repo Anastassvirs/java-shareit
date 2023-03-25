@@ -15,6 +15,9 @@
 
     <properties>
         <java.version>11</java.version>
+        <maven-checkstyle.version>3.1.2</maven-checkstyle.version>
+        <postgres.version>42.3.2</postgres.version>
+        <puppycrawl-checkstyle.version>10.3</puppycrawl-checkstyle.version>
     </properties>
 
     <dependencies>
@@ -26,6 +29,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+            <version>${postgres.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -109,6 +113,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${maven-checkstyle.version}</version>
                     <configuration>
                         <configLocation>checkstyle.xml</configLocation>
                         <failOnViolation>true</failOnViolation>
@@ -127,6 +132,7 @@
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
                             <artifactId>checkstyle</artifactId>
+                            <version>${puppycrawl-checkstyle.version}</version>
                         </dependency>
 
                         <dependency>
