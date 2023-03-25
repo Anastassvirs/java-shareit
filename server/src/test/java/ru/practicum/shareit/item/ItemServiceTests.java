@@ -163,7 +163,7 @@ public class ItemServiceTests {
         when(userService.userExistById(any(Long.class))).thenReturn(true);
         when(bookingRepository.findAllByItemIdAndStartAfterAndStatus(any(Long.class),
                 any(LocalDateTime.class), any(StatusOfBooking.class))).thenReturn(bookings);
-        when(bookingRepository.findAllByItemIdAndEndBeforeAndStatus(any(Long.class),
+        when(bookingRepository.findAllByItemIdAndStartBeforeAndStatus(any(Long.class),
                 any(LocalDateTime.class), any(StatusOfBooking.class))).thenReturn(bookings);
         when(commentRepository.findAllByItemId(any(Long.class))).thenReturn(comments);
         when(itemMapper.toItemDtoBookingsComments(item)).thenReturn(itemDto);

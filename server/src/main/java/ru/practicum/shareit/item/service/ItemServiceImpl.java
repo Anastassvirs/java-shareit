@@ -70,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
 
     private BookingDto findLastBooking(Long itemId) {
         System.out.println(LocalDateTime.now());
-        List<Booking> bookings = bookingRepository.findAllByItemIdAndEndBeforeAndStatus(itemId,
+        List<Booking> bookings = bookingRepository.findAllByItemIdAndStartBeforeAndStatus(itemId,
                 LocalDateTime.now(), StatusOfBooking.APPROVED);
         System.out.println("\nlastbookings: " + bookings + "\n");
         if (!bookings.isEmpty()) {
