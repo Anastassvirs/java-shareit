@@ -15,7 +15,6 @@
 
     <properties>
         <java.version>11</java.version>
-        <maven-checkstyle.version>3.1.2</maven-checkstyle.version>
     </properties>
 
     <dependencies>
