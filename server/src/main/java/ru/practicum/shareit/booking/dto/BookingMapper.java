@@ -6,14 +6,12 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.NotFoundAnythingException;
 import ru.practicum.shareit.item.repository.ItemRepository;
 
-import javax.validation.constraints.NotNull;
-
 @Component
 @AllArgsConstructor
 public class BookingMapper {
     private final ItemRepository itemRepository;
 
-    public Booking toBookingCreation(@NotNull CreateBookingDto bookingCreationDto) {
+    public Booking toBookingCreation(CreateBookingDto bookingCreationDto) {
         return new Booking(
                 bookingCreationDto.getStart(),
                 bookingCreationDto.getEnd(),
@@ -22,7 +20,7 @@ public class BookingMapper {
         );
     }
 
-    public BookingDto toBookingDto(@NotNull Booking booking) {
+    public BookingDto toBookingDto(Booking booking) {
         return new BookingDto(
                 booking.getId(),
                 booking.getStart(),

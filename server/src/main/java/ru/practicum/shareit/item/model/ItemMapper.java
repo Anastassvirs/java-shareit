@@ -7,7 +7,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoBookingsComments;
 import ru.practicum.shareit.request.RequestRepository;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +15,7 @@ import java.util.List;
 public class ItemMapper {
     private final RequestRepository requestRepository;
 
-    public ItemDto toItemDto(@NotNull Item item) {
+    public ItemDto toItemDto(Item item) {
         return new ItemDto(
                 item.getId(),
                 item.getName(),
@@ -26,7 +25,7 @@ public class ItemMapper {
         );
     }
 
-    public ItemDtoBookingsComments toItemDtoBookingsComments(@NotNull Item item) {
+    public ItemDtoBookingsComments toItemDtoBookingsComments(Item item) {
         return new ItemDtoBookingsComments(
                 item.getId(),
                 item.getName(),
@@ -36,7 +35,7 @@ public class ItemMapper {
         );
     }
 
-    public List<ItemDto> toListItemDto(@NotNull List<Item> items) {
+    public List<ItemDto> toListItemDto(List<Item> items) {
         List<ItemDto> dtoList = new ArrayList<>();
         for (Item item : items) {
             dtoList.add(new ItemDto(
@@ -51,7 +50,7 @@ public class ItemMapper {
         return dtoList;
     }
 
-    public Item toItem(@NotNull ItemDto itemDto) {
+    public Item toItem(ItemDto itemDto) {
         return new Item(
                 itemDto.getId() != null ? itemDto.getId() : null,
                 itemDto.getName(),

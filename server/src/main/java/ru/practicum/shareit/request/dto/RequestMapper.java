@@ -6,7 +6,6 @@ import ru.practicum.shareit.item.model.ItemMapper;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.model.ItemRequest;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +15,7 @@ public class RequestMapper {
     private final ItemRepository itemRepository;
     private final ItemMapper itemMapper;
 
-    public ItemRequestDto toRequestDto(@NotNull ItemRequest itemRequest) {
+    public ItemRequestDto toRequestDto(ItemRequest itemRequest) {
         return new ItemRequestDto(
                 itemRequest.getId(),
                 itemRequest.getDescription(),
@@ -31,7 +30,7 @@ public class RequestMapper {
         );
     }
 
-    public List<ItemRequestDto> toListRequestDto(@NotNull List<ItemRequest> itemRequests) {
+    public List<ItemRequestDto> toListRequestDto(List<ItemRequest> itemRequests) {
         List<ItemRequestDto> dtos = new ArrayList<>();
         for (ItemRequest request : itemRequests) {
             dtos.add(toRequestDto(request));

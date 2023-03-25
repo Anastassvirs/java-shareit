@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.shareit.booking.dto.BookingDto;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -16,12 +14,8 @@ import java.util.List;
 @EqualsAndHashCode
 public class ItemDtoBookingsComments {
     private Long id;
-    @NotNull
-    @NotBlank
     private String name;
-    @NotBlank
     private String description;
-    @NotNull
     private Boolean available;
     private Long requestId;
     private BookingDto lastBooking;
